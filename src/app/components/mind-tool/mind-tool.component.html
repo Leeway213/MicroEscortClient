@@ -2,7 +2,8 @@
 <div class="container-fluid media work-panel">
   <svg:svg class="svg-container center align-self-center" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
     attr.viewBox="0 0 {{width}} {{height}}" [attr.width]="width" [attr.height]="height" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
-    (mouseup)="onMouseUp($event)" (mousewheel)="onMouseWheel($event)" [attr.transform]="'scale('+ zoom + ') translate(' + transX + ',' + transY + ')'"
+    (mouseup)="onMouseUp($event)" (mousewheel)="onMouseWheel($event)" 
+    [attr.transform]="'scale('+ zoom + ') translate(' + transX + ',' + transY + ')'"
     (contextmenu)="disableMenu()">
     <svg:image #image attr.xlink:href="{{imgSrc}}" attr.width="{{width}}" attr.height="{{height}}">
     </svg:image>

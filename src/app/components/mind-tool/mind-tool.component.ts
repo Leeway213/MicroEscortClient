@@ -94,7 +94,7 @@ export class MindToolComponent implements OnInit {
   }
 
   onMouseDown(e: MouseEvent) {
-    if (e.buttons === 1 && !e.altKey) {
+    if (e.buttons === 1 && !e.shiftKey) {
       switch (this.toolType) {
         case ToolType.BoundingBox:
           this.startBounding(e);
@@ -102,9 +102,11 @@ export class MindToolComponent implements OnInit {
         case ToolType.Path:
           break;
       }
-    } else if (e.buttons === 1 && e.altKey) {
+    } else if (e.buttons === 1 && e.shiftKey) {
       this.translating = true;
     }
+
+    e.preventDefault();
   }
 
   onMouseMove(e: MouseEvent) {
@@ -128,6 +130,8 @@ export class MindToolComponent implements OnInit {
           break;
       }
     }
+
+    e.preventDefault();
   }
 
   onMouseUp(e: MouseEvent) {
@@ -147,10 +151,12 @@ export class MindToolComponent implements OnInit {
         this.operationStack.push(ObjectHelper.objClone(this.boundingBoxs, []) as BoundingBox[]);
       }
     }
+
+    e.preventDefault();
   }
 
   onMouseWheel(e: WheelEvent) {
-    if (e.altKey) {
+    if (e.shiftKey) {
       if (e.deltaY < 0) {
         this.zoomIn();
       } else if (e.deltaY > 0 && this.zoomTimes > 0) {
