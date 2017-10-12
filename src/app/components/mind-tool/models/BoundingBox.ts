@@ -1,18 +1,26 @@
-import { Point } from './Point';
-export class BoundingBox {
+import { EventEmitter } from "events";
+import { Point } from "./Point";
 
-    constructor() {
-        this.center = new Point(-1, -1);
-    }
+/**
+ * Bounding Box
+ */
+export class BoundingBox {
+  constructor() {
+  }
+
+  /**
+   * label
+   */
+  label: string;
 
   start: Point;
 
-  center: Point;
-
   private _width: number;
+
   get width() {
     return this._width;
   }
+
   set width(value: number) {
     if (this._width !== value) {
       this._width = value;
@@ -26,9 +34,13 @@ export class BoundingBox {
   }
 
   private _height: number;
-  get height() { return this._height; }
+
+  get height() {
+    return this._height;
+  }
+
   set height(value: number) {
-    if ( this._height !== value) {
+    if (this._height !== value) {
       this._height = value;
       this.svgHeight = Math.abs(this._height);
 
@@ -50,8 +62,4 @@ export class BoundingBox {
   strokeColor: string;
   strokeWidth: number;
 
-  caculateCenter() {
-      this.center.X = this.start.X + (this.width / 2);
-      this.center.Y = this.start.Y + (this.height / 2);
-  }
 }

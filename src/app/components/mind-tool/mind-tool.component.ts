@@ -1,3 +1,4 @@
+import { ObjectHelper } from './utils/StaticMethod';
 import { ToolType } from './models/ToolType';
 import { concat } from "@angular-devkit/schematics/node_modules/rxjs/operator/concat";
 import {
@@ -9,8 +10,9 @@ import {
   OnInit,
   ViewChild
 } from "@angular/core";
-import { BoundingBox } from "./models/BoundingBox";
+import { BoundingBox } from './models/BoundingBox';
 import { Point } from "./models/Point";
+import { OperationStack } from './models/OperationStack';
 
 @Component({
   selector: "app-mind-tool",
@@ -57,12 +59,19 @@ export class MindToolComponent implements OnInit {
     this.height = this.srcHeight;
 
     this.zoomTimes = 0;
+    this.operationStack = [];
 
     switch (this.toolType) {
       case ToolType.BoundingBox:
       this.boundingBoxs = [];
       break;
     }
+
+    document.onkeydown = e => {
+      if (e.ctrlKey && e.key === 'z') {
+        this.undo();
+      }
+    };
   }
 
   disableMenu() {
@@ -124,6 +133,7 @@ export class MindToolComponent implements OnInit {
   onMouseUp(e: MouseEvent) {
     if (this.resizing) {
       this.resizing = false;
+      this.operationStack.push(ObjectHelper.objClone(this.boundingBoxs, []) as BoundingBox[]);
       return;
     }
 
@@ -134,6 +144,7 @@ export class MindToolComponent implements OnInit {
     if (e.button === 0 && this.boundingBoxs.length >= 1) {
       if (this.toolType === ToolType.BoundingBox) {
         this.endBounding(e);
+        this.operationStack.push(ObjectHelper.objClone(this.boundingBoxs, []) as BoundingBox[]);
       }
     }
   }
@@ -220,5 +231,24 @@ export class MindToolComponent implements OnInit {
   translate(e: MouseEvent) {
     this.transX += e.movementX / this.zoom;
     this.transY += e.movementY / this.zoom;
+  }
+
+  undo() {
+    if (this.operationStack.length <= 0) {
+      return;
+    }
+    this.operationStack.pop();
+    switch (this.toolType) {
+      case ToolType.BoundingBox:
+      this.undoBounding();
+      break;
+    }
+  }
+
+  undoBounding() {
+    this.boundingBoxs = this.operationStack[this.operationStack.length - 1];
+    if (!this.boundingBoxs) {
+      this.boundingBoxs = [];
+    }
   }
 }
