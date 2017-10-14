@@ -2,32 +2,36 @@
 <div class="container-fluid media work-panel">
   <svg:svg class="svg-container center align-self-center" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
     attr.viewBox="0 0 {{width}} {{height}}" [attr.width]="width" [attr.height]="height" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
-    (mouseup)="onMouseUp($event)" (mousewheel)="onMouseWheel($event)" 
-    [attr.transform]="'scale('+ zoom + ') translate(' + transX + ',' + transY + ')'"
+    (mouseup)="onMouseUp($event)" (mousewheel)="onMouseWheel($event)" [attr.transform]="'scale('+ zoom + ') translate(' + transX + ',' + transY + ')'"
     (contextmenu)="disableMenu()">
     <svg:image #image attr.xlink:href="{{imgSrc}}" attr.width="{{width}}" attr.height="{{height}}">
     </svg:image>
     <svg:g #svgGroup *ngFor="let item of boundingBoxs; let i = index">
-      <svg:rect class="bounding-box" [style.stroke-width]="(2/zoom) + 'px'" [attr.x]="item.svgStart.X" [attr.y]="item.svgStart.Y" [attr.width]="item.svgWidth" [attr.height]="item.svgHeight"></svg:rect>
-      <svg:g *ngIf="item.svgWidth > 0 && item.svgHeight > 0" >
-        <svg:circle id="left-top" class="bounding-point" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X"
-          [attr.cy]="item.svgStart.Y"></svg:circle>
-        <svg:circle id="left-center-{{i}}" class="bounding-point resize-point" [attr.r]="3 / zoom"
-          [attr.cx]="item.svgStart.X" [attr.cy]="item.svgStart.Y + (item.svgHeight / 2)" (mousedown)="startResize($event)"></svg:circle>
-        <svg:circle id="left-bottom" class="bounding-point" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X"
-          [attr.cy]="item.svgStart.Y + item.svgHeight"></svg:circle>
-        <svg:circle id="top-center-{{i}}" class="bounding-point resize-point" [attr.r]="3 / zoom"
-          [attr.cx]="item.svgStart.X + (item.svgWidth / 2)" [attr.cy]="item.svgStart.Y" (mousedown)="startResize($event)"></svg:circle>
-        <svg:circle id="bottom-center-{{i}}" class="bounding-point resize-point"
-          [attr.r]="3 / zoom" [attr.cx]="item.svgStart.X + (item.svgWidth / 2)" [attr.cy]="item.svgStart.Y + item.svgHeight" (mousedown)="startResize($event)"></svg:circle>
-        <svg:circle id="right-top" class="bounding-point" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X + item.svgWidth"
-          [attr.cy]="item.svgStart.Y"></svg:circle>
-        <svg:circle id="right-center-{{i}}" class="bounding-point resize-point" [attr.r]="3 / zoom"
-          [attr.cx]="item.svgStart.X + item.svgWidth" [attr.cy]="item.svgStart.Y + (item.svgHeight / 2)" (mousedown)="startResize($event)"></svg:circle>
-        <svg:circle id="right-bottom" class="bounding-point" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X + item.svgWidth"
-          [attr.cy]="item.svgStart.Y + item.svgHeight"></svg:circle>
+      <svg:rect class="bounding-box" [style.stroke-width]="(2/zoom) + 'px'" [attr.x]="item.svgStart.X" [attr.y]="item.svgStart.Y"
+        [attr.width]="item.svgWidth" [attr.height]="item.svgHeight"></svg:rect>
+      <svg:g *ngIf="item.svgWidth > 0 && item.svgHeight > 0">
+        <svg:circle id="left-top" class="bounding-point" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X" [attr.cy]="item.svgStart.Y"></svg:circle>
+        <svg:circle id="left-center-{{i}}" class="bounding-point resize-point" [attr.r]="3 / zoom" [attr.cx]="item.svgStart.X" [attr.cy]="item.svgStart.Y + (item.svgHeight / 2)"
+          (mousedown)="startResize($event)"></svg:circle>
+        <svg:circle id="left-bottom" class="bounding-point" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X" [attr.cy]="item.svgStart.Y + item.svgHeight"></svg:circle>
+        <svg:circle id="top-center-{{i}}" class="bounding-point resize-point" [attr.r]="3 / zoom" [attr.cx]="item.svgStart.X + (item.svgWidth / 2)"
+          [attr.cy]="item.svgStart.Y" (mousedown)="startResize($event)"></svg:circle>
+        <svg:circle id="bottom-center-{{i}}" class="bounding-point resize-point" [attr.r]="3 / zoom" [attr.cx]="item.svgStart.X + (item.svgWidth / 2)"
+          [attr.cy]="item.svgStart.Y + item.svgHeight" (mousedown)="startResize($event)"></svg:circle>
+        <svg:circle id="right-top" class="bounding-point" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X + item.svgWidth" [attr.cy]="item.svgStart.Y"></svg:circle>
+        <svg:circle id="right-center-{{i}}" class="bounding-point resize-point" [attr.r]="3 / zoom" [attr.cx]="item.svgStart.X + item.svgWidth"
+          [attr.cy]="item.svgStart.Y + (item.svgHeight / 2)" (mousedown)="startResize($event)"></svg:circle>
+        <svg:circle id="right-bottom" class="bounding-point" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X + item.svgWidth" [attr.cy]="item.svgStart.Y + item.svgHeight"></svg:circle>
 
       </svg:g>
+    </svg:g>
+
+    <svg:g class="polygon-group">
+
+      <svg:line *ngFor="let line of polygonCanvas.lines" [attr.x1]="line.start.X" [attr.y1]="line.start.Y" [attr.x2]="line.end.X"
+        [attr.y2]="line.end.Y" stroke-width="2" stroke="green"></svg:line>
+      <svg:circle *ngFor="let point of polygonCanvas.points" r="2" [attr.cx]="point.X" [attr.cy]="point.Y" style="stroke: red; fill: white;"></svg:circle>
+
     </svg:g>
   </svg:svg>
 </div>

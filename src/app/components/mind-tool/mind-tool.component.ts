@@ -1,5 +1,6 @@
-import { ObjectHelper } from './utils/StaticMethod';
-import { ToolType } from './models/ToolType';
+import { PolygonCanvas } from "./models/PolygonCanvas";
+import { ObjectHelper } from "./utils/StaticMethod";
+import { ToolType } from "./models/ToolType";
 import { concat } from "@angular-devkit/schematics/node_modules/rxjs/operator/concat";
 import {
   AfterContentInit,
@@ -10,9 +11,8 @@ import {
   OnInit,
   ViewChild
 } from "@angular/core";
-import { BoundingBox } from './models/BoundingBox';
+import { BoundingBox } from "./models/BoundingBox";
 import { Point } from "./models/Point";
-import { OperationStack } from './models/OperationStack';
 
 @Component({
   selector: "app-mind-tool",
@@ -22,7 +22,6 @@ import { OperationStack } from './models/OperationStack';
 export class MindToolComponent implements OnInit {
   @ViewChild("image") imageRef: ElementRef;
 
-  @ViewChild("svgGroup") svgGroup: ElementRef;
 
   @Input() imgSrc: string;
 
@@ -41,6 +40,7 @@ export class MindToolComponent implements OnInit {
   zoom = 1;
 
   boundingBoxs: Array<BoundingBox>;
+  polygonCanvas: PolygonCanvas;
 
   resizing = false;
   resizingBoundingBox: BoundingBox;
@@ -50,8 +50,7 @@ export class MindToolComponent implements OnInit {
   transX = 0;
   transY = 0;
 
-  constructor() {
-  }
+  constructor() {}
 
   ngOnInit() {
     this.imageEle = this.imageRef.nativeElement as HTMLImageElement;
@@ -63,12 +62,15 @@ export class MindToolComponent implements OnInit {
 
     switch (this.toolType) {
       case ToolType.BoundingBox:
-      this.boundingBoxs = [];
-      break;
+        this.boundingBoxs = [];
+        break;
+      case ToolType.Path:
+        this.polygonCanvas = new PolygonCanvas();
+        break;
     }
 
     document.onkeydown = e => {
-      if (e.ctrlKey && e.key === 'z') {
+      if (e.ctrlKey && e.key === "z") {
         this.undo();
       }
     };
@@ -99,8 +101,6 @@ export class MindToolComponent implements OnInit {
         case ToolType.BoundingBox:
           this.startBounding(e);
           break;
-        case ToolType.Path:
-          break;
       }
     } else if (e.buttons === 1 && e.shiftKey) {
       this.translating = true;
@@ -120,15 +120,12 @@ export class MindToolComponent implements OnInit {
       return;
     }
 
-    if (e.buttons === 1 && this.boundingBoxs.length >= 1) {
-      switch (this.toolType) {
-        case ToolType.BoundingBox:
-          this.moveBounding(e);
-          break;
-
-        case ToolType.Path:
-          break;
-      }
+    if (
+      this.toolType === ToolType.BoundingBox &&
+      e.buttons === 1 &&
+      this.boundingBoxs.length >= 1
+    ) {
+      this.moveBounding(e);
     }
 
     e.preventDefault();
@@ -137,7 +134,10 @@ export class MindToolComponent implements OnInit {
   onMouseUp(e: MouseEvent) {
     if (this.resizing) {
       this.resizing = false;
-      this.operationStack.push(ObjectHelper.objClone(this.boundingBoxs, []) as BoundingBox[]);
+      this.operationStack.push(ObjectHelper.objClone(
+        this.boundingBoxs,
+        []
+      ) as BoundingBox[]);
       return;
     }
 
@@ -145,10 +145,23 @@ export class MindToolComponent implements OnInit {
       this.translating = false;
       return;
     }
-    if (e.button === 0 && this.boundingBoxs.length >= 1) {
-      if (this.toolType === ToolType.BoundingBox) {
-        this.endBounding(e);
-        this.operationStack.push(ObjectHelper.objClone(this.boundingBoxs, []) as BoundingBox[]);
+    if (e.button === 0) {
+      switch (this.toolType) {
+        case ToolType.BoundingBox:
+          if (this.boundingBoxs.length >= 1) {
+            this.endBounding(e);
+            this.operationStack.push(ObjectHelper.objClone(
+              this.boundingBoxs,
+              []
+            ) as BoundingBox[]);
+          }
+          break;
+
+        case ToolType.Path:
+          const p = new Point(Math.round(e.offsetX), Math.round(e.offsetY));
+          console.log(`${p.X}, ${p.Y}`);
+          this.polygonCanvas.draw(p);
+          break;
       }
     }
 
@@ -246,8 +259,8 @@ export class MindToolComponent implements OnInit {
     this.operationStack.pop();
     switch (this.toolType) {
       case ToolType.BoundingBox:
-      this.undoBounding();
-      break;
+        this.undoBounding();
+        break;
     }
   }
 
