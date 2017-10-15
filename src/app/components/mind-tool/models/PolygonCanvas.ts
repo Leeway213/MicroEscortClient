@@ -1,6 +1,7 @@
 import { Line } from "./Line";
 import { Point } from "./Point";
 import { Polygon } from "./Polygon";
+import { Graph, Vertex } from "./Graph";
 export class PolygonCanvas {
   private _points: Point[];
   get points() {
@@ -17,12 +18,18 @@ export class PolygonCanvas {
     return this._polygons;
   }
 
+  private _graphs: Graph[];
+  get graphs() {
+    return this._graphs;
+  }
+
   private _paths: Path[];
 
   constructor() {
     this._points = [];
     this._lines = [];
     this._polygons = [];
+    this._graphs = [];
     this._paths = [];
   }
 
@@ -34,6 +41,9 @@ export class PolygonCanvas {
       this._paths.length === 0 ||
       this._paths[this._paths.length - 1].endIndex
     ) {
+      const newGraph = new Graph();
+      newGraph.addVertex(new Vertex(p.X, p.Y));
+      this._graphs.push(newGraph);
       const pointCount: number = this.drawPoint(p);
       this._paths.push({ startIndex: pointCount - 1 } as Path);
       return;
@@ -48,8 +58,33 @@ export class PolygonCanvas {
       if (intersection) {
         const pointCount = this.drawPoint(intersection);
         this.drawLine(newLine.start, intersection);
+
+        // 在图中插入交点
+        // const graph = this._graphs[this._graphs.length - 1];
+        const crossGraphIndex = this.onWhichGraphIndex(intersection.left);
+        const graph = this._graphs[crossGraphIndex];
+
+        graph.insertVertexBetweenLine(
+          intersection,
+          intersection.left,
+          intersection.right
+        );
+
+        // 如果交点位于其他graph上
+        if (crossGraphIndex !== this._graphs.length - 1) {
+          graph.merge(this._graphs.pop(), [intersection]);
+        }
+
         this._paths[this._paths.length - 1].endIndex = pointCount - 1;
       } else {
+        const graph = this._graphs[this._graphs.length - 1];
+        const vertex = new Vertex(p.X, p.Y);
+        const neighbor = graph.findVertex(
+          this._points[this._points.length - 1]
+        );
+        vertex.addNeighbor(neighbor);
+        graph.addVertex(vertex);
+
         this.drawPoint(p);
         this.drawLine(newLine.start, newLine.end);
       }
@@ -57,8 +92,6 @@ export class PolygonCanvas {
   }
 
   private drawPoint(p: Point): number {
-    if (this._points.length >= 3) {
-    }
     this._points.push(p);
     return this._points.length;
   }
@@ -71,13 +104,13 @@ export class PolygonCanvas {
     return this._lines.length;
   }
 
-  private getNearestIntersection(line: Line): Point {
-    const points = this.getIntersections(line);
+  private getNearestIntersection(line: Line): Intersection {
+    const intersections = this.getIntersections(line);
 
-    let result: Point;
+    let result: Intersection;
 
-    if (points) {
-      points.forEach((value, index, arr) => {
+    if (intersections) {
+      intersections.forEach((value, index, arr) => {
         if (result) {
           result =
             Math.sqrt(value.X - line.start.X) +
@@ -95,24 +128,62 @@ export class PolygonCanvas {
     return result;
   }
 
-  private getIntersections(line: Line): Point[] {
-    const points: Point[] = [];
+  private getIntersections(line: Line): Intersection[] {
+    const intersections: Intersection[] = [];
 
     this._lines.forEach((value, index, arr) => {
-      if (index !== this._lines.length - 1) {
-        const intersection: Point = CanvasUtils.getIntersection(line, value);
+      if (!line.start.equal(value.end)) {
+        const intersection = CanvasUtils.getIntersection(line, value);
         if (intersection) {
           console.log(`cross lines is ${index}`);
-          points.push(intersection);
+          intersection.left = new Vertex(value.start.X, value.start.Y);
+          intersection.right = new Vertex(value.end.X, value.end.Y);
+          intersections.push(intersection);
         }
       }
     });
 
-    if (points.length > 0) {
-      return points;
+    if (intersections.length > 0) {
+      return intersections;
     } else {
       return undefined;
     }
+  }
+
+  private onWhichGraph(args: any): Graph {
+    if (args instanceof Line) {
+      return this.onWhichGraph(args.start);
+    } else if (args instanceof Point) {
+      return this._graphs.find((value, index, arr) => {
+        return value.vertexs.some((v, i, a) => {
+          return v.equal(args);
+        });
+      });
+    }
+  }
+
+  private onWhichLine(p: Point): Line {
+    return this._lines.find((value, index, arr) => {
+      return value.isOnLine(p);
+    });
+  }
+
+  private onWhichGraphIndex(args: any): number {
+    if (args instanceof Line) {
+      return this.onWhichGraphIndex(args.start);
+    } else if (args instanceof Point) {
+      return this._graphs.findIndex((value, index, arr) => {
+        return value.vertexs.some((v, i, a) => {
+          return v.equal(args);
+        });
+      });
+    }
+  }
+
+  private onWhichLineIndex(p: Point): number {
+    return this._lines.findIndex((value, index, arr) => {
+      return value.isOnLine(p);
+    });
   }
 }
 
@@ -123,7 +194,7 @@ export class Path {
 
 export class CanvasUtils {
   /**
-   * 直线相交排斥实验
+   * 直线相交矩形排斥判断
    * @param line1
    * @param line2
    */
@@ -140,6 +211,11 @@ export class CanvasUtils {
     );
   }
 
+  /**
+   * 直线相交跨立判断
+   * @param line1
+   * @param line2
+   */
   static isLineSegmentCross(line1: Line, line2: Line): boolean {
     if (
       this.multi(line1.start, line1.end, line2.start) *
@@ -155,7 +231,12 @@ export class CanvasUtils {
     }
   }
 
-  static getIntersection(line1: Line, line2: Line): Point {
+  /**
+   * 获取两线段交点
+   * @param line1
+   * @param line2
+   */
+  static getIntersection(line1: Line, line2: Line): Intersection {
     let x: number;
     let y: number;
 
@@ -175,7 +256,7 @@ export class CanvasUtils {
             (line1.end.Y - line1.start.Y) *
             (line2.end.X - line2.start.X);
 
-        x = tmpxRight / tmpxLeft;
+        x = Math.round(tmpxRight / tmpxLeft);
 
         const tmpLeft =
           (line1.start.X - line1.end.X) * (line2.end.Y - line2.start.Y) -
@@ -191,10 +272,10 @@ export class CanvasUtils {
             (line2.start.X - line2.end.X) *
             (line1.end.Y - line1.start.Y);
 
-        y = tmpRight / tmpLeft;
+        y = Math.round(tmpRight / tmpLeft);
 
         console.log(`cross point is (${x},${y})`);
-        return new Point(x, y);
+        return new Intersection(x, y);
       }
     }
     return undefined;
@@ -203,4 +284,9 @@ export class CanvasUtils {
   private static multi(p1: Point, p2: Point, p3: Point): number {
     return (p1.X - p3.X) * (p2.Y - p3.Y) - (p2.X - p3.X) * (p1.Y - p3.Y);
   }
+}
+
+export class Intersection extends Vertex {
+  left: Vertex;
+  right: Vertex;
 }

@@ -12,3 +12,4 @@ export class Point {
         return this.X === p.X && this.Y === p.Y;
     }
 }
+

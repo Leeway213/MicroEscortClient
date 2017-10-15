@@ -26,7 +26,7 @@
       </svg:g>
     </svg:g>
 
-    <svg:g class="polygon-group">
+    <svg:g class="polygon-group" *ngIf="polygonCanvas">
 
       <svg:line *ngFor="let line of polygonCanvas.lines" [attr.x1]="line.start.X" [attr.y1]="line.start.Y" [attr.x2]="line.end.X"
         [attr.y2]="line.end.Y" stroke-width="2" stroke="green"></svg:line>
