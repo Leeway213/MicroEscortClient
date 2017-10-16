@@ -73,6 +73,8 @@ export class Graph {
 export class Vertex extends Point {
     neighbors: Vertex[];
 
+    visited: boolean;
+
     constructor(x: number, y: number) {
         super(x, y);
         this.neighbors = [];
@@ -85,7 +87,7 @@ export class Vertex extends Point {
     addNeighbor(v: Vertex): number {
         this.neighbors = this.neighbors || [];
 
-        if (this.findNeighborIndex(v)) {
+        if (this.findNeighborIndex(v) !== -1) {
             return 0;
         }
         this.neighbors.push(v);
