@@ -9,7 +9,7 @@ export class Point {
     }
 
     equal(p: Point): boolean {
-        return this.X === p.X && this.Y === p.Y;
+        return p && this.X === p.X && this.Y === p.Y;
     }
 }
 

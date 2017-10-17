@@ -1,107 +1,98 @@
+import { Graph, Vertex } from "./Graph";
 import { Line } from "./Line";
 import { Point } from "./Point";
-import { Polygon } from "./Polygon";
-import { Graph, Vertex } from "./Graph";
-export class PolygonCanvas {
-  private _points: Point[];
-  get points() {
-    return this._points;
-  }
+export class PolygonCanvas extends Graph {
+  lines: Line[];
 
-  private _lines: Line[];
-  get lines() {
-    return this._lines;
-  }
-
-  private _polygons: Polygon[];
-  get polygons() {
-    return this._polygons;
-  }
-
-  private _graphs: Graph[];
-  get graphs() {
-    return this._graphs;
-  }
-
-  private _paths: Path[];
+  preVertex: Vertex;
 
   constructor() {
-    this._points = [];
-    this._lines = [];
-    this._polygons = [];
-    this._graphs = [];
-    this._paths = [];
+    super();
+    this.lines = [];
   }
 
   draw(p: Point) {
-    // 如果_paths为空，说明正在画第一个点;
-    // 如果_paths的最后一个元素中，endIndex不是undefined，说明前一个path已结束;
-    // 只画一个点，并建立新的path后即返回。
-    if (
-      this._paths.length === 0 ||
-      this._paths[this._paths.length - 1].endIndex
-    ) {
-      const newGraph = new Graph();
-      newGraph.addVertex(new Vertex(p.X, p.Y));
-      this._graphs.push(newGraph);
-      const pointCount: number = this.drawPoint(p);
-      this._paths.push({ startIndex: pointCount - 1 } as Path);
-      return;
-    } else {
-      const newLine: Line = new Line();
-      newLine.start = this._points[this._points.length - 1];
-      newLine.end = p;
-
-      // 获取最近的交点
-      const intersection = this.getNearestIntersection(newLine);
-
-      if (intersection) {
-        const pointCount = this.drawPoint(intersection);
-        this.drawLine(newLine.start, intersection);
-
-        // 在图中插入交点
-        // const graph = this._graphs[this._graphs.length - 1];
-        const crossGraphIndex = this.onWhichGraphIndex(intersection.left);
-        const graph = this._graphs[crossGraphIndex];
-
-        graph.insertVertexBetweenLine(
-          intersection,
-          intersection.left,
-          intersection.right
-        );
-
-        // 如果交点位于其他graph上
-        if (crossGraphIndex !== this._graphs.length - 1) {
-          graph.merge(this._graphs.pop(), [intersection]);
-        }
-
-        this._paths[this._paths.length - 1].endIndex = pointCount - 1;
+    const found = this.findVertex(p);
+    const onLine = this.onWhichLine(p);
+    if (!this.preVertex) {
+      if (found) {
+        this.preVertex = found;
+      } else if (!onLine) {
+        const newVertex = new Vertex(p.X, p.Y);
+        this.addVertex(newVertex);
+        this.preVertex = newVertex;
       } else {
-        const graph = this._graphs[this._graphs.length - 1];
-        const vertex = new Vertex(p.X, p.Y);
-        const neighbor = graph.findVertex(
-          this._points[this._points.length - 1]
+        const newVertex = new Vertex(p.X, p.Y);
+        this.insertVertexBetweenLine(
+          newVertex,
+          <Vertex>onLine.start,
+          <Vertex>onLine.end
         );
-        vertex.addNeighbor(neighbor);
-        graph.addVertex(vertex);
+        this.preVertex = newVertex;
+      }
+    } else {
+      if (found) {
+        this.addEdge(this.preVertex, found);
+        this.drawLine(this.preVertex, found);
+        this.preVertex = undefined;
+        this.getRings();
+      } else {
+        const gradient = (p.Y - this.preVertex.Y) / (p.X - this.preVertex.X);
+        const extendPoint = new Point(
+          4 - gradient / Math.abs(gradient) * p.X,
+          gradient * 4 - (gradient / Math.abs(gradient) * p.Y)
+        );
 
-        this.drawPoint(p);
-        this.drawLine(newLine.start, newLine.end);
+        const tmpLine = new Line();
+        tmpLine.start = this.preVertex;
+        tmpLine.end = extendPoint;
+        const intersection = this.getNearestIntersection(tmpLine);
+
+        if (intersection && !intersection.equal(this.preVertex)) {
+          intersection.addNeighbor(this.preVertex);
+          this.insertVertexBetweenLine(
+            intersection,
+            intersection.left,
+            intersection.right
+          );
+
+          this.drawLine(this.preVertex, intersection);
+
+          this.preVertex = undefined;
+
+          this.getRings();
+        } else {
+          const newVertex = new Vertex(p.X, p.Y);
+          newVertex.addNeighbor(this.preVertex);
+          this.addVertex(newVertex);
+          this.drawLine(this.preVertex, newVertex);
+          this.preVertex = newVertex;
+        }
       }
     }
   }
 
-  private drawPoint(p: Point): number {
-    this._points.push(p);
-    return this._points.length;
+  drawOnPoint(p: Point) {
+    const found = this.findVertex(p);
+    if (!p.equal(this.preVertex)) {
+      if (this.preVertex) {
+        this.addEdge(this.preVertex, found);
+        this.drawLine(this.preVertex, found);
+
+        this.preVertex = undefined;
+
+        this.getRings();
+      } else {
+        this.preVertex = this.findVertex(p);
+      }
+    }
   }
 
-  private drawLine(startPoint: Point, endPoint: Point): number {
+  drawLine(start: Vertex, end: Vertex) {
     const line = new Line();
-    line.start = startPoint;
-    line.end = endPoint;
-    this._lines.push(line);
-    return this._lines.length;
+    line.start = start;
+    line.end = end;
+    this.lines.push(line);
   }
 
   private getNearestIntersection(line: Line): Intersection {
@@ -131,13 +122,13 @@ export class PolygonCanvas {
   private getIntersections(line: Line): Intersection[] {
     const intersections: Intersection[] = [];
 
-    this._lines.forEach((value, index, arr) => {
+    this.lines.forEach((value, index, arr) => {
       if (!line.start.equal(value.end)) {
         const intersection = CanvasUtils.getIntersection(line, value);
         if (intersection) {
           console.log(`cross lines is ${index}`);
-          intersection.left = new Vertex(value.start.X, value.start.Y);
-          intersection.right = new Vertex(value.end.X, value.end.Y);
+          intersection.left = value.start as Vertex;
+          intersection.right = value.end as Vertex;
           intersections.push(intersection);
         }
       }
@@ -150,54 +141,54 @@ export class PolygonCanvas {
     }
   }
 
-  private onWhichGraph(args: any): Graph {
-    if (args instanceof Line) {
-      return this.onWhichGraph(args.start);
-    } else if (args instanceof Point) {
-      return this._graphs.find((value, index, arr) => {
-        return value.vertexs.some((v, i, a) => {
-          return v.equal(args);
-        });
-      });
-    }
-  }
+  //   private onWhichGraph(args: any): Graph {
+  //     if (args instanceof Line) {
+  //       return this.onWhichGraph(args.start);
+  //     } else if (args instanceof Point) {
+  //       return this._graphs.find((value, index, arr) => {
+  //         return value.vertexs.some((v, i, a) => {
+  //           return v.equal(args);
+  //         });
+  //       });
+  //     }
+  //   }
 
   private onWhichLine(p: Point): Line {
-    return this._lines.find((value, index, arr) => {
+    return this.lines.find((value, index, arr) => {
       return value.isOnLine(p);
     });
   }
 
-  private onWhichGraphIndex(args: any): number {
-    if (args instanceof Line) {
-      return this.onWhichGraphIndex(args.start);
-    } else if (args instanceof Point) {
-      return this._graphs.findIndex((value, index, arr) => {
-        return value.vertexs.some((v, i, a) => {
-          return v.equal(args);
-        });
-      });
-    }
-  }
+  //   private onWhichGraphIndex(args: any): number {
+  //     if (args instanceof Line) {
+  //       return this.onWhichGraphIndex(args.start);
+  //     } else if (args instanceof Point) {
+  //       return this._graphs.findIndex((value, index, arr) => {
+  //         return value.vertexs.some((v, i, a) => {
+  //           return v.equal(args);
+  //         });
+  //       });
+  //     }
+  //   }
 
-  private onWhichLineIndex(p: Point): number {
-    return this._lines.findIndex((value, index, arr) => {
-      return value.isOnLine(p);
-    });
-  }
+  //   private onWhichLineIndex(p: Point): number {
+  //     return this.lines.findIndex((value, index, arr) => {
+  //       return value.isOnLine(p);
+  //     });
+  //   }
 }
 
-export class Path {
-  startIndex: number;
-  endIndex: number;
+export class Intersection extends Vertex {
+  left: Vertex;
+  right: Vertex;
 }
 
 export class CanvasUtils {
   /**
-   * 直线相交矩形排斥判断
-   * @param line1
-   * @param line2
-   */
+     * 直线相交矩形排斥判断
+     * @param line1
+     * @param line2
+     */
   static isRectCross(line1: Line, line2: Line): boolean {
     return (
       Math.min(line1.start.X, line1.end.X) <=
@@ -212,10 +203,10 @@ export class CanvasUtils {
   }
 
   /**
-   * 直线相交跨立判断
-   * @param line1
-   * @param line2
-   */
+     * 直线相交跨立判断
+     * @param line1
+     * @param line2
+     */
   static isLineSegmentCross(line1: Line, line2: Line): boolean {
     if (
       this.multi(line1.start, line1.end, line2.start) *
@@ -232,10 +223,10 @@ export class CanvasUtils {
   }
 
   /**
-   * 获取两线段交点
-   * @param line1
-   * @param line2
-   */
+     * 获取两线段交点
+     * @param line1
+     * @param line2
+     */
   static getIntersection(line1: Line, line2: Line): Intersection {
     let x: number;
     let y: number;
@@ -284,9 +275,4 @@ export class CanvasUtils {
   private static multi(p1: Point, p2: Point, p3: Point): number {
     return (p1.X - p3.X) * (p2.Y - p3.Y) - (p2.X - p3.X) * (p1.Y - p3.Y);
   }
-}
-
-export class Intersection extends Vertex {
-  left: Vertex;
-  right: Vertex;
 }

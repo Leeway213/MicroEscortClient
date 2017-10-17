@@ -22,7 +22,6 @@ import { Point } from "./models/Point";
 export class MindToolComponent implements OnInit {
   @ViewChild("image") imageRef: ElementRef;
 
-
   @Input() imgSrc: string;
 
   imageEle: HTMLImageElement;
@@ -96,13 +95,13 @@ export class MindToolComponent implements OnInit {
   }
 
   onMouseDown(e: MouseEvent) {
-    if (e.buttons === 1 && !e.shiftKey) {
+    if (e.buttons === 1 && !e.ctrlKey) {
       switch (this.toolType) {
         case ToolType.BoundingBox:
           this.startBounding(e);
           break;
       }
-    } else if (e.buttons === 1 && e.shiftKey) {
+    } else if (e.buttons === 1 && e.ctrlKey) {
       this.translating = true;
     }
 
@@ -158,18 +157,29 @@ export class MindToolComponent implements OnInit {
           break;
 
         case ToolType.Path:
-          const p = new Point(Math.round(e.offsetX), Math.round(e.offsetY));
-          console.log(`${p.X}, ${p.Y}`);
-          this.polygonCanvas.draw(p);
+          if (e.srcElement.classList.contains("path-point")) {
+            // tslint:disable-next-line:radix
+            const x = parseInt(e.srcElement.getAttribute("cx"));
+            // tslint:disable-next-line:radix
+            const y = parseInt(e.srcElement.getAttribute("cy"));
+            console.log(`draw on point ${x},${y}`);
+            this.polygonCanvas.drawOnPoint(new Point(x, y));
+          } else {
+            const p = new Point(Math.round(e.offsetX), Math.round(e.offsetY));
+            console.log(`${p.X}, ${p.Y}`);
+            this.polygonCanvas.draw(p);
+          }
           break;
       }
     }
 
+    e.stopPropagation();
+    e.stopImmediatePropagation();
     e.preventDefault();
   }
 
   onMouseWheel(e: WheelEvent) {
-    if (e.shiftKey) {
+    if (e.ctrlKey) {
       if (e.deltaY < 0) {
         this.zoomIn();
       } else if (e.deltaY > 0 && this.zoomTimes > 0) {

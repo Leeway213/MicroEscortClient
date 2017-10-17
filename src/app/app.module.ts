@@ -1,3 +1,4 @@
+import { PointsToStringPipe } from './components/mind-tool/utils/PointsToString';
 import { StringToToolTypePipe } from './components/mind-tool/utils/StringToToolType';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -9,7 +10,8 @@ import { MindToolComponent } from './components/mind-tool/mind-tool.component';
   declarations: [
     AppComponent,
     MindToolComponent,
-    StringToToolTypePipe
+    StringToToolTypePipe,
+    PointsToStringPipe
   ],
   imports: [
     BrowserModule

@@ -27,11 +27,18 @@
     </svg:g>
 
     <svg:g class="polygon-group" *ngIf="polygonCanvas">
-
-      <svg:line *ngFor="let line of polygonCanvas.lines" [attr.x1]="line.start.X" [attr.y1]="line.start.Y" [attr.x2]="line.end.X"
-        [attr.y2]="line.end.Y" stroke-width="2" stroke="green"></svg:line>
-      <svg:circle *ngFor="let point of polygonCanvas.points" r="2" [attr.cx]="point.X" [attr.cy]="point.Y" style="stroke: red; fill: white;"></svg:circle>
-
+      <svg:g>
+        <svg:polygon style="fill-opacity: 0.2; fill: white;" *ngFor="let ring of polygonCanvas.rings" [attr.points]="ring | PointsToString"></svg:polygon>
+      </svg:g>
+      <svg:g>
+        <svg:line class="path-line" *ngFor="let line of polygonCanvas.lines" [attr.x1]="line.start.X" [attr.y1]="line.start.Y" [attr.x2]="line.end.X"
+          [attr.y2]="line.end.Y" [attr.stroke-width]="3" stroke="green" ></svg:line>
+      </svg:g>
+      <svg:g>
+        <svg:circle class="path-point" *ngFor="let point of polygonCanvas.vertexs" [attr.r]="2 / zoom"
+        [attr.cx]="point.X" [attr.cy]="point.Y" style="stroke: red; fill: white;"
+        (mouseup)="onMouseUp($event)"></svg:circle>
+      </svg:g>
     </svg:g>
   </svg:svg>
 </div>
