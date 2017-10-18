@@ -13,7 +13,21 @@ export class PolygonCanvas extends Graph {
 
   draw(p: Point) {
     const found = this.findVertex(p);
-    const onLine = this.onWhichLine(p);
+    let onLine: Line;
+    {
+      for (const value of this.lines) {
+        const tmp = this.getNeareastPointFromPointToLine(p, value);
+        if (tmp) {
+          const distance = this.getDistanceBetween(tmp, p);
+          if (this.getDistanceBetween(tmp, p) <= 5) {
+            p = tmp;
+            onLine = value;
+            break;
+          }
+        }
+      }
+    }
+
     if (!this.preVertex) {
       if (found) {
         this.preVertex = found;
@@ -37,11 +51,11 @@ export class PolygonCanvas extends Graph {
         this.preVertex = undefined;
         this.getRings();
       } else {
+        // 求this.preVertex到p的延长线（X轴延长4）; 用以计算在线段this.preVertex--->p与某条线段即将相交时的交点
         const gradient = (p.Y - this.preVertex.Y) / (p.X - this.preVertex.X);
-        const extendPoint = new Point(
-          4 - gradient / Math.abs(gradient) * p.X,
-          gradient * 4 - (gradient / Math.abs(gradient) * p.Y)
-        );
+        const endPointX = p.X > this.preVertex.X ? p.X + 1 : p.X - 1;
+        const endPointY = gradient * (endPointX - p.X) + p.Y;
+        const extendPoint = new Point(endPointX, endPointY);
 
         const tmpLine = new Line();
         tmpLine.start = this.preVertex;
@@ -95,6 +109,37 @@ export class PolygonCanvas extends Graph {
     this.lines.push(line);
   }
 
+  private getNeareastPointFromPointToLine(
+    p: Point,
+    l: Line
+  ): Point | undefined {
+    const gradient = (l.start.Y - l.end.Y) / (l.start.X - l.end.X);
+    const reverseGradient = 1 / gradient;
+    const nearX = Math.round(
+      (p.Y - l.start.Y + gradient * l.start.X - reverseGradient * p.X) /
+        (gradient - reverseGradient)
+    );
+    const nearY = Math.round(p.Y - reverseGradient * (p.X - nearX));
+    const nearPoint = new Point(nearX, nearY);
+
+    if (this.isBetween(nearPoint, l.start, l.end)) {
+      return nearPoint;
+    } else {
+      return undefined;
+    }
+  }
+
+  private isBetween(p: Point, left: Point, right: Point): boolean {
+    return (
+      Math.pow(p.X - left.X, 2) + Math.pow(p.Y - left.Y, 2) <=
+      Math.pow(right.X - left.X, 2) + Math.pow(right.Y - left.Y, 2)
+    );
+  }
+
+  private getDistanceBetween(p1: Point, p2: Point): number {
+    return Math.sqrt(Math.pow(p1.X - p2.X, 2) + Math.pow(p1.Y - p2.Y, 2));
+  }
+
   private getNearestIntersection(line: Line): Intersection {
     const intersections = this.getIntersections(line);
 
@@ -104,10 +149,10 @@ export class PolygonCanvas extends Graph {
       intersections.forEach((value, index, arr) => {
         if (result) {
           result =
-            Math.sqrt(value.X - line.start.X) +
-              Math.sqrt(value.Y - line.start.Y) <
-            Math.sqrt(result.X - line.start.X) +
-              Math.sqrt(result.Y - line.start.Y)
+            Math.pow(value.X - line.start.X, 2) +
+              Math.pow(value.Y - line.start.Y, 2) <
+            Math.pow(result.X - line.start.X, 2) +
+              Math.pow(result.Y - line.start.Y, 2)
               ? value
               : result;
         } else {

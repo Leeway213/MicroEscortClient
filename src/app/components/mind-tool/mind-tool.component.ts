@@ -1,6 +1,6 @@
 import { PolygonCanvas } from "./models/PolygonCanvas";
 import { ObjectHelper } from "./utils/StaticMethod";
-import { ToolType } from "./models/ToolType";
+import { ToolType } from './models/ToolType';
 import { concat } from "@angular-devkit/schematics/node_modules/rxjs/operator/concat";
 import {
   AfterContentInit,
@@ -169,6 +169,7 @@ export class MindToolComponent implements OnInit {
             console.log(`${p.X}, ${p.Y}`);
             this.polygonCanvas.draw(p);
           }
+
           break;
       }
     }
@@ -271,7 +272,14 @@ export class MindToolComponent implements OnInit {
       case ToolType.BoundingBox:
         this.undoBounding();
         break;
+      case ToolType.Path:
+      this.undoPolygon();
+      break;
     }
+  }
+
+  undoPolygon() {
+    
   }
 
   undoBounding() {

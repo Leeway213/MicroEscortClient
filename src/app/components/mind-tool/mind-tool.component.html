@@ -32,7 +32,7 @@
       </svg:g>
       <svg:g>
         <svg:line class="path-line" *ngFor="let line of polygonCanvas.lines" [attr.x1]="line.start.X" [attr.y1]="line.start.Y" [attr.x2]="line.end.X"
-          [attr.y2]="line.end.Y" [attr.stroke-width]="3" stroke="green" ></svg:line>
+          [attr.y2]="line.end.Y" [attr.stroke-width]="3 / zoom + 0.4" stroke="green" ></svg:line>
       </svg:g>
       <svg:g>
         <svg:circle class="path-point" *ngFor="let point of polygonCanvas.vertexs" [attr.r]="2 / zoom"
