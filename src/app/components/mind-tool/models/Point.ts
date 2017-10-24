@@ -9,7 +9,7 @@ export class Point {
     }
 
     equal(p: Point): boolean {
-        return p && this.X === p.X && this.Y === p.Y;
+        return p && Math.abs(this.X - p.X) <= 0.001 && Math.abs(this.Y - p.Y) <= 0.001;
     }
 }
 

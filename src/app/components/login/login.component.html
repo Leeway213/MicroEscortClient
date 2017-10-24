@@ -1,0 +1,28 @@
+<form class="form-container" [formGroup]="loginForm" (submit)="login()">
+  <div style="width: 100%;">
+    <mat-form-field class="input-field">
+      <input matInput required [formControl]="usernameFormControl" placeholder="Username" value="">
+      <mat-error *ngIf="usernameFormControl.hasError('required')">
+        username is
+        <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field class="input-field">
+      <input #pass matInput required [formControl]="passwordFormControl" type="password" placeholder="Password" value="">
+      <mat-hint *ngIf="!pass.value" align="start"><strong>密码需要包含字母和数字</strong></mat-hint>
+      <mat-error *ngIf="passwordFormControl.hasError('required')">
+        password is
+        <strong>required</strong>
+      </mat-error>
+      <mat-error *ngIf="passwordFormControl.hasError('pattern')">
+        密码需要字母和数字组合
+      </mat-error>
+    </mat-form-field>
+
+
+    <button mat-raised-button [disabled]="!loginForm.valid" color="accent" type="submit" class="submit-button">Login</button>
+
+    <a [routerLink]="['/signup']">don't have an account? Signup</a>
+  </div>
+
+</form>

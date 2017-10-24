@@ -1,0 +1,15 @@
+<form class="form-container">
+  <div style="width: 100%;">
+    <mat-form-field class="input-field" #usernameField>
+      <input matInput required [formControl]="usernameFormControl" placeholder="Username" value="" (change)="onUsernameChanged($event)">
+      <mat-error *ngIf="usernameFormControl.hasError('required')">
+        username is
+        <strong>required</strong>
+      </mat-error>
+      <mat-error *ngIf="usernameFormControl.hasError('isUserExists')">
+        Your username already
+        <strong>exists</strong>
+      </mat-error>
+    </mat-form-field>
+  </div>
+</form>

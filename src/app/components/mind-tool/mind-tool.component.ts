@@ -1,7 +1,7 @@
 import { PolygonCanvas } from "./models/PolygonCanvas";
 import { ObjectHelper } from "./utils/StaticMethod";
 import { ToolType } from './models/ToolType';
-import { concat } from "@angular-devkit/schematics/node_modules/rxjs/operator/concat";
+// import { concat } from "@angular-devkit/schematics/node_modules/rxjs/operator/concat";
 import {
   AfterContentInit,
   AfterViewInit,
@@ -13,6 +13,8 @@ import {
 } from "@angular/core";
 import { BoundingBox } from "./models/BoundingBox";
 import { Point } from "./models/Point";
+import { Vertex } from './models/Graph';
+import { Line } from './models/Line';
 
 @Component({
   selector: "app-mind-tool",
@@ -65,6 +67,13 @@ export class MindToolComponent implements OnInit {
         break;
       case ToolType.Path:
         this.polygonCanvas = new PolygonCanvas();
+        
+        this.polygonCanvas.draw(new Point(2, 2));
+        this.polygonCanvas.draw(new Point(2, this.height - 2));
+        this.polygonCanvas.draw(new Point(this.width - 2, this.height - 2));
+        this.polygonCanvas.draw(new Point(this.width - 2, 2));
+        this.polygonCanvas.draw(new Point(2, 2));
+
         break;
     }
 
@@ -157,7 +166,7 @@ export class MindToolComponent implements OnInit {
           break;
 
         case ToolType.Path:
-          if (e.srcElement.classList.contains("path-point")) {
+          if (e.srcElement && e.srcElement.classList.contains("path-point")) {
             // tslint:disable-next-line:radix
             const x = parseInt(e.srcElement.getAttribute("cx"));
             // tslint:disable-next-line:radix
@@ -165,7 +174,8 @@ export class MindToolComponent implements OnInit {
             console.log(`draw on point ${x},${y}`);
             this.polygonCanvas.drawOnPoint(new Point(x, y));
           } else {
-            const p = new Point(Math.round(e.offsetX), Math.round(e.offsetY));
+            // const p = new Point(Math.round(e.offsetX), Math.round(e.offsetY));
+            const p = new Point(e.offsetX, e.offsetY);
             console.log(`${p.X}, ${p.Y}`);
             this.polygonCanvas.draw(p);
           }

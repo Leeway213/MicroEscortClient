@@ -1,0 +1,16 @@
+.form-container {
+    margin: 10em auto;
+    width: 25em;
+    background-color: rgb(228, 228, 228);
+    padding: 2em;
+    border-radius: 5px;
+}
+
+.input-field {
+    width: 100%;
+    margin: 0.5em 0 0 0;
+}
+
+.submit-button {
+    margin-top: 2em;
+}

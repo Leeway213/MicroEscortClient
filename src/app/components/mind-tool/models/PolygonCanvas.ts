@@ -13,8 +13,8 @@ export class PolygonCanvas extends Graph {
 
   draw(p: Point) {
     const found = this.findVertex(p);
-    let onLine: Line;
-    {
+    let onLine: Line = this.onWhichLine(p);
+    if (!onLine) {
       for (const value of this.lines) {
         const tmp = this.getNeareastPointFromPointToLine(p, value);
         if (tmp) {
@@ -51,18 +51,25 @@ export class PolygonCanvas extends Graph {
         this.preVertex = undefined;
         this.getRings();
       } else {
-        // 求this.preVertex到p的延长线（X轴延长4）; 用以计算在线段this.preVertex--->p与某条线段即将相交时的交点
-        const gradient = (p.Y - this.preVertex.Y) / (p.X - this.preVertex.X);
-        const endPointX = p.X > this.preVertex.X ? p.X + 1 : p.X - 1;
-        const endPointY = gradient * (endPointX - p.X) + p.Y;
-        const extendPoint = new Point(endPointX, endPointY);
+        // // 求this.preVertex到p的延长线（X轴延长4）; 用以计算在线段this.preVertex--->p与某条线段即将相交时的交点
+        // let gradient = (p.Y - this.preVertex.Y) / (p.X - this.preVertex.X);
+        // gradient = gradient === Infinity ? 1 : gradient;
+        // const endPointX = p.X > this.preVertex.X ? p.X + 1 : p.X - 1;
+        // const endPointY = gradient * (endPointX - p.X) + p.Y;
+        // const extendPoint = new Point(endPointX, endPointY);
 
         const tmpLine = new Line();
         tmpLine.start = this.preVertex;
-        tmpLine.end = extendPoint;
+        // tmpLine.end = extendPoint;
+        tmpLine.end = p;
         const intersection = this.getNearestIntersection(tmpLine);
 
-        if (intersection && !intersection.equal(this.preVertex)) {
+        if (
+          intersection &&
+          intersection.X &&
+          intersection.Y &&
+          !intersection.equal(this.preVertex)
+        ) {
           intersection.addNeighbor(this.preVertex);
           this.insertVertexBetweenLine(
             intersection,
@@ -113,14 +120,23 @@ export class PolygonCanvas extends Graph {
     p: Point,
     l: Line
   ): Point | undefined {
-    const gradient = (l.start.Y - l.end.Y) / (l.start.X - l.end.X);
-    const reverseGradient = 1 / gradient;
-    const nearX = Math.round(
-      (p.Y - l.start.Y + gradient * l.start.X - reverseGradient * p.X) /
-        (gradient - reverseGradient)
-    );
-    const nearY = Math.round(p.Y - reverseGradient * (p.X - nearX));
-    const nearPoint = new Point(nearX, nearY);
+    let nearPoint: Point;
+    if (l.start.X === l.end.X) {
+      nearPoint = new Point(l.start.X, p.Y);
+    } else if (l.start.Y === l.end.Y) {
+      nearPoint = new Point(p.X, l.start.Y);
+    } else {
+      const gradient = (l.start.Y - l.end.Y) / (l.start.X - l.end.X);
+      const reverseGradient = 1 / gradient;
+      const nearX = // Math.round(
+        (p.Y - l.start.Y + gradient * l.start.X - reverseGradient * p.X) /
+          (gradient - reverseGradient);
+      // );
+      const nearY = // Math.round(
+        p.Y - reverseGradient * (p.X - nearX);
+      // );
+      nearPoint = new Point(nearX, nearY);
+    }
 
     if (this.isBetween(nearPoint, l.start, l.end)) {
       return nearPoint;
@@ -292,7 +308,8 @@ export class CanvasUtils {
             (line1.end.Y - line1.start.Y) *
             (line2.end.X - line2.start.X);
 
-        x = Math.round(tmpxRight / tmpxLeft);
+        // x = Math.round(tmpxRight / tmpxLeft);
+        x = tmpxRight / tmpxLeft;
 
         const tmpLeft =
           (line1.start.X - line1.end.X) * (line2.end.Y - line2.start.Y) -
@@ -308,7 +325,8 @@ export class CanvasUtils {
             (line2.start.X - line2.end.X) *
             (line1.end.Y - line1.start.Y);
 
-        y = Math.round(tmpRight / tmpLeft);
+        // y = Math.round(tmpRight / tmpLeft);
+        y = tmpRight / tmpLeft;
 
         console.log(`cross point is (${x},${y})`);
         return new Intersection(x, y);

@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'app';
-  imgSrc: string = '../assets/test.jpeg';
+  imgSrc = 'https://images.spare5.com/instructions/spare5/building_blocks.png';
 }
