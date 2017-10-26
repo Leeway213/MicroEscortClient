@@ -1,7 +1,8 @@
+import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
+import { UserService } from '../../services/user.service';
 
-const PASS_REGEX = /[\da-zA-Z]*\d+[a-zA-Z]+[\da-zA-Z]*/;
 
 @Component({
   selector: 'app-login',
@@ -17,13 +18,15 @@ export class LoginComponent implements OnInit {
   ]);
 
   passwordFormControl = new FormControl('', [
-    Validators.required,
-    Validators.pattern(PASS_REGEX)
+    Validators.required
   ]);
 
   constructor(
+    public userService: UserService,
+    private route: ActivatedRoute,
     private formBuilder: FormBuilder
   ) {
+
     this.loginForm = this.formBuilder.group({
       username: this.usernameFormControl,
       password: this.passwordFormControl
@@ -31,14 +34,18 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.route.pathFromRoot.toString());
   }
 
-  login() {
+  async login() {
     if (this.loginForm.valid) {
-      console.log(this.loginForm.value);
-    } else {
-
+      try {
+        const result = await this.userService.login(this.loginForm.value);
+      } catch (err) {
+      }
     }
   }
 
 }
+
+

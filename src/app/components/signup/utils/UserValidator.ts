@@ -1,5 +1,5 @@
-import { UserService } from "../../../services/user.service";
-import { AbstractControl, AsyncValidatorFn } from "@angular/forms";
+import { UserService } from '../../../services/user.service';
+import { AbstractControl, AsyncValidatorFn } from '@angular/forms';
 
 export function isUsernameExistsValidator(
   userService: UserService

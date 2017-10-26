@@ -5,14 +5,17 @@ import { RouterModule, Routes } from '@angular/router';
 import { SignupComponent } from './components/signup/signup.component';
 
 const routes: Routes = [
-    {
-        path: '', redirectTo: 'login', pathMatch: 'full'
-    },
+    // {
+    //     path: '', redirectTo: 'login', pathMatch: 'full'
+    // },
     {
         path: 'login', component: LoginComponent
     },
     {
         path: 'signup', component: SignupComponent
+    },
+    {
+        path: 'requester', redirectTo: 'login', pathMatch: 'full'
     }
 ];
 

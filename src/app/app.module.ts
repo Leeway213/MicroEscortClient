@@ -1,4 +1,4 @@
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PointsToStringPipe } from './components/mind-tool/utils/PointsToString';
@@ -14,6 +14,8 @@ import { MindToolComponent } from './components/mind-tool/mind-tool.component';
 import { LoginComponent } from './components/login/login.component';
 import { AppRoutingModule } from './app-routing.module';
 import { SignupComponent } from './components/signup/signup.component';
+import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+import {MatDialogModule} from '@angular/material';
 
 
 @NgModule({
@@ -35,9 +37,11 @@ import { SignupComponent } from './components/signup/signup.component';
     MatProgressSpinnerModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    HttpModule
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+    {provide: LocationStrategy, useClass: HashLocationStrategy}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

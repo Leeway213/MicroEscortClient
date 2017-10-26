@@ -1,22 +1,34 @@
-import { Http, Request, RequestMethod, Response } from '@angular/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-const BASE_URL = `localhost`;
+const BASE_URL = `http://localhost:3000`;
 
 @Injectable()
 export class UserService {
 
-  constructor(
-    private http: Http
-  ) {
+  role: 'Requester' | 'Trainer' = 'Trainer';
+
+  constructor(private http: HttpClient) {
   }
 
-  validateUsername(username: string): Promise<Response> {
-    const req = new Request({
-      url: `http://localhost:3000/users/validate?username=${username}`
-    });
-    req.method = RequestMethod.Get;
-    return this.http.request(req).toPromise();
+  validateUsername(username: string): Promise<any> {
+    return this.http
+      .get(`${BASE_URL}/${this.role}/validate`, {
+        params: new HttpParams().set('username', username)
+      })
+      .toPromise();
   }
 
+  signup(userinfo: any): Promise<any> {
+    return this.http
+      .post(`${BASE_URL}/${this.role}/signup`, userinfo)
+      .toPromise();
+  }
+
+  login(userinfo: any): Promise<any> {
+    return this.http
+      .post(`${BASE_URL}/users/login`, `username=${userinfo.username}&password=${userinfo.password}`, {
+        headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')
+      }).toPromise();
+  }
 }
