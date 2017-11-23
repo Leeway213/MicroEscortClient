@@ -1,0 +1,18 @@
+<div>
+  <div *ngIf="quizResult === undefined">
+    <div *ngIf="submitConfirm" class="action-confirm">
+      <div class="action-confirm-text">
+        确定提交吗？要不要再确认一下。要做一个付责任的镖师哦~~
+      </div>
+      <div class="action-confirm-buttons">
+        <button mat-raised-button (click)="this.submitConfirm = false">我再看看</button>
+        <button mat-raised-button color="primary" (click)="submit()">不改了</button>
+      </div>
+    </div>
+    <button *ngIf="!submitConfirm" mat-raised-button color="accent" class="action-next" (click)="this.submitConfirm = true">Next</button>
+  </div>
+
+  <div *ngIf="quizResult !== undefined">
+    <app-quiz-result [correct]="quizResult.correct" (onNext)="next()"></app-quiz-result>
+  </div>
+</div>

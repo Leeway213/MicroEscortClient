@@ -1,0 +1,28 @@
+.action-next {
+    position: absolute;
+    bottom: 0.1em;
+    right: 0.1em;
+}
+
+.action-confirm {
+    background-color: rgba(255,255,255,0.7);
+    border-radius: 2px;
+    box-shadow: 0 0 1em black;
+    padding-top: 2em;
+}
+
+.action-confirm-text {
+    width: 280px;
+    color: red;
+    font-size: 14px;
+    font-weight: 200;
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+.action-confirm-buttons {
+    margin-top: 2em;
+    margin-right: 0.1em;
+    margin-bottom: 0.1em;
+    text-align: right;
+}

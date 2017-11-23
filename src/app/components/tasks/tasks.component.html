@@ -1,0 +1,19 @@
+<p>
+  tasks works!
+</p>
+<div class="container">
+  <div class="row">
+    <mat-card *ngFor="let project of projectService.projects" class="col-sm-3 project-mat-card" (click)="onCardClick(project)"
+      [@hover]="project.hover" (mouseover)="project.hover = 'yes'" (mouseleave)="project.hover = 'no'">
+      <mat-card-header>
+        <mat-card-title>{{project.name}}</mat-card-title>
+      </mat-card-header>
+      <img mat-card-image src="http://via.placeholder.com/200x150">
+      <mat-card-content>
+        <p>{{project.description}}</p>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+</div>

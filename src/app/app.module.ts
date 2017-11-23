@@ -1,3 +1,4 @@
+import { ProjectService } from './services/project.service';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -5,7 +6,7 @@ import { PointsToStringPipe } from './components/mind-tool/utils/PointsToString'
 import { StringToToolTypePipe } from './components/mind-tool/utils/StringToToolType';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { MatButtonModule } from '@angular/material';
+import { MatButtonModule, MatButtonToggleModule, MatIconModule } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatInputModule, MatProgressBarModule, MatProgressSpinnerModule} from '@angular/material';
 
@@ -16,6 +17,18 @@ import { AppRoutingModule } from './app-routing.module';
 import { SignupComponent } from './components/signup/signup.component';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import {MatDialogModule} from '@angular/material';
+import { CovalentLoadingModule } from '@covalent/core';
+import { TaskPublisherComponent } from './components/task-publisher/task-publisher.component';
+import { TasksComponent } from './components/tasks/tasks.component';
+import { AuthGuard } from './utils/auth.guard';
+import { HeaderComponent } from './components/header/header.component';
+import { UserService } from './services/user.service';
+import {MatCardModule} from '@angular/material/card';
+import { TaskService } from './services/task.service';
+import { TaskResolver } from './utils/TaskResolver.guard';
+import { TaskSubmitComponent } from './components/task-submit/task-submit.component';
+import { DoTaskComponent } from './components/do-task/do-task.component';
+import { QuizResultComponent } from './components/quiz-result/quiz-result.component';
 
 
 @NgModule({
@@ -25,7 +38,13 @@ import {MatDialogModule} from '@angular/material';
     StringToToolTypePipe,
     PointsToStringPipe,
     LoginComponent,
-    SignupComponent
+    SignupComponent,
+    TaskPublisherComponent,
+    TasksComponent,
+    HeaderComponent,
+    TaskSubmitComponent,
+    DoTaskComponent,
+    QuizResultComponent
   ],
   imports: [
     BrowserModule,
@@ -35,12 +54,21 @@ import {MatDialogModule} from '@angular/material';
     MatInputModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
+    MatCardModule,
+    MatButtonToggleModule,
+    MatIconModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    CovalentLoadingModule
   ],
   providers: [
-    {provide: LocationStrategy, useClass: HashLocationStrategy}
+    {provide: LocationStrategy, useClass: HashLocationStrategy},
+    UserService,
+    AuthGuard,
+    TaskResolver,
+    TaskService,
+    ProjectService
   ],
   bootstrap: [AppComponent]
 })

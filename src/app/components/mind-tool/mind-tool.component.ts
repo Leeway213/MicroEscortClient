@@ -1,43 +1,54 @@
-import { PolygonCanvas } from "./models/PolygonCanvas";
-import { ObjectHelper } from "./utils/StaticMethod";
+import { Task } from 'protractor/built/taskScheduler';
+import { PolygonCanvas } from './models/PolygonCanvas';
+import { ObjectHelper } from './utils/StaticMethod';
 import { ToolType } from './models/ToolType';
-// import { concat } from "@angular-devkit/schematics/node_modules/rxjs/operator/concat";
 import {
-  AfterContentInit,
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Input,
-  OnInit,
-  ViewChild
-} from "@angular/core";
-import { BoundingBox } from "./models/BoundingBox";
-import { Point } from "./models/Point";
+    AfterContentInit,
+    AfterViewInit,
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    Output,
+} from '@angular/core';
+import { BoundingBox } from './models/BoundingBox';
+import { Point } from './models/Point';
 import { Vertex } from './models/Graph';
 import { Line } from './models/Line';
+import { TaskService } from '../../services/task.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { TaskModel } from '../tasks/tasks.component';
 
 @Component({
-  selector: "app-mind-tool",
-  templateUrl: "./mind-tool.component.html",
-  styleUrls: ["./mind-tool.component.css"]
+  selector: 'app-mind-tool',
+  templateUrl: './mind-tool.component.html',
+  styleUrls: ['./mind-tool.component.css']
 })
-export class MindToolComponent implements OnInit {
-  @ViewChild("image") imageRef: ElementRef;
+export class MindToolComponent implements OnInit, OnDestroy {
+  get currentTask(): TaskModel {
+    return this.tasks ? this.tasks[this.currentTaskIndex] : null;
+  }
+  quiz: boolean;
+  currentTaskIndex: number;
+  @Input() tasks: TaskModel[];
+
+  mode: 'draw' | 'select' | 'delete' = 'draw';
 
   @Input() imgSrc: string;
-
-  imageEle: HTMLImageElement;
 
   @Input() srcWidth: number;
   @Input() srcHeight: number;
 
   @Input() toolType: ToolType;
 
-  operationStack: any[];
+  operationStack: any[] = [];
 
   width: number;
   height: number;
-  zoomTimes: number;
+  zoomTimes = 0;
   zoom = 1;
 
   boundingBoxs: Array<BoundingBox>;
@@ -51,23 +62,50 @@ export class MindToolComponent implements OnInit {
   transX = 0;
   transY = 0;
 
-  constructor() {}
+  @Output() quizEvent = new EventEmitter();
+
+  constructor(
+    private taskService: TaskService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit() {
-    this.imageEle = this.imageRef.nativeElement as HTMLImageElement;
-    this.width = this.srcWidth;
-    this.height = this.srcHeight;
+    this.addSkipWhenWindowClosedHandler();
+    this.initialize();
+    this.addShotcut();
+  }
 
-    this.zoomTimes = 0;
-    this.operationStack = [];
+  async ngOnDestroy(): Promise<void> {
+    console.log(this.currentTask);
+    this.removeSkipWhenWindowClosedHandler();
+    await this.taskService.skipTask(this.currentTask.id);
+  }
 
+  private initialize() {
+    // this.route.data.subscribe(async res => {
+    //   this.quiz = res.task[0].quiz;
+    //   this.tasks = res.task;
+    //   this.currentTaskIndex = 0;
+
+    //   this.toolType = this.determinToolType(this.currentTask.type);
+
+    //   this.refresh();
+    // });
+    this.currentTaskIndex = 0;
+    this.quiz = this.currentTask.quiz;
+    this.toolType = this.determinToolType(this.currentTask.type);
+    this.refresh();
+  }
+
+  private initDraw() {
     switch (this.toolType) {
       case ToolType.BoundingBox:
         this.boundingBoxs = [];
         break;
       case ToolType.Path:
         this.polygonCanvas = new PolygonCanvas();
-        
+
         this.polygonCanvas.draw(new Point(2, 2));
         this.polygonCanvas.draw(new Point(2, this.height - 2));
         this.polygonCanvas.draw(new Point(this.width - 2, this.height - 2));
@@ -76,28 +114,136 @@ export class MindToolComponent implements OnInit {
 
         break;
     }
+  }
 
+  private async refresh() {
+    await this.loadImage(this.currentTask.params.attachment);
+    this.initDraw();
+    this.fitImage();
+    this.operationStack = [];
+  }
+
+  private async loadImage(src: string) {
+    const promise = new Promise<HTMLImageElement>(resolve => {
+      const tmp: HTMLImageElement = new Image();
+      tmp.onload = () => {
+        resolve(tmp);
+      };
+      tmp.src = src;
+    });
+    const image: HTMLImageElement = await promise;
+    this.width = image.width;
+    this.height = image.height;
+
+    this.imgSrc = src;
+  }
+
+  private determinToolType(typeString: string): ToolType {
+    const lowerType: string = typeString.toLowerCase();
+    switch (lowerType) {
+      case 'boundingbox':
+      return ToolType.BoundingBox;
+      case 'polygon':
+      return ToolType.Path;
+      default:
+      return undefined;
+    }
+  }
+
+  /**
+   * 添加快捷键操作
+   */
+  private addShotcut() {
     document.onkeydown = e => {
-      if (e.ctrlKey && e.key === "z") {
+      // ctrl+z: 撤销
+      if (e.ctrlKey && e.key === 'z') {
         this.undo();
       }
     };
   }
 
+  /**
+   * 为当前窗口添加一个事件句柄，在浏览器窗口或标签关闭、刷新时，执行跳过当前任务的操作
+   */
+  private addSkipWhenWindowClosedHandler() {
+    window.onbeforeunload = async e => {
+      console.log(e);
+      await this.taskService.skipTask(this.currentTask.id);
+      e.returnValue = '离开？';
+    };
+  }
+
+  /**
+   * 移除window.onbeforeunload事件句柄
+   */
+  private removeSkipWhenWindowClosedHandler() {
+    window.onbeforeunload = undefined;
+  }
+
+  private drawCorrect(data: any) {
+    // todo: 画出正确答案
+  }
+
+  async submit() {
+    if (this.toolType === ToolType.BoundingBox) {
+      const annotations = this.boundingBoxs.map(value => value.getResult());
+      const result: any = {};
+      result.taskId = this.currentTask.id;
+      result.results = { annotations: annotations, quiz: this.currentTask.quiz };
+
+      const response = await this.taskService.finishTask(this.currentTask.id, result);
+      console.log(response);
+      if (this.quiz) {
+        this.drawCorrect(response.data);
+        this.quizEvent.emit(response.data);
+      } else {
+        // todo: 提交任务结果并刷新任务
+      }
+    }
+  }
+
+  next() {
+    this.currentTaskIndex++;
+    if (this.currentTask) {
+      this.refresh();
+    } else {
+      this.router.navigate(['/tasks']);
+    }
+  }
+
+  modeChange(e) {
+    this.mode = e.value;
+  }
+
+  /**
+   * 右键点击事件，禁止右键菜单
+   */
   disableMenu() {
     return false;
   }
 
+  /**
+   * 放大按钮点击事件
+   */
   onZoomInClick() {
     this.zoomIn();
   }
 
+  /**
+   * 缩小按钮点击事件
+   */
   onZoomOutClick() {
     this.zoomOut();
   }
 
+  /**
+   * 还原大小按钮点击事件
+   */
   fitImage() {
     this.zoom = 1;
+    if (this.toolType === ToolType.Path) {
+      this.polygonCanvas.zoom = 1;
+    }
     this.zoomTimes = 0;
     this.transX = 0;
     this.transY = 0;
@@ -111,6 +257,7 @@ export class MindToolComponent implements OnInit {
           break;
       }
     } else if (e.buttons === 1 && e.ctrlKey) {
+      // 开始拖动
       this.translating = true;
     }
 
@@ -166,11 +313,11 @@ export class MindToolComponent implements OnInit {
           break;
 
         case ToolType.Path:
-          if (e.srcElement && e.srcElement.classList.contains("path-point")) {
+          if (e.srcElement && e.srcElement.classList.contains('path-point')) {
             // tslint:disable-next-line:radix
-            const x = parseInt(e.srcElement.getAttribute("cx"));
+            const x = parseInt(e.srcElement.getAttribute('cx'));
             // tslint:disable-next-line:radix
-            const y = parseInt(e.srcElement.getAttribute("cy"));
+            const y = parseInt(e.srcElement.getAttribute('cy'));
             console.log(`draw on point ${x},${y}`);
             this.polygonCanvas.drawOnPoint(new Point(x, y));
           } else {
@@ -191,21 +338,30 @@ export class MindToolComponent implements OnInit {
 
   onMouseWheel(e: WheelEvent) {
     if (e.ctrlKey) {
-      if (e.deltaY < 0) {
+      if (e.deltaY < 0 && this.zoomTimes < 10) {
         this.zoomIn();
       } else if (e.deltaY > 0 && this.zoomTimes > 0) {
         this.zoomOut();
       }
+      console.log(`zoom: ${this.zoomTimes}`);
       e.preventDefault();
     }
   }
 
   zoomIn() {
     this.zoom += 0.2 * (this.zoomTimes++ + 1);
+    if (this.toolType === ToolType.Path) {
+      this.polygonCanvas.zoom += 0.2 * (this.zoomTimes++ + 1);
+    }
   }
 
   zoomOut() {
-    this.zoom -= 0.2 * (--this.zoomTimes + 1);
+    console.log(`${this.zoom} - 0.2 * (${this.zoomTimes})`);
+    this.zoom -= 0.2 * (this.zoomTimes--);
+    if (this.toolType === ToolType.Path) {
+      this.polygonCanvas.zoom -= 0.2 * (this.zoomTimes-- - 1);
+    }
+    console.log(this.zoom);
   }
 
   startBounding(e: MouseEvent) {
@@ -213,7 +369,7 @@ export class MindToolComponent implements OnInit {
     const boundingbox: BoundingBox = new BoundingBox();
     boundingbox.start = new Point(e.offsetX, e.offsetY);
     boundingbox.svgStart = new Point(e.offsetX, e.offsetY);
-    boundingbox.strokeColor = "#555555";
+    boundingbox.strokeColor = '#555555';
     this.boundingBoxs.push(boundingbox);
   }
 
@@ -235,7 +391,7 @@ export class MindToolComponent implements OnInit {
   }
 
   startResize(e: MouseEvent) {
-    const tmp: string[] = e.srcElement.id.split("-");
+    const tmp: string[] = e.srcElement.id.split('-');
     // tslint:disable-next-line:radix
     const index: number = parseInt(tmp[2]);
     this.resizingBoundingBox = this.boundingBoxs[index];
@@ -274,22 +430,22 @@ export class MindToolComponent implements OnInit {
   }
 
   undo() {
-    if (this.operationStack.length <= 0) {
-      return;
-    }
-    this.operationStack.pop();
     switch (this.toolType) {
       case ToolType.BoundingBox:
+        if (this.operationStack.length <= 0) {
+          return;
+        }
+        this.operationStack.pop();
         this.undoBounding();
         break;
       case ToolType.Path:
-      this.undoPolygon();
-      break;
+        this.undoPolygon();
+        break;
     }
   }
 
   undoPolygon() {
-    
+    this.polygonCanvas.undo();
   }
 
   undoBounding() {

@@ -1,45 +1,50 @@
-<form class="form-container" (submit)="signup()">
-  <div style="width: 100%;">
-    <mat-form-field class="input-field" [formGroup]="signupForm">
-      <input matInput required [formControl]="usernameFormControl" placeholder="Username" value="" (change)="onUsernameChanged($event)">
-      <div [ngClass]="{ 'invisible': !usernameValidating }" matSuffix >
-        <mat-progress-spinner mode="indeterminate" 
-            color="warn" [strokeWidth]="1.9" [diameter]="23"></mat-progress-spinner>
-      </div>
-      <mat-error *ngIf="usernameFormControl.hasError('required')">
-        username is
-        <strong>required</strong>
-      </mat-error>
-      <mat-error *ngIf="usernameFormControl.hasError('pattern')">
+<form class="form-container" (submit)="signup()"  [formGroup]="signupForm">
+  <h2>{{userService.role}} Signup</h2>
+    <div style="width: 100%;">
+      <mat-form-field class="input-field">
+        <input matInput required [formControl]="usernameFormControl" placeholder="Username" value="" (change)="onUsernameChanged($event)">
+        <div [ngClass]="{ 'invisible': !usernameValidating }" matSuffix>
+          <mat-progress-spinner mode="indeterminate" color="warn" [strokeWidth]="1.9" [diameter]="23"></mat-progress-spinner>
+        </div>
+        <mat-error *ngIf="usernameFormControl.hasError('required')">
+          username is
+          <strong>required</strong>
+        </mat-error>
+        <mat-error *ngIf="usernameFormControl.hasError('pattern')">
           只能输入5-20个, 以字母开头、可带数字、“_”、“.”的字串
-      </mat-error>
-      <mat-error *ngIf="usernameFormControl.hasError('isUserExists')">
-        Your username already
-        <strong>exists</strong>
-      </mat-error>
-      <mat-error *ngIf="usernameFormControl.hasError('networkFailure')">
-        Network Failed
-      </mat-error>
-    </mat-form-field>
-    <mat-form-field class="input-field">
-      <input #pass matInput required [formControl]="passwordFormControl" type="password" placeholder="Password" value="">
-      <mat-hint *ngIf="!pass.value" align="start">密码必须<strong>同时包含字母、数字、特殊字符(!@#$%^&*)中的两种</strong>。</mat-hint>
-      <mat-error *ngIf="passwordFormControl.hasError('required')">
+        </mat-error>
+        <mat-error *ngIf="usernameFormControl.hasError('isUserExists')">
+          Your username already
+          <strong>exists</strong>
+        </mat-error>
+        <mat-error *ngIf="usernameFormControl.hasError('networkFailure')">
+          Network Failed
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="input-field">
+        <input #pass matInput required [formControl]="passwordFormControl" type="password" placeholder="Password" value="">
+        <mat-hint *ngIf="!pass.value" align="start">密码必须
+          <strong>同时包含字母、数字、特殊字符(!@#$%^&*)中的两种</strong>。</mat-hint>
+        <mat-error *ngIf="passwordFormControl.hasError('required')">
           username is
           <strong>required</strong>
         </mat-error>
         <mat-error *ngIf="passwordFormControl.hasError('pattern')">
-          密码必须<strong>同时包含字母、数字、特殊字符(!@#$%^&*)中的两种</strong>。
+          密码必须
+          <strong>同时包含字母、数字、特殊字符(!@#$%^&*)中的两种</strong>。
         </mat-error>
-    </mat-form-field>
-    <mat-form-field class="input-field">
-      <input matInput [formControl]="emailFormControl" placeholder="Email" value="">
-      <mat-error *ngIf="emailFormControl.hasError('email')">
-        邮箱格式不正确
-      </mat-error>
-    </mat-form-field>
+      </mat-form-field>
+      <mat-form-field class="input-field">
+        <input matInput [formControl]="emailFormControl" placeholder="Email" value="">
+        <mat-error *ngIf="emailFormControl.hasError('email')">
+          邮箱格式不正确
+        </mat-error>
+      </mat-form-field>
 
-    <button mat-raised-button [disabled]="!signupForm.valid" color="accent" type="submit" class="submit-button">Signup</button>
-    <a [routerLink]="['/login']">Already have an account? Login</a>
-  </div>
+      <button mat-raised-button [disabled]="!signupForm.valid" color="accent" type="submit" class="submit-button">Signup</button>
+      <a [routerLink]="['/login']">Already have an account? Login</a>
+      <mat-error *ngIf="signupForm.hasError('signupFailed')">
+        
+      </mat-error>
+    </div>
 </form>

@@ -9,6 +9,7 @@ import {
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatFormField } from '@angular/material';
 import { emailValidator } from './utils/EmailValidator';
+import { Router } from '@angular/router';
 
 const USERNAME_REGEX = /^[a-zA-Z]{1}([a-zA-Z0-9]|[._]){4,19}$/;
 const PASS_REGEX = /^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]+$/;
@@ -19,6 +20,10 @@ const PASS_REGEX = /^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]+$/
   styleUrls: ['./signup.component.css']
 })
 export class SignupComponent implements OnInit {
+
+  // 传入的注册成功后的跳转路由
+  redirectTo: string;
+
   isUserExists: boolean;
   usernameValidating: boolean;
   networkFailed: boolean;
@@ -38,8 +43,9 @@ export class SignupComponent implements OnInit {
   emailFormControl = new FormControl('', [emailValidator()]);
 
   constructor(
-    private userService: UserService,
-    private formBuilder: FormBuilder
+    public userService: UserService,
+    private formBuilder: FormBuilder,
+    private router: Router
   ) {
     this.signupForm = this.formBuilder.group({
       username: this.usernameFormControl,
@@ -80,8 +86,20 @@ export class SignupComponent implements OnInit {
 
   async signup() {
     if (this.signupForm.valid) {
-      const result = await this.userService.signup(JSON.stringify(this.signupForm.value));
-      console.log(result);
+      try {
+        const result = await this.userService.signup(JSON.stringify(this.signupForm.value));
+        console.log(result);
+        if (this.redirectTo) {
+          this.router.navigate([this.redirectTo]);
+        } else {
+          this.router.navigate(['tasks']);
+        }
+      } catch (err) {
+        console.log(err);
+        this.signupForm.setErrors({
+          'signupFailed': { value: true }
+        });
+      }
     } else {
     }
   }

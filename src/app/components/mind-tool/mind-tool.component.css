@@ -3,18 +3,27 @@
     display: table;
     margin-left: auto;
     margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 .work-panel {
+    position: absolute;
+    padding-top: 1em;
+    top: 50px;
+    bottom: 0;
     overflow: hidden;
     background-color: #060544; 
-    min-height: 35.6em;
-    max-height: 442px;
-    max-width: 1536px;
+    width: 100%;
+    height: auto !important;
+    /* min-height: 35.6em; */
+    /* max-height: 442px; */
+    /* max-width: 1536px; */
 }
 
 .svg-container {
-    cursor: crosshair;
+    z-index: 10;
+    box-shadow: 0 0 1em white;
 }
 
 .bounding-box {
@@ -26,9 +35,22 @@
 .bounding-point {
     stroke: red;
     fill: white;
-    stroke-width: 1px;
 }
 
 .resize-point {
     cursor: move;
+}
+
+.bottom-tools {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    background-color: rgba(0,0,0,0.3);
+}
+
+.action-panel {
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }

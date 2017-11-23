@@ -3,6 +3,7 @@ import { Line } from "./Line";
 import { Point } from "./Point";
 export class PolygonCanvas extends Graph {
   lines: Line[];
+  zoom: number = 1;
 
   preVertex: Vertex;
 
@@ -11,15 +12,28 @@ export class PolygonCanvas extends Graph {
     this.lines = [];
   }
 
+  /**
+   * draw point
+   * @param p
+   */
   draw(p: Point) {
+
+    // 查找是否是已经存在的点
     const found = this.findVertex(p);
+
+    // 计算新的点是否在已有的线上，并获得这条线
     let onLine: Line = this.onWhichLine(p);
+
     if (!onLine) {
+
+      // 查找是否有与新点的距离小于5的线
       for (const value of this.lines) {
         const tmp = this.getNeareastPointFromPointToLine(p, value);
         if (tmp) {
+          // 获取点到直线的距离
           const distance = this.getDistanceBetween(tmp, p);
-          if (this.getDistanceBetween(tmp, p) <= 5) {
+          if (distance <= 5 / this.zoom) {
+            // 如果距离小于5，则用直线上的投射替代p
             p = tmp;
             onLine = value;
             break;
@@ -28,6 +42,7 @@ export class PolygonCanvas extends Graph {
       }
     }
 
+    // 如果前一个顶点为空，则重新开始画一条路径
     if (!this.preVertex) {
       if (found) {
         this.preVertex = found;
@@ -51,12 +66,6 @@ export class PolygonCanvas extends Graph {
         this.preVertex = undefined;
         this.getRings();
       } else {
-        // // 求this.preVertex到p的延长线（X轴延长4）; 用以计算在线段this.preVertex--->p与某条线段即将相交时的交点
-        // let gradient = (p.Y - this.preVertex.Y) / (p.X - this.preVertex.X);
-        // gradient = gradient === Infinity ? 1 : gradient;
-        // const endPointX = p.X > this.preVertex.X ? p.X + 1 : p.X - 1;
-        // const endPointY = gradient * (endPointX - p.X) + p.Y;
-        // const extendPoint = new Point(endPointX, endPointY);
 
         const tmpLine = new Line();
         tmpLine.start = this.preVertex;
@@ -116,6 +125,15 @@ export class PolygonCanvas extends Graph {
     this.lines.push(line);
   }
 
+  undo() {
+    this.removeVertex(this.vertexs[this.vertexCount - 1]);
+  }
+
+  /**
+   * 获取一个点在一条直线的投射
+   * @param p
+   * @param l
+   */
   private getNeareastPointFromPointToLine(
     p: Point,
     l: Line
@@ -152,6 +170,11 @@ export class PolygonCanvas extends Graph {
     );
   }
 
+  /**
+   * 获取两点间的距离
+   * @param p1
+   * @param p2
+   */
   private getDistanceBetween(p1: Point, p2: Point): number {
     return Math.sqrt(Math.pow(p1.X - p2.X, 2) + Math.pow(p1.Y - p2.Y, 2));
   }

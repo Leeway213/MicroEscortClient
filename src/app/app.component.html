@@ -1,15 +1,5 @@
 <!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{title}}!
-  </h1>
-</div>
+<app-header [brand]="'粒微镖局'" [leftNavs]="leftNavs"></app-header>
 
-<div>
-  <nav>
-    <a routerLink="/login" routerLinkActive="active">Requester</a>
-    <a routerLink="/signup" routeLinkActive="active">signup</a>
-  </nav>
-</div>
-
+<!-- <app-mind-tool imgSrc="../assets/main.jpg" srcWidth=960 srcHeight=400 [toolType]="'BoundingBox' | StringToToolType"></app-mind-tool> -->
 <router-outlet></router-outlet>

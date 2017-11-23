@@ -8,6 +8,8 @@ export class BoundingBox {
   constructor() {
   }
 
+  selected: boolean;
+
   /**
    * label
    */
@@ -61,5 +63,14 @@ export class BoundingBox {
 
   strokeColor: string;
   strokeWidth: number;
+
+  getResult() {
+    return {
+      start: this.start,
+      width: this.width,
+      height: this.height,
+      label: this.label
+    };
+  }
 
 }

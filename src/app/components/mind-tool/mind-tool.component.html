@@ -1,27 +1,29 @@
 <div class="left-menu"></div>
-<div class="container-fluid media work-panel">
-  <svg:svg class="svg-container center align-self-center" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+<div class="work-panel">
+    <!-- <canvas #canvas style="z-index: -1;"></canvas> -->
+  <svg class="svg-container center align-self-center" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
     attr.viewBox="0 0 {{width}} {{height}}" [attr.width]="width" [attr.height]="height" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
     (mouseup)="onMouseUp($event)" (mousewheel)="onMouseWheel($event)" [attr.transform]="'scale('+ zoom + ') translate(' + transX + ',' + transY + ')'"
-    (contextmenu)="disableMenu()">
+    (contextmenu)="disableMenu()"
+    [style.cursor]="mode === 'draw' ? 'crosshair' : default">
     <svg:image #image attr.xlink:href="{{imgSrc}}" attr.width="{{width}}" attr.height="{{height}}">
     </svg:image>
     <svg:g #svgGroup *ngFor="let item of boundingBoxs; let i = index">
       <svg:rect class="bounding-box" [style.stroke-width]="(2/zoom) + 'px'" [attr.x]="item.svgStart.X" [attr.y]="item.svgStart.Y"
         [attr.width]="item.svgWidth" [attr.height]="item.svgHeight"></svg:rect>
       <svg:g *ngIf="item.svgWidth > 0 && item.svgHeight > 0">
-        <svg:circle id="left-top" class="bounding-point" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X" [attr.cy]="item.svgStart.Y"></svg:circle>
-        <svg:circle id="left-center-{{i}}" class="bounding-point resize-point" [attr.r]="3 / zoom" [attr.cx]="item.svgStart.X" [attr.cy]="item.svgStart.Y + (item.svgHeight / 2)"
+        <svg:circle id="left-top" class="bounding-point" [style.stroke-width]="(1/zoom) + 'px'"  [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X" [attr.cy]="item.svgStart.Y"></svg:circle>
+        <svg:circle id="left-center-{{i}}" class="bounding-point resize-point" [style.stroke-width]="(1/zoom) + 'px'" [attr.r]="3 / zoom" [attr.cx]="item.svgStart.X" [attr.cy]="item.svgStart.Y + (item.svgHeight / 2)"
           (mousedown)="startResize($event)"></svg:circle>
-        <svg:circle id="left-bottom" class="bounding-point" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X" [attr.cy]="item.svgStart.Y + item.svgHeight"></svg:circle>
-        <svg:circle id="top-center-{{i}}" class="bounding-point resize-point" [attr.r]="3 / zoom" [attr.cx]="item.svgStart.X + (item.svgWidth / 2)"
+        <svg:circle id="left-bottom" class="bounding-point" [style.stroke-width]="(1/zoom) + 'px'"  [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X" [attr.cy]="item.svgStart.Y + item.svgHeight"></svg:circle>
+        <svg:circle id="top-center-{{i}}" class="bounding-point resize-point" [style.stroke-width]="(1/zoom) + 'px'"  [attr.r]="3 / zoom" [attr.cx]="item.svgStart.X + (item.svgWidth / 2)"
           [attr.cy]="item.svgStart.Y" (mousedown)="startResize($event)"></svg:circle>
-        <svg:circle id="bottom-center-{{i}}" class="bounding-point resize-point" [attr.r]="3 / zoom" [attr.cx]="item.svgStart.X + (item.svgWidth / 2)"
+        <svg:circle id="bottom-center-{{i}}" class="bounding-point resize-point" [style.stroke-width]="(1/zoom) + 'px'" [attr.r]="3 / zoom" [attr.cx]="item.svgStart.X + (item.svgWidth / 2)"
           [attr.cy]="item.svgStart.Y + item.svgHeight" (mousedown)="startResize($event)"></svg:circle>
-        <svg:circle id="right-top" class="bounding-point" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X + item.svgWidth" [attr.cy]="item.svgStart.Y"></svg:circle>
-        <svg:circle id="right-center-{{i}}" class="bounding-point resize-point" [attr.r]="3 / zoom" [attr.cx]="item.svgStart.X + item.svgWidth"
+        <svg:circle id="right-top" class="bounding-point" [style.stroke-width]="(1/zoom) + 'px'" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X + item.svgWidth" [attr.cy]="item.svgStart.Y"></svg:circle>
+        <svg:circle id="right-center-{{i}}" class="bounding-point resize-point" [style.stroke-width]="(1/zoom) + 'px'" [attr.r]="3 / zoom" [attr.cx]="item.svgStart.X + item.svgWidth"
           [attr.cy]="item.svgStart.Y + (item.svgHeight / 2)" (mousedown)="startResize($event)"></svg:circle>
-        <svg:circle id="right-bottom" class="bounding-point" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X + item.svgWidth" [attr.cy]="item.svgStart.Y + item.svgHeight"></svg:circle>
+        <svg:circle id="right-bottom" class="bounding-point" [style.stroke-width]="(1/zoom) + 'px'" [attr.r]="2 / zoom" [attr.cx]="item.svgStart.X + item.svgWidth" [attr.cy]="item.svgStart.Y + item.svgHeight"></svg:circle>
 
       </svg:g>
     </svg:g>
@@ -32,19 +34,47 @@
       </svg:g>
       <svg:g>
         <svg:line class="path-line" *ngFor="let line of polygonCanvas.lines" [attr.x1]="line.start.X" [attr.y1]="line.start.Y" [attr.x2]="line.end.X"
-          [attr.y2]="line.end.Y" [attr.stroke-width]="3 / zoom + 0.4" stroke="green" ></svg:line>
+          [attr.y2]="line.end.Y" [attr.stroke-width]="3 / zoom" stroke="green" ></svg:line>
       </svg:g>
       <svg:g>
         <svg:circle class="path-point" *ngFor="let point of polygonCanvas.vertexs" [attr.r]="2 / zoom"
-        [attr.cx]="point.X" [attr.cy]="point.Y" style="stroke: red; fill: white;"
+        [attr.cx]="point.X" [attr.cy]="point.Y" style="stroke: red; fill: white;" [attr.stroke-width]="2 / zoom"
         (mouseup)="onMouseUp($event)"></svg:circle>
       </svg:g>
     </svg:g>
-  </svg:svg>
+  </svg>
 </div>
-<div class="bottom-tools navbar ficxed-bottom bg-dark">
-  <button (click)="onZoomInClick()">放大+</button>
+<div class="container bottom-tools">
+      <mat-button-toggle-group #group="matButtonToggleGroup" [value]="mode" (change)="modeChange($event)">
+          <mat-button-toggle value="draw">
+            <span>绘制</span>
+          </mat-button-toggle>
+          <mat-button-toggle value="select">
+            <span>选择</span>
+            <!-- <mat-icon>select</mat-icon> -->
+          </mat-button-toggle>
+          <mat-button-toggle value="delete">
+            <span>删除</span>
+            <!-- <mat-icon>delete</mat-icon> -->
+          </mat-button-toggle>
+        </mat-button-toggle-group>
+  <button (click)="onZoomInClick()" [disabled]="zoomTimes === 10">放大+</button>
   <button [disabled]="zoomTimes === 0" (click)="onZoomOutClick()">缩小-</button>
   <button (click)="fitImage()">适应大小</button>
   <button (click)="undo()" [disabled]="operationStack.length === 0">撤销</button>
 </div>
+
+<!-- <div class="action-panel">
+  <div *ngIf="submitConfirm" class="action-confirm">
+    <div class="action-confirm-text">
+      确定提交吗？要不要再确认一下。要做一个付责任的镖师哦~~
+    </div>
+    <div class="action-confirm-buttons">
+      <button mat-raised-button (click)="this.submitConfirm = false">我再看看</button>
+      <button mat-raised-button color="primary">不改了</button>
+    </div>
+  </div>
+  <button *ngIf="!submitConfirm" mat-raised-button color="accent" class="action-next" (click)="this.submitConfirm = true">Next</button>
+</div> -->
+
+<!-- <app-task-submit class="action-panel"></app-task-submit> -->
