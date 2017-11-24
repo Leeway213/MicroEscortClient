@@ -31,7 +31,6 @@ import { DoTaskComponent } from './components/do-task/do-task.component';
 import { QuizResultComponent } from './components/quiz-result/quiz-result.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpProgressService, ProgressInterceptor } from './services/http-progress.service';
-import { HttpErrorInterceptor } from './services/http-error.service';
 
 
 @NgModule({
@@ -77,11 +76,6 @@ import { HttpErrorInterceptor } from './services/http-error.service';
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ProgressInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: HttpErrorInterceptor,
       multi: true
     }
   ],
