@@ -1,6 +1,7 @@
 import { ToolType } from './components/mind-tool/models/ToolType';
 import { Component } from '@angular/core';
 import { UserService } from './services/user.service';
+import { HttpProgressService } from './services/http-progress.service';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +26,8 @@ export class AppComponent {
   ];
 
   constructor(
-    private userServce: UserService
+    private userServce: UserService,
+    private httpProgressService: HttpProgressService
   ) {
     this.userServce.role = 'Trainer';
   }

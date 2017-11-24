@@ -117,6 +117,8 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   private async refresh() {
+    this.imgSrc = '';
+    this.width = this.height = 0;
     await this.loadImage(this.currentTask.params.attachment);
     this.initDraw();
     this.fitImage();
@@ -250,7 +252,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   onMouseDown(e: MouseEvent) {
-    if (e.buttons === 1 && !e.ctrlKey) {
+    if (e.buttons === 1 && !e.ctrlKey && this.mode === 'draw') {
       switch (this.toolType) {
         case ToolType.BoundingBox:
           this.startBounding(e);
@@ -278,7 +280,8 @@ export class MindToolComponent implements OnInit, OnDestroy {
     if (
       this.toolType === ToolType.BoundingBox &&
       e.buttons === 1 &&
-      this.boundingBoxs.length >= 1
+      this.boundingBoxs.length >= 1 &&
+      this.mode === 'draw'
     ) {
       this.moveBounding(e);
     }
@@ -303,7 +306,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
     if (e.button === 0) {
       switch (this.toolType) {
         case ToolType.BoundingBox:
-          if (this.boundingBoxs.length >= 1) {
+          if (this.boundingBoxs.length >= 1 && this.mode === 'draw') {
             this.endBounding(e);
             this.operationStack.push(ObjectHelper.objClone(
               this.boundingBoxs,
@@ -313,7 +316,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
           break;
 
         case ToolType.Path:
-          if (e.srcElement && e.srcElement.classList.contains('path-point')) {
+          if (e.srcElement && e.srcElement.classList.contains('path-point') && this.mode === 'draw') {
             // tslint:disable-next-line:radix
             const x = parseInt(e.srcElement.getAttribute('cx'));
             // tslint:disable-next-line:radix

@@ -15,7 +15,8 @@ export class ProjectService {
     this.http.get(`${this.userService.baseUrl}/projects`, {
       headers: new HttpHeaders({
         Authorization: 'Bearer ' + this.userService.user.token
-      })
+      }),
+      reportProgress: true
     }).subscribe(
       res => {
         const resData = res as any;
