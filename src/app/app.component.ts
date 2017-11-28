@@ -27,7 +27,7 @@ export class AppComponent {
 
   constructor(
     private userServce: UserService,
-    private httpProgressService: HttpProgressService
+    public httpProgressService: HttpProgressService
   ) {
     this.userServce.role = 'Trainer';
   }

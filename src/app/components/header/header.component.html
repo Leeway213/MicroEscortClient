@@ -24,10 +24,14 @@
         </li>
       </ul>
 
-      <ul *ngIf="!userService.checkAuth() && currentPath !== '/signup' && currentPath !== '/login'" class="nav navbar-nav navbar-right"> 
-          <li><a routerLink="/signup"><span class="glyphicon glyphicon-user"></span> 注册</a></li> 
-          <li><a routerLink="/login"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li> 
-      </ul> 
+      <ul *ngIf="!userService.checkAuth() && currentPath !== '/signup' && currentPath !== '/login'" class="nav navbar-nav navbar-right">
+          <li><a routerLink="/signup"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
+          <li><a routerLink="/login"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+      </ul>
+
+      <ul *ngIf="userService.checkAuth()" class="nav navbar-nav navbar-right">
+        <!-- todo: exp & money -->
+      </ul>
 
       <ul *ngIf="userService.checkAuth()" class="nav navbar-nav navbar-right">
         <li class="dropdown">
@@ -53,6 +57,7 @@
           </ul>
         </li>
       </ul>
+
     </div>
   </div>
 </nav>

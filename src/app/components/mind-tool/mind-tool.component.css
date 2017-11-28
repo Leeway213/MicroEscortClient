@@ -13,12 +13,18 @@
     top: 50px;
     bottom: 0;
     overflow: hidden;
-    background-color: #060544; 
+    background-color: #060544;
     width: 100%;
     height: auto !important;
     /* min-height: 35.6em; */
     /* max-height: 442px; */
     /* max-width: 1536px; */
+}
+
+.work-panel .left-menu {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .svg-container {
@@ -45,8 +51,12 @@
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: auto;
+    height: 42px;
     background-color: rgba(0,0,0,0.3);
+}
+
+.bottom-tools button {
+  color: white;
 }
 
 .action-panel {
@@ -54,3 +64,5 @@
     bottom: 0;
     right: 0;
 }
+
+

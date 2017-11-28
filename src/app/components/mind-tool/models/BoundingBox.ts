@@ -1,5 +1,5 @@
-import { EventEmitter } from "events";
-import { Point } from "./Point";
+import { EventEmitter } from 'events';
+import { Point } from './Point';
 
 /**
  * Bounding Box

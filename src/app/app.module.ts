@@ -6,7 +6,7 @@ import { PointsToStringPipe } from './components/mind-tool/utils/PointsToString'
 import { StringToToolTypePipe } from './components/mind-tool/utils/StringToToolType';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { MatButtonModule, MatButtonToggleModule, MatIconModule } from '@angular/material';
+import { MatButtonModule, MatButtonToggleModule, MatIconModule, MatExpansionModule, MatListModule } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatInputModule, MatProgressBarModule, MatProgressSpinnerModule} from '@angular/material';
 
@@ -31,6 +31,7 @@ import { DoTaskComponent } from './components/do-task/do-task.component';
 import { QuizResultComponent } from './components/quiz-result/quiz-result.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpProgressService, ProgressInterceptor } from './services/http-progress.service';
+import { LabelListComponent } from './components/label-list/label-list.component';
 
 
 @NgModule({
@@ -46,7 +47,8 @@ import { HttpProgressService, ProgressInterceptor } from './services/http-progre
     HeaderComponent,
     TaskSubmitComponent,
     DoTaskComponent,
-    QuizResultComponent
+    QuizResultComponent,
+    LabelListComponent
   ],
   imports: [
     BrowserModule,
@@ -60,6 +62,8 @@ import { HttpProgressService, ProgressInterceptor } from './services/http-progre
     MatButtonToggleModule,
     MatIconModule,
     MatProgressBarModule,
+    MatExpansionModule,
+    MatListModule,
     ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,

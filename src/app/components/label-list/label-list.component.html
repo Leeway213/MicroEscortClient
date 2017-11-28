@@ -1,0 +1,13 @@
+  <mat-expansion-panel *ngIf="objects" class="object-container">
+    <mat-expansion-panel-header>
+      <mat-panel-title style="color: white;">Label List</mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-list>
+      <mat-list-item *ngFor="let object of objects; let i = index">
+        <svg:svg viewBox="0 0 14 14" width="14" height="14" xmlns="http://www.w3.org/1000/svg">
+          <svg:circle cx="7" cy="7" r="6" [style.fill]="colors[i]" style="stroke-width: 2px; stroke: rgba(255, 255, 255, 0.5);"></svg:circle>
+        </svg:svg>
+        <span class="mat-list-line" (click)="onClick(i)" mat-list-line>{{object}}</span>
+      </mat-list-item>
+    </mat-list>
+  </mat-expansion-panel>

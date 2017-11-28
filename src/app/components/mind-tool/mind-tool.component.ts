@@ -28,14 +28,19 @@ import { TaskModel } from '../tasks/tasks.component';
   styleUrls: ['./mind-tool.component.css']
 })
 export class MindToolComponent implements OnInit, OnDestroy {
+
+  quiz: boolean;
+  correctResult: any;
+
+  currentTaskIndex: number;
+  @Input() tasks: TaskModel[];
   get currentTask(): TaskModel {
     return this.tasks ? this.tasks[this.currentTaskIndex] : null;
   }
-  quiz: boolean;
-  currentTaskIndex: number;
-  @Input() tasks: TaskModel[];
 
   mode: 'draw' | 'select' | 'delete' = 'draw';
+
+  @ViewChild('toolContainer') toolRef: any;
 
   @Input() imgSrc: string;
 
@@ -74,6 +79,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
     this.addSkipWhenWindowClosedHandler();
     this.initialize();
     this.addShotcut();
+    console.log(this.toolRef);
   }
 
   async ngOnDestroy(): Promise<void> {
@@ -123,6 +129,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
     this.initDraw();
     this.fitImage();
     this.operationStack = [];
+    this.correctResult = undefined;
   }
 
   private async loadImage(src: string) {
@@ -196,6 +203,8 @@ export class MindToolComponent implements OnInit, OnDestroy {
       const response = await this.taskService.finishTask(this.currentTask.id, result);
       console.log(response);
       if (this.quiz) {
+        this.correctResult = response.data.result;
+        console.log(this.correctResult);
         this.drawCorrect(response.data);
         this.quizEvent.emit(response.data);
       } else {
@@ -215,6 +224,14 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   modeChange(e) {
     this.mode = e.value;
+  }
+
+  /**
+   *
+   * @param args  object { label: "", color: "" }
+   */
+  label(args: any) {
+    console.log(args);
   }
 
   /**
@@ -308,10 +325,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
         case ToolType.BoundingBox:
           if (this.boundingBoxs.length >= 1 && this.mode === 'draw') {
             this.endBounding(e);
-            this.operationStack.push(ObjectHelper.objClone(
-              this.boundingBoxs,
-              []
-            ) as BoundingBox[]);
           }
           break;
 
@@ -369,10 +382,17 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   startBounding(e: MouseEvent) {
     console.log(`start ${e.offsetX}--${e.offsetY}`);
+
+    // 将最后一个bounding的selected设置为false
+    if (this.boundingBoxs.length > 0) {
+      this.boundingBoxs[this.boundingBoxs.length - 1].selected = false;
+    }
+
     const boundingbox: BoundingBox = new BoundingBox();
     boundingbox.start = new Point(e.offsetX, e.offsetY);
     boundingbox.svgStart = new Point(e.offsetX, e.offsetY);
     boundingbox.strokeColor = '#555555';
+    boundingbox.selected = true;
     this.boundingBoxs.push(boundingbox);
   }
 
@@ -390,6 +410,17 @@ export class MindToolComponent implements OnInit, OnDestroy {
     ];
     if (!boundingbox.width && !boundingbox.height) {
       this.boundingBoxs.pop();
+      return;
+    }
+    this.operationStack.push(ObjectHelper.objClone(
+      this.boundingBoxs,
+      []
+    ) as BoundingBox[]);
+  }
+
+  selectBounding(i: number) {
+    if (this.mode !== 'delete') {
+      this.boundingBoxs[i].selected = !this.boundingBoxs[i].selected;
     }
   }
 
