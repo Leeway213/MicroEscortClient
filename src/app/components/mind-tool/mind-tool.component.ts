@@ -3,16 +3,16 @@ import { PolygonCanvas } from './models/PolygonCanvas';
 import { ObjectHelper } from './utils/StaticMethod';
 import { ToolType } from './models/ToolType';
 import {
-    AfterContentInit,
-    AfterViewInit,
-    Component,
-    ElementRef,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    ViewChild,
-    Output,
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  Output
 } from '@angular/core';
 import { BoundingBox } from './models/BoundingBox';
 import { Point } from './models/Point';
@@ -28,7 +28,6 @@ import { TaskModel } from '../tasks/tasks.component';
   styleUrls: ['./mind-tool.component.css']
 })
 export class MindToolComponent implements OnInit, OnDestroy {
-
   quiz: boolean;
   correctResult: any;
 
@@ -85,7 +84,9 @@ export class MindToolComponent implements OnInit, OnDestroy {
   async ngOnDestroy(): Promise<void> {
     console.log(this.currentTask);
     this.removeSkipWhenWindowClosedHandler();
-    await this.taskService.skipTask(this.currentTask.id);
+    if (this.currentTask) {
+      await this.taskService.skipTask(this.currentTask.id);
+    }
   }
 
   private initialize() {
@@ -151,11 +152,11 @@ export class MindToolComponent implements OnInit, OnDestroy {
     const lowerType: string = typeString.toLowerCase();
     switch (lowerType) {
       case 'boundingbox':
-      return ToolType.BoundingBox;
+        return ToolType.BoundingBox;
       case 'polygon':
-      return ToolType.Path;
+        return ToolType.Path;
       default:
-      return undefined;
+        return undefined;
     }
   }
 
@@ -198,9 +199,15 @@ export class MindToolComponent implements OnInit, OnDestroy {
       const annotations = this.boundingBoxs.map(value => value.getResult());
       const result: any = {};
       result.taskId = this.currentTask.id;
-      result.results = { annotations: annotations, quiz: this.currentTask.quiz };
+      result.results = {
+        annotations: annotations,
+        quiz: this.currentTask.quiz
+      };
 
-      const response = await this.taskService.finishTask(this.currentTask.id, result);
+      const response = await this.taskService.finishTask(
+        this.currentTask.id,
+        result
+      );
       console.log(response);
       if (this.quiz) {
         this.correctResult = response.data.result;
@@ -208,7 +215,20 @@ export class MindToolComponent implements OnInit, OnDestroy {
         this.drawCorrect(response.data);
         this.quizEvent.emit(response.data);
       } else {
-        // todo: 提交任务结果并刷新任务
+        // todo:刷新任务
+        try {
+          const res: any = await this.taskService.getTask(
+            this.currentTask.project
+          );
+          console.log(res);
+          if (res.code === 1) {
+            this.tasks = res.data;
+            this.refresh();
+          }
+        } catch (error) {
+          this.tasks = undefined;
+          this.router.navigate(['/tasks']);
+        }
       }
     }
   }
@@ -238,10 +258,10 @@ export class MindToolComponent implements OnInit, OnDestroy {
         value.fillColor = args.color;
       }
     });
-      this.operationStack.push(ObjectHelper.objClone(
-        this.boundingBoxs,
-        []
-      ) as BoundingBox[]);
+    this.operationStack.push(ObjectHelper.objClone(
+      this.boundingBoxs,
+      []
+    ) as BoundingBox[]);
   }
 
   /**
@@ -339,7 +359,11 @@ export class MindToolComponent implements OnInit, OnDestroy {
           break;
 
         case ToolType.Path:
-          if (e.srcElement && e.srcElement.classList.contains('path-point') && this.mode === 'draw') {
+          if (
+            e.srcElement &&
+            e.srcElement.classList.contains('path-point') &&
+            this.mode === 'draw'
+          ) {
             // tslint:disable-next-line:radix
             const x = parseInt(e.srcElement.getAttribute('cx'));
             // tslint:disable-next-line:radix
@@ -383,7 +407,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   zoomOut() {
     console.log(`${this.zoom} - 0.2 * (${this.zoomTimes})`);
-    this.zoom -= 0.2 * (this.zoomTimes--);
+    this.zoom -= 0.2 * this.zoomTimes--;
     if (this.toolType === ToolType.Path) {
       this.polygonCanvas.zoom -= 0.2 * (this.zoomTimes-- - 1);
     }
