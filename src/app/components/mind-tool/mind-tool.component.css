@@ -33,8 +33,7 @@
 }
 
 .bounding-box {
-    fill-opacity: 0.1;
-    fill: white;
+    fill-opacity: 0.3;
     stroke: rgb(0, 255, 0);
 }
 

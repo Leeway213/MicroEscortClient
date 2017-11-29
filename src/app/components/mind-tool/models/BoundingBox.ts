@@ -59,7 +59,7 @@ export class BoundingBox {
   svgWidth: number;
   svgHeight: number;
 
-  fillColor: string;
+  fillColor = 'white';
 
   strokeColor: string;
   strokeWidth: number;

@@ -232,6 +232,16 @@ export class MindToolComponent implements OnInit, OnDestroy {
    */
   label(args: any) {
     console.log(args);
+    this.boundingBoxs.map(value => {
+      if (value.selected) {
+        value.label = args.label;
+        value.fillColor = args.color;
+      }
+    });
+      this.operationStack.push(ObjectHelper.objClone(
+        this.boundingBoxs,
+        []
+      ) as BoundingBox[]);
   }
 
   /**
@@ -418,10 +428,16 @@ export class MindToolComponent implements OnInit, OnDestroy {
     ) as BoundingBox[]);
   }
 
-  selectBounding(i: number) {
+  clickBox(i: number) {
     if (this.mode !== 'delete') {
       this.boundingBoxs[i].selected = !this.boundingBoxs[i].selected;
+    } else if (this.mode === 'delete') {
+      this.boundingBoxs.splice(i, 1);
     }
+    this.operationStack.push(ObjectHelper.objClone(
+      this.boundingBoxs,
+      []
+    ) as BoundingBox[]);
   }
 
   startResize(e: MouseEvent) {
