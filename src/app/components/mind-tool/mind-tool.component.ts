@@ -131,34 +131,12 @@ export class MindToolComponent implements OnInit, OnDestroy {
     this.labelToolComponent.refresh();
   }
 
-  // private initDraw() {
-  //   switch (this.toolType) {
-  //     case ToolType.BoundingBox:
-  //       this.boundingBoxs = [];
-  //       break;
-  //     case ToolType.Path:
-  //       this.polygonCanvas = new PolygonCanvas();
-
-  //       this.polygonCanvas.draw(new Point(2, 2));
-  //       this.polygonCanvas.draw(new Point(2, this.height - 2));
-  //       this.polygonCanvas.draw(new Point(this.width - 2, this.height - 2));
-  //       this.polygonCanvas.draw(new Point(this.width - 2, 2));
-  //       this.polygonCanvas.draw(new Point(2, 2));
-
-  //       break;
-  //   }
-  // }
-
   private async refresh() {
     this.imgSrc = '';
     this.width = this.height = 0;
     await this.loadImage(this.currentTask.params.attachment);
     console.log(this.imgSrc);
-    // this.initDraw();
     this.fitImage();
-    // this.operationStack = [];
-    // this.correctResult = undefined;
-
     this.refreshTool();
   }
 
@@ -178,18 +156,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
     this.labelToolComponent.width = this.width;
     this.labelToolComponent.height = this.height;
   }
-
-  // private determinToolType_bak(typeString: string): ToolType {
-  //   const lowerType: string = typeString.toLowerCase();
-  //   switch (lowerType) {
-  //     case 'boundingbox':
-  //       return ToolType.BoundingBox;
-  //     case 'polygon':
-  //       return ToolType.Path;
-  //     default:
-  //       return undefined;
-  //   }
-  // }
 
   /**
    * 添加快捷键操作
@@ -220,10 +186,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
     window.onbeforeunload = undefined;
   }
 
-  private drawCorrect(data: any) {
-    // todo: 画出正确答案
-  }
-
   async submit() {
       const annotations = this.labelToolComponent.getResult();
       const result: any = {};
@@ -239,7 +201,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
       );
       console.log(response);
       if (this.currentTask.quiz) {
-        // this.correctResult = response.data.result;
         this.quizEvent.emit(response.data);
       } else {
         // 刷新任务
@@ -315,13 +276,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   onMouseDown(e: MouseEvent) {
-    // if (e.buttons === 1 && !e.ctrlKey && this.mode === 'draw') {
-    //   switch (this.toolType) {
-    //     case ToolType.BoundingBox:
-    //       this.startBounding(e);
-    //       break;
-    //   }
-    // } else if (e.buttons === 1 && e.ctrlKey) {
     if (e.buttons === 1 && e.ctrlKey) {
       // 开始拖动
       this.translating = true;
@@ -332,76 +286,21 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   onMouseMove(e: MouseEvent) {
-    // if (this.resizing) {
-    //   this.resizeBound(e);
-    //   return;
-    // }
 
     if (this.translating && e.buttons === 1) {
       this.translate(e);
       return false;
     }
 
-    // if (
-    //   this.toolType === ToolType.BoundingBox &&
-    //   e.buttons === 1 &&
-    //   this.boundingBoxs.length >= 1 &&
-    //   this.mode === 'draw'
-    // ) {
-    //   this.moveBounding(e);
-    // }
-
-    // e.preventDefault();
   }
 
   onMouseUp(e: MouseEvent) {
-    // if (this.resizing) {
-    //   this.resizing = false;
-    //   this.operationStack.push(ObjectHelper.objClone(
-    //     this.boundingBoxs,
-    //     []
-    //   ) as BoundingBox[]);
-    //   return;
-    // }
 
     if (this.translating) {
       this.translating = false;
       return false;
     }
-    // if (e.button === 0) {
-    //   switch (this.toolType) {
-    //     case ToolType.BoundingBox:
-    //       if (this.boundingBoxs.length >= 1 && this.mode === 'draw') {
-    //         this.endBounding(e);
-    //       }
-    //       break;
-
-    //     case ToolType.Path:
-    //       if (
-    //         e.srcElement &&
-    //         e.srcElement.classList.contains('path-point') &&
-    //         this.mode === 'draw'
-    //       ) {
-    //         // tslint:disable-next-line:radix
-    //         const x = parseInt(e.srcElement.getAttribute('cx'));
-    //         // tslint:disable-next-line:radix
-    //         const y = parseInt(e.srcElement.getAttribute('cy'));
-    //         console.log(`draw on point ${x},${y}`);
-    //         this.polygonCanvas.drawOnPoint(new Point(x, y));
-    //       } else {
-    //         // const p = new Point(Math.round(e.offsetX), Math.round(e.offsetY));
-    //         const p = new Point(e.offsetX, e.offsetY);
-    //         console.log(`${p.X}, ${p.Y}`);
-    //         this.polygonCanvas.draw(p);
-    //       }
-
-    //       break;
-    //   }
-    // }
-
-    // e.stopPropagation();
-    // e.stopImmediatePropagation();
-    // e.preventDefault();
+ 
   }
 
   onMouseWheel(e: WheelEvent) {
@@ -418,9 +317,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   zoomIn() {
     this.zoom += 0.2 * (this.zoomTimes++ + 1);
-    // if (this.toolType === ToolType.Path) {
-    //   this.polygonCanvas.zoom += 0.2 * (this.zoomTimes++ + 1);
-    // }
 
     this.refreshTransform();
     console.log(this.labelToolComponent.zoom);
@@ -429,96 +325,9 @@ export class MindToolComponent implements OnInit, OnDestroy {
   zoomOut() {
     console.log(`${this.zoom} - 0.2 * (${this.zoomTimes})`);
     this.zoom -= 0.2 * this.zoomTimes--;
-    // if (this.toolType === ToolType.Path) {
-    //   this.polygonCanvas.zoom -= 0.2 * (this.zoomTimes-- - 1);
-    // }
 
     this.refreshTransform();
   }
-
-  // startBounding(e: MouseEvent) {
-  //   console.log(`start ${e.offsetX}--${e.offsetY}`);
-
-  //   // 将最后一个bounding的selected设置为false
-  //   if (this.boundingBoxs.length > 0) {
-  //     this.boundingBoxs[this.boundingBoxs.length - 1].selected = false;
-  //   }
-
-  //   const boundingbox: BoundingBox = new BoundingBox();
-  //   boundingbox.start = new Point(e.offsetX, e.offsetY);
-  //   boundingbox.svgStart = new Point(e.offsetX, e.offsetY);
-  //   boundingbox.strokeColor = '#555555';
-  //   boundingbox.selected = true;
-  //   this.boundingBoxs.push(boundingbox);
-  // }
-
-  // moveBounding(e: MouseEvent) {
-  //   const boundingbox: BoundingBox = this.boundingBoxs[
-  //     this.boundingBoxs.length - 1
-  //   ];
-  //   boundingbox.width = e.offsetX - boundingbox.start.X;
-  //   boundingbox.height = e.offsetY - boundingbox.start.Y;
-  // }
-
-  // endBounding(e: MouseEvent) {
-  //   const boundingbox: BoundingBox = this.boundingBoxs[
-  //     this.boundingBoxs.length - 1
-  //   ];
-  //   if (!boundingbox.width && !boundingbox.height) {
-  //     this.boundingBoxs.pop();
-  //     return;
-  //   }
-  //   this.operationStack.push(ObjectHelper.objClone(
-  //     this.boundingBoxs,
-  //     []
-  //   ) as BoundingBox[]);
-  // }
-
-  // clickBox(i: number) {
-  //   if (this.mode !== 'delete') {
-  //     this.boundingBoxs[i].selected = !this.boundingBoxs[i].selected;
-  //   } else if (this.mode === 'delete') {
-  //     this.boundingBoxs.splice(i, 1);
-  //   }
-  //   this.operationStack.push(ObjectHelper.objClone(
-  //     this.boundingBoxs,
-  //     []
-  //   ) as BoundingBox[]);
-  // }
-
-  // startResize(e: MouseEvent) {
-  //   const tmp: string[] = e.srcElement.id.split('-');
-  //   // tslint:disable-next-line:radix
-  //   const index: number = parseInt(tmp[2]);
-  //   this.resizingBoundingBox = this.boundingBoxs[index];
-  //   this.resizingBound = tmp[0];
-  //   this.resizing = true;
-
-  //   e.stopPropagation();
-  // }
-
-  // resizeBound(e: MouseEvent) {
-  //   switch (this.resizingBound) {
-  //     case `left`:
-  //       this.resizingBoundingBox.svgWidth +=
-  //         this.resizingBoundingBox.svgStart.X - e.offsetX;
-  //       this.resizingBoundingBox.svgStart.X = e.offsetX;
-  //       break;
-  //     case `right`:
-  //       this.resizingBoundingBox.svgWidth =
-  //         e.offsetX - this.resizingBoundingBox.svgStart.X;
-  //       break;
-  //     case `top`:
-  //       this.resizingBoundingBox.svgHeight +=
-  //         this.resizingBoundingBox.svgStart.Y - e.offsetY;
-  //       this.resizingBoundingBox.svgStart.Y = e.offsetY;
-  //       break;
-  //     case `bottom`:
-  //       this.resizingBoundingBox.svgHeight =
-  //         e.offsetY - this.resizingBoundingBox.svgStart.Y;
-  //       break;
-  //   }
-  // }
 
   translate(e: MouseEvent) {
     this.transX += e.movementX / this.zoom;
@@ -529,17 +338,5 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   undo() {
     this.labelToolComponent.undo();
-    // switch (this.toolType) {
-    //   case ToolType.BoundingBox:
-    //     if (this.operationStack.length <= 0) {
-    //       return;
-    //     }
-    //     this.operationStack.pop();
-    //     this.undoBounding();
-    //     break;
-    //   case ToolType.Path:
-    //     this.undoPolygon();
-    //     break;
-    // }
   }
 }
