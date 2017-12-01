@@ -5,8 +5,6 @@ import { TaskService } from '../../services/task.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TaskModel } from '../tasks/tasks.component';
 import { MindToolComponent } from '../mind-tool/mind-tool.component';
-import { BoundingBox } from '../mind-tool/models/BoundingBox';
-import { ToolType } from '../mind-tool/models/ToolType';
 
 @Component({
   selector: 'app-do-task',

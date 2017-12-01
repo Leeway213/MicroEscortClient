@@ -1,0 +1,25 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  attr.viewBox="0 0 {{width}} {{height}}" [attr.width]="width" [attr.height]="height"
+  (click)="onSvgClick($event)">
+  <svg:g class="polygon-group" *ngIf="polygonCanvas">
+    <svg:g>
+      <svg:polygon style="fill-opacity: 0.2; fill: white;" 
+        *ngFor="let ring of polygonCanvas.rings" [attr.points]="ring | PointsToString"></svg:polygon>
+    </svg:g>
+    <svg:g>
+      <svg:line class="path-line" 
+        *ngFor="let line of polygonCanvas.lines" 
+        [attr.x1]="line.start.X"
+        [attr.y1]="line.start.Y"
+        [attr.x2]="line.end.X"
+        [attr.y2]="line.end.Y"
+        [attr.stroke-width]="1.5 / zoom" stroke="green"></svg:line>
+    </svg:g>
+    <svg:g>
+      <svg:circle class="path-point" *ngFor="let point of polygonCanvas.vertexs" 
+        [attr.r]="2 / zoom" [attr.cx]="point.X" [attr.cy]="point.Y"
+        style="stroke: red; fill: white;" 
+        [attr.stroke-width]="1 / zoom" (click)="onSvgClick($event)"></svg:circle>
+    </svg:g>
+  </svg:g>
+</svg>

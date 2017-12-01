@@ -2,8 +2,6 @@ import { ProjectService } from './services/project.service';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { PointsToStringPipe } from './components/mind-tool/utils/PointsToString';
-import { StringToToolTypePipe } from './components/mind-tool/utils/StringToToolType';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MatButtonModule, MatButtonToggleModule, MatIconModule, MatExpansionModule, MatListModule } from '@angular/material';
@@ -34,14 +32,15 @@ import { HttpProgressService, ProgressInterceptor } from './services/http-progre
 import { LabelListComponent } from './components/label-list/label-list.component';
 import { ToolSwitchDirective } from './directives/tool-switch.directive';
 import { BoundingBoxComponent } from './components/label-tools/image-annotation/bounding-box/bounding-box.component';
+import { PolygonComponent } from './components/label-tools/image-annotation/polygon/polygon.component';
+import { PointsToStringPipe } from './components/label-tools/image-annotation/polygon/utils/point-to-string.pipe';
 
 
 @NgModule({
   declarations: [
+    PointsToStringPipe,
     AppComponent,
     MindToolComponent,
-    StringToToolTypePipe,
-    PointsToStringPipe,
     LoginComponent,
     SignupComponent,
     TaskPublisherComponent,
@@ -52,7 +51,8 @@ import { BoundingBoxComponent } from './components/label-tools/image-annotation/
     QuizResultComponent,
     LabelListComponent,
     ToolSwitchDirective,
-    BoundingBoxComponent
+    BoundingBoxComponent,
+    PolygonComponent
   ],
   imports: [
     BrowserModule,
@@ -87,7 +87,7 @@ import { BoundingBoxComponent } from './components/label-tools/image-annotation/
       multi: true
     }
   ],
-  entryComponents: [BoundingBoxComponent],
+  entryComponents: [BoundingBoxComponent, PolygonComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

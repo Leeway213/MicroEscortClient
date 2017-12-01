@@ -1,5 +1,6 @@
 import { BoundingBoxComponent } from './image-annotation/bounding-box/bounding-box.component';
 import { Type } from '@angular/core';
+import { PolygonComponent } from './image-annotation/polygon/polygon.component';
 export interface LabelToolComponent {
   data: any;
   width: number;
@@ -15,5 +16,6 @@ export interface LabelToolComponent {
 }
 
 export const labelTools: {[key: string]: Type<LabelToolComponent>} = {
-  'boundingbox': BoundingBoxComponent
+  'boundingbox': BoundingBoxComponent,
+  'polygon': PolygonComponent
 };

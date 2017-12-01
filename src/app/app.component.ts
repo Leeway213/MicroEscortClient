@@ -1,4 +1,3 @@
-import { ToolType } from './components/mind-tool/models/ToolType';
 import { Component } from '@angular/core';
 import { UserService } from './services/user.service';
 import { HttpProgressService } from './services/http-progress.service';

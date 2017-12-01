@@ -2,9 +2,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { labelTools } from './../label-tools/LabelToolComponent';
 import { LabelToolComponent } from '../label-tools/LabelToolComponent';
 import { Task } from 'protractor/built/taskScheduler';
-import { PolygonCanvas } from './models/PolygonCanvas';
-import { ObjectHelper } from './utils/StaticMethod';
-import { ToolType } from './models/ToolType';
 import {
     AfterContentInit,
     AfterViewInit,
@@ -19,9 +16,6 @@ import {
     ViewChild,
     Type,
 } from '@angular/core';
-import { Point } from './models/Point';
-import { Vertex } from './models/Graph';
-import { Line } from './models/Line';
 import { TaskService } from '../../services/task.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TaskModel } from '../tasks/tasks.component';
@@ -65,14 +59,10 @@ export class MindToolComponent implements OnInit, OnDestroy {
   @Input() srcWidth: number;
   @Input() srcHeight: number;
 
-  @Input() toolType: ToolType;
-
   width: number;
   height: number;
   zoomTimes = 0;
   zoom = 1;
-
-  polygonCanvas: PolygonCanvas;
 
   translating = false;
   transX = 0;
@@ -115,20 +105,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   private initialize() {
-    // this.canvasContext = (this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d');
-    // this.route.data.subscribe(async res => {
-    //   this.quiz = res.task[0].quiz;
-    //   this.tasks = res.task;
-    //   this.currentTaskIndex = 0;
-
-    //   this.toolType = this.determinToolType(this.currentTask.type);
-
-    //   this.refresh();
-    // });
     this.currentTaskIndex = 0;
-    // this.quiz = this.currentTask.quiz;
-    // this.toolType = this.determinToolType_bak(this.currentTask.type);
-    // console.log(labelTools);
     this.loadTool(labelTools[this.currentTask.type]);
     this.refresh();
   }
@@ -202,17 +179,17 @@ export class MindToolComponent implements OnInit, OnDestroy {
     this.labelToolComponent.height = this.height;
   }
 
-  private determinToolType_bak(typeString: string): ToolType {
-    const lowerType: string = typeString.toLowerCase();
-    switch (lowerType) {
-      case 'boundingbox':
-        return ToolType.BoundingBox;
-      case 'polygon':
-        return ToolType.Path;
-      default:
-        return undefined;
-    }
-  }
+  // private determinToolType_bak(typeString: string): ToolType {
+  //   const lowerType: string = typeString.toLowerCase();
+  //   switch (lowerType) {
+  //     case 'boundingbox':
+  //       return ToolType.BoundingBox;
+  //     case 'polygon':
+  //       return ToolType.Path;
+  //     default:
+  //       return undefined;
+  //   }
+  // }
 
   /**
    * 添加快捷键操作
@@ -330,9 +307,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
    */
   fitImage() {
     this.zoom = 1;
-    if (this.toolType === ToolType.Path) {
-      this.polygonCanvas.zoom = 1;
-    }
     this.zoomTimes = 0;
     this.transX = 0;
     this.transY = 0;
@@ -567,9 +541,5 @@ export class MindToolComponent implements OnInit, OnDestroy {
     //     this.undoPolygon();
     //     break;
     // }
-  }
-
-  undoPolygon() {
-    this.polygonCanvas.undo();
   }
 }
