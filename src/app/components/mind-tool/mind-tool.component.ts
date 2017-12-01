@@ -19,7 +19,6 @@ import {
     ViewChild,
     Type,
 } from '@angular/core';
-import { BoundingBox } from './models/BoundingBox';
 import { Point } from './models/Point';
 import { Vertex } from './models/Graph';
 import { Line } from './models/Line';
@@ -51,9 +50,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
   canvasContext: CanvasRenderingContext2D;
 
 
-  quiz: boolean;
-  correctResult: any;
-
   currentTaskIndex: number;
   @Input() tasks: TaskModel[];
   get currentTask(): TaskModel {
@@ -71,19 +67,12 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   @Input() toolType: ToolType;
 
-  operationStack: any[] = [];
-
   width: number;
   height: number;
   zoomTimes = 0;
   zoom = 1;
 
-  boundingBoxs: Array<BoundingBox>;
   polygonCanvas: PolygonCanvas;
-
-  resizing = false;
-  resizingBoundingBox: BoundingBox;
-  resizingBound: string;
 
   translating = false;
   transX = 0;
@@ -582,12 +571,5 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   undoPolygon() {
     this.polygonCanvas.undo();
-  }
-
-  undoBounding() {
-    this.boundingBoxs = this.operationStack[this.operationStack.length - 1];
-    if (!this.boundingBoxs) {
-      this.boundingBoxs = [];
-    }
   }
 }
