@@ -1,18 +1,23 @@
+import { DomSanitizer } from '@angular/platform-browser';
+import { labelTools } from './../label-tools/LabelToolComponent';
+import { LabelToolComponent } from '../label-tools/LabelToolComponent';
 import { Task } from 'protractor/built/taskScheduler';
 import { PolygonCanvas } from './models/PolygonCanvas';
 import { ObjectHelper } from './utils/StaticMethod';
 import { ToolType } from './models/ToolType';
 import {
-  AfterContentInit,
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-  Output
+    AfterContentInit,
+    AfterViewInit,
+    Component,
+    ComponentFactoryResolver,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
+    ViewChild,
+    Type,
 } from '@angular/core';
 import { BoundingBox } from './models/BoundingBox';
 import { Point } from './models/Point';
@@ -21,6 +26,11 @@ import { Line } from './models/Line';
 import { TaskService } from '../../services/task.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TaskModel } from '../tasks/tasks.component';
+import { ToolSwitchDirective } from '../../directives/tool-switch.directive';
+import { BoundingBoxComponent } from '../label-tools/image-annotation/bounding-box/bounding-box.component';
+import { SafeStyle } from '@angular/platform-browser/src/security/dom_sanitization_service';
+
+
 
 @Component({
   selector: 'app-mind-tool',
@@ -28,6 +38,19 @@ import { TaskModel } from '../tasks/tasks.component';
   styleUrls: ['./mind-tool.component.css']
 })
 export class MindToolComponent implements OnInit, OnDestroy {
+
+  @ViewChild(ToolSwitchDirective) toolSwitch: ToolSwitchDirective;
+
+  labelToolComponent: LabelToolComponent;
+
+  safeTransform: SafeStyle;
+
+  @ViewChild('svgContainer') svgContainerRef: ElementRef;
+
+  @ViewChild('canvas') canvasRef: ElementRef;
+  canvasContext: CanvasRenderingContext2D;
+
+
   quiz: boolean;
   correctResult: any;
 
@@ -71,10 +94,23 @@ export class MindToolComponent implements OnInit, OnDestroy {
   constructor(
     private taskService: TaskService,
     private route: ActivatedRoute,
-    private router: Router
-  ) {}
+    private router: Router,
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private sanitizer: DomSanitizer
+  ) {
+  }
+
+  private refreshTransform() {
+    this.safeTransform = this.sanitizer.bypassSecurityTrustStyle(`scale(${this.zoom}) translate(${this.transX}px, ${this.transY}px)`);
+    this.labelToolComponent.zoom = this.zoom;
+  }
 
   ngOnInit() {
+    (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mousedown', event => { this.onMouseDown(event) }, true);
+    (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mousemove', event => { this.onMouseMove(event) }, true);
+    (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mouseup', event => { this.onMouseUp(event) }, true);
+    (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mousewheel', event => { this.onMouseWheel(event) }, true);
+
     this.addSkipWhenWindowClosedHandler();
     this.initialize();
     this.addShotcut();
@@ -90,6 +126,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   private initialize() {
+    // this.canvasContext = (this.canvasRef.nativeElement as HTMLCanvasElement).getContext('2d');
     // this.route.data.subscribe(async res => {
     //   this.quiz = res.task[0].quiz;
     //   this.tasks = res.task;
@@ -100,43 +137,69 @@ export class MindToolComponent implements OnInit, OnDestroy {
     //   this.refresh();
     // });
     this.currentTaskIndex = 0;
-    this.quiz = this.currentTask.quiz;
-    this.toolType = this.determinToolType(this.currentTask.type);
+    // this.quiz = this.currentTask.quiz;
+    // this.toolType = this.determinToolType_bak(this.currentTask.type);
+    // console.log(labelTools);
+    this.loadTool(labelTools[this.currentTask.type]);
     this.refresh();
   }
 
-  private initDraw() {
-    switch (this.toolType) {
-      case ToolType.BoundingBox:
-        this.boundingBoxs = [];
-        break;
-      case ToolType.Path:
-        this.polygonCanvas = new PolygonCanvas();
-
-        this.polygonCanvas.draw(new Point(2, 2));
-        this.polygonCanvas.draw(new Point(2, this.height - 2));
-        this.polygonCanvas.draw(new Point(this.width - 2, this.height - 2));
-        this.polygonCanvas.draw(new Point(this.width - 2, 2));
-        this.polygonCanvas.draw(new Point(2, 2));
-
-        break;
+  private loadTool(component: Type<LabelToolComponent>) {
+    if (!component) {
+      return;
     }
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component);
+    const viewContainerRef = this.toolSwitch.viewContainerRef;
+    viewContainerRef.clear();
+
+    const componentRef = viewContainerRef.createComponent(componentFactory);
+    this.labelToolComponent = componentRef.instance;
+    this.refreshTool();
   }
+
+  private refreshTool() {
+    this.labelToolComponent.data = this.currentTask;
+    this.labelToolComponent.mode = this.mode;
+    this.labelToolComponent.zoom = this.zoom;
+    this.labelToolComponent.blockKeyInMouseEvent = 'ctrlKey';
+    this.labelToolComponent.refresh();
+  }
+
+  // private initDraw() {
+  //   switch (this.toolType) {
+  //     case ToolType.BoundingBox:
+  //       this.boundingBoxs = [];
+  //       break;
+  //     case ToolType.Path:
+  //       this.polygonCanvas = new PolygonCanvas();
+
+  //       this.polygonCanvas.draw(new Point(2, 2));
+  //       this.polygonCanvas.draw(new Point(2, this.height - 2));
+  //       this.polygonCanvas.draw(new Point(this.width - 2, this.height - 2));
+  //       this.polygonCanvas.draw(new Point(this.width - 2, 2));
+  //       this.polygonCanvas.draw(new Point(2, 2));
+
+  //       break;
+  //   }
+  // }
 
   private async refresh() {
     this.imgSrc = '';
     this.width = this.height = 0;
     await this.loadImage(this.currentTask.params.attachment);
-    this.initDraw();
+    console.log(this.imgSrc);
+    // this.initDraw();
     this.fitImage();
-    this.operationStack = [];
-    this.correctResult = undefined;
+    // this.operationStack = [];
+    // this.correctResult = undefined;
+
+    this.refreshTool();
   }
 
   private async loadImage(src: string) {
-    const promise = new Promise<HTMLImageElement>(resolve => {
+    const promise = new Promise<any>(resolve => {
       const tmp: HTMLImageElement = new Image();
-      tmp.onload = () => {
+      tmp.onload = function () {
         resolve(tmp);
       };
       tmp.src = src;
@@ -144,11 +207,13 @@ export class MindToolComponent implements OnInit, OnDestroy {
     const image: HTMLImageElement = await promise;
     this.width = image.width;
     this.height = image.height;
-
     this.imgSrc = src;
+
+    this.labelToolComponent.width = this.width;
+    this.labelToolComponent.height = this.height;
   }
 
-  private determinToolType(typeString: string): ToolType {
+  private determinToolType_bak(typeString: string): ToolType {
     const lowerType: string = typeString.toLowerCase();
     switch (lowerType) {
       case 'boundingbox':
@@ -177,7 +242,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
    */
   private addSkipWhenWindowClosedHandler() {
     window.onbeforeunload = async e => {
-      console.log(e);
       await this.taskService.skipTask(this.currentTask.id);
       e.returnValue = '离开？';
     };
@@ -195,8 +259,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   async submit() {
-    if (this.toolType === ToolType.BoundingBox) {
-      const annotations = this.boundingBoxs.map(value => value.getResult());
+      const annotations = this.labelToolComponent.getResult();
       const result: any = {};
       result.taskId = this.currentTask.id;
       result.results = {
@@ -209,13 +272,11 @@ export class MindToolComponent implements OnInit, OnDestroy {
         result
       );
       console.log(response);
-      if (this.quiz) {
-        this.correctResult = response.data.result;
-        console.log(this.correctResult);
-        this.drawCorrect(response.data);
+      if (this.currentTask.quiz) {
+        // this.correctResult = response.data.result;
         this.quizEvent.emit(response.data);
       } else {
-        // todo:刷新任务
+        // 刷新任务
         try {
           const res: any = await this.taskService.getTask(
             this.currentTask.project
@@ -230,7 +291,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
           this.router.navigate(['/tasks']);
         }
       }
-    }
   }
 
   next() {
@@ -244,6 +304,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   modeChange(e) {
     this.mode = e.value;
+    this.labelToolComponent.mode = e.value;
   }
 
   /**
@@ -251,17 +312,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
    * @param args  object { label: "", color: "" }
    */
   label(args: any) {
-    console.log(args);
-    this.boundingBoxs.map(value => {
-      if (value.selected) {
-        value.label = args.label;
-        value.fillColor = args.color;
-      }
-    });
-    this.operationStack.push(ObjectHelper.objClone(
-      this.boundingBoxs,
-      []
-    ) as BoundingBox[]);
+    this.labelToolComponent.label(args);
   }
 
   /**
@@ -296,94 +347,98 @@ export class MindToolComponent implements OnInit, OnDestroy {
     this.zoomTimes = 0;
     this.transX = 0;
     this.transY = 0;
+
+    this.refreshTransform();
   }
 
   onMouseDown(e: MouseEvent) {
-    if (e.buttons === 1 && !e.ctrlKey && this.mode === 'draw') {
-      switch (this.toolType) {
-        case ToolType.BoundingBox:
-          this.startBounding(e);
-          break;
-      }
-    } else if (e.buttons === 1 && e.ctrlKey) {
+    // if (e.buttons === 1 && !e.ctrlKey && this.mode === 'draw') {
+    //   switch (this.toolType) {
+    //     case ToolType.BoundingBox:
+    //       this.startBounding(e);
+    //       break;
+    //   }
+    // } else if (e.buttons === 1 && e.ctrlKey) {
+    if (e.buttons === 1 && e.ctrlKey) {
       // 开始拖动
       this.translating = true;
+
+      return false;
     }
 
-    e.preventDefault();
   }
 
   onMouseMove(e: MouseEvent) {
-    if (this.resizing) {
-      this.resizeBound(e);
-      return;
-    }
+    // if (this.resizing) {
+    //   this.resizeBound(e);
+    //   return;
+    // }
 
     if (this.translating && e.buttons === 1) {
       this.translate(e);
-      return;
+      return false;
     }
 
-    if (
-      this.toolType === ToolType.BoundingBox &&
-      e.buttons === 1 &&
-      this.boundingBoxs.length >= 1 &&
-      this.mode === 'draw'
-    ) {
-      this.moveBounding(e);
-    }
+    // if (
+    //   this.toolType === ToolType.BoundingBox &&
+    //   e.buttons === 1 &&
+    //   this.boundingBoxs.length >= 1 &&
+    //   this.mode === 'draw'
+    // ) {
+    //   this.moveBounding(e);
+    // }
 
-    e.preventDefault();
+    // e.preventDefault();
   }
 
   onMouseUp(e: MouseEvent) {
-    if (this.resizing) {
-      this.resizing = false;
-      this.operationStack.push(ObjectHelper.objClone(
-        this.boundingBoxs,
-        []
-      ) as BoundingBox[]);
-      return;
-    }
+    // if (this.resizing) {
+    //   this.resizing = false;
+    //   this.operationStack.push(ObjectHelper.objClone(
+    //     this.boundingBoxs,
+    //     []
+    //   ) as BoundingBox[]);
+    //   return;
+    // }
 
     if (this.translating) {
       this.translating = false;
-      return;
+      return false;
     }
-    if (e.button === 0) {
-      switch (this.toolType) {
-        case ToolType.BoundingBox:
-          if (this.boundingBoxs.length >= 1 && this.mode === 'draw') {
-            this.endBounding(e);
-          }
-          break;
+    // if (e.button === 0) {
+    //   switch (this.toolType) {
+    //     case ToolType.BoundingBox:
+    //       if (this.boundingBoxs.length >= 1 && this.mode === 'draw') {
+    //         this.endBounding(e);
+    //       }
+    //       break;
 
-        case ToolType.Path:
-          if (
-            e.srcElement &&
-            e.srcElement.classList.contains('path-point') &&
-            this.mode === 'draw'
-          ) {
-            // tslint:disable-next-line:radix
-            const x = parseInt(e.srcElement.getAttribute('cx'));
-            // tslint:disable-next-line:radix
-            const y = parseInt(e.srcElement.getAttribute('cy'));
-            console.log(`draw on point ${x},${y}`);
-            this.polygonCanvas.drawOnPoint(new Point(x, y));
-          } else {
-            // const p = new Point(Math.round(e.offsetX), Math.round(e.offsetY));
-            const p = new Point(e.offsetX, e.offsetY);
-            console.log(`${p.X}, ${p.Y}`);
-            this.polygonCanvas.draw(p);
-          }
+    //     case ToolType.Path:
+    //       if (
+    //         e.srcElement &&
+    //         e.srcElement.classList.contains('path-point') &&
+    //         this.mode === 'draw'
+    //       ) {
+    //         // tslint:disable-next-line:radix
+    //         const x = parseInt(e.srcElement.getAttribute('cx'));
+    //         // tslint:disable-next-line:radix
+    //         const y = parseInt(e.srcElement.getAttribute('cy'));
+    //         console.log(`draw on point ${x},${y}`);
+    //         this.polygonCanvas.drawOnPoint(new Point(x, y));
+    //       } else {
+    //         // const p = new Point(Math.round(e.offsetX), Math.round(e.offsetY));
+    //         const p = new Point(e.offsetX, e.offsetY);
+    //         console.log(`${p.X}, ${p.Y}`);
+    //         this.polygonCanvas.draw(p);
+    //       }
 
-          break;
-      }
-    }
+    //       break;
+    //   }
+    // }
 
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    e.preventDefault();
+    // e.stopPropagation();
+    // e.stopImmediatePropagation();
+    // e.preventDefault();
   }
 
   onMouseWheel(e: WheelEvent) {
@@ -400,122 +455,129 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   zoomIn() {
     this.zoom += 0.2 * (this.zoomTimes++ + 1);
-    if (this.toolType === ToolType.Path) {
-      this.polygonCanvas.zoom += 0.2 * (this.zoomTimes++ + 1);
-    }
+    // if (this.toolType === ToolType.Path) {
+    //   this.polygonCanvas.zoom += 0.2 * (this.zoomTimes++ + 1);
+    // }
+
+    this.refreshTransform();
+    console.log(this.labelToolComponent.zoom);
   }
 
   zoomOut() {
     console.log(`${this.zoom} - 0.2 * (${this.zoomTimes})`);
     this.zoom -= 0.2 * this.zoomTimes--;
-    if (this.toolType === ToolType.Path) {
-      this.polygonCanvas.zoom -= 0.2 * (this.zoomTimes-- - 1);
-    }
-    console.log(this.zoom);
+    // if (this.toolType === ToolType.Path) {
+    //   this.polygonCanvas.zoom -= 0.2 * (this.zoomTimes-- - 1);
+    // }
+
+    this.refreshTransform();
   }
 
-  startBounding(e: MouseEvent) {
-    console.log(`start ${e.offsetX}--${e.offsetY}`);
+  // startBounding(e: MouseEvent) {
+  //   console.log(`start ${e.offsetX}--${e.offsetY}`);
 
-    // 将最后一个bounding的selected设置为false
-    if (this.boundingBoxs.length > 0) {
-      this.boundingBoxs[this.boundingBoxs.length - 1].selected = false;
-    }
+  //   // 将最后一个bounding的selected设置为false
+  //   if (this.boundingBoxs.length > 0) {
+  //     this.boundingBoxs[this.boundingBoxs.length - 1].selected = false;
+  //   }
 
-    const boundingbox: BoundingBox = new BoundingBox();
-    boundingbox.start = new Point(e.offsetX, e.offsetY);
-    boundingbox.svgStart = new Point(e.offsetX, e.offsetY);
-    boundingbox.strokeColor = '#555555';
-    boundingbox.selected = true;
-    this.boundingBoxs.push(boundingbox);
-  }
+  //   const boundingbox: BoundingBox = new BoundingBox();
+  //   boundingbox.start = new Point(e.offsetX, e.offsetY);
+  //   boundingbox.svgStart = new Point(e.offsetX, e.offsetY);
+  //   boundingbox.strokeColor = '#555555';
+  //   boundingbox.selected = true;
+  //   this.boundingBoxs.push(boundingbox);
+  // }
 
-  moveBounding(e: MouseEvent) {
-    const boundingbox: BoundingBox = this.boundingBoxs[
-      this.boundingBoxs.length - 1
-    ];
-    boundingbox.width = e.offsetX - boundingbox.start.X;
-    boundingbox.height = e.offsetY - boundingbox.start.Y;
-  }
+  // moveBounding(e: MouseEvent) {
+  //   const boundingbox: BoundingBox = this.boundingBoxs[
+  //     this.boundingBoxs.length - 1
+  //   ];
+  //   boundingbox.width = e.offsetX - boundingbox.start.X;
+  //   boundingbox.height = e.offsetY - boundingbox.start.Y;
+  // }
 
-  endBounding(e: MouseEvent) {
-    const boundingbox: BoundingBox = this.boundingBoxs[
-      this.boundingBoxs.length - 1
-    ];
-    if (!boundingbox.width && !boundingbox.height) {
-      this.boundingBoxs.pop();
-      return;
-    }
-    this.operationStack.push(ObjectHelper.objClone(
-      this.boundingBoxs,
-      []
-    ) as BoundingBox[]);
-  }
+  // endBounding(e: MouseEvent) {
+  //   const boundingbox: BoundingBox = this.boundingBoxs[
+  //     this.boundingBoxs.length - 1
+  //   ];
+  //   if (!boundingbox.width && !boundingbox.height) {
+  //     this.boundingBoxs.pop();
+  //     return;
+  //   }
+  //   this.operationStack.push(ObjectHelper.objClone(
+  //     this.boundingBoxs,
+  //     []
+  //   ) as BoundingBox[]);
+  // }
 
-  clickBox(i: number) {
-    if (this.mode !== 'delete') {
-      this.boundingBoxs[i].selected = !this.boundingBoxs[i].selected;
-    } else if (this.mode === 'delete') {
-      this.boundingBoxs.splice(i, 1);
-    }
-    this.operationStack.push(ObjectHelper.objClone(
-      this.boundingBoxs,
-      []
-    ) as BoundingBox[]);
-  }
+  // clickBox(i: number) {
+  //   if (this.mode !== 'delete') {
+  //     this.boundingBoxs[i].selected = !this.boundingBoxs[i].selected;
+  //   } else if (this.mode === 'delete') {
+  //     this.boundingBoxs.splice(i, 1);
+  //   }
+  //   this.operationStack.push(ObjectHelper.objClone(
+  //     this.boundingBoxs,
+  //     []
+  //   ) as BoundingBox[]);
+  // }
 
-  startResize(e: MouseEvent) {
-    const tmp: string[] = e.srcElement.id.split('-');
-    // tslint:disable-next-line:radix
-    const index: number = parseInt(tmp[2]);
-    this.resizingBoundingBox = this.boundingBoxs[index];
-    this.resizingBound = tmp[0];
-    this.resizing = true;
+  // startResize(e: MouseEvent) {
+  //   const tmp: string[] = e.srcElement.id.split('-');
+  //   // tslint:disable-next-line:radix
+  //   const index: number = parseInt(tmp[2]);
+  //   this.resizingBoundingBox = this.boundingBoxs[index];
+  //   this.resizingBound = tmp[0];
+  //   this.resizing = true;
 
-    e.stopPropagation();
-  }
+  //   e.stopPropagation();
+  // }
 
-  resizeBound(e: MouseEvent) {
-    switch (this.resizingBound) {
-      case `left`:
-        this.resizingBoundingBox.svgWidth +=
-          this.resizingBoundingBox.svgStart.X - e.offsetX;
-        this.resizingBoundingBox.svgStart.X = e.offsetX;
-        break;
-      case `right`:
-        this.resizingBoundingBox.svgWidth =
-          e.offsetX - this.resizingBoundingBox.svgStart.X;
-        break;
-      case `top`:
-        this.resizingBoundingBox.svgHeight +=
-          this.resizingBoundingBox.svgStart.Y - e.offsetY;
-        this.resizingBoundingBox.svgStart.Y = e.offsetY;
-        break;
-      case `bottom`:
-        this.resizingBoundingBox.svgHeight =
-          e.offsetY - this.resizingBoundingBox.svgStart.Y;
-        break;
-    }
-  }
+  // resizeBound(e: MouseEvent) {
+  //   switch (this.resizingBound) {
+  //     case `left`:
+  //       this.resizingBoundingBox.svgWidth +=
+  //         this.resizingBoundingBox.svgStart.X - e.offsetX;
+  //       this.resizingBoundingBox.svgStart.X = e.offsetX;
+  //       break;
+  //     case `right`:
+  //       this.resizingBoundingBox.svgWidth =
+  //         e.offsetX - this.resizingBoundingBox.svgStart.X;
+  //       break;
+  //     case `top`:
+  //       this.resizingBoundingBox.svgHeight +=
+  //         this.resizingBoundingBox.svgStart.Y - e.offsetY;
+  //       this.resizingBoundingBox.svgStart.Y = e.offsetY;
+  //       break;
+  //     case `bottom`:
+  //       this.resizingBoundingBox.svgHeight =
+  //         e.offsetY - this.resizingBoundingBox.svgStart.Y;
+  //       break;
+  //   }
+  // }
 
   translate(e: MouseEvent) {
     this.transX += e.movementX / this.zoom;
     this.transY += e.movementY / this.zoom;
+    this.refreshTransform();
+    console.log(this.transX + '--' + this.transY);
   }
 
   undo() {
-    switch (this.toolType) {
-      case ToolType.BoundingBox:
-        if (this.operationStack.length <= 0) {
-          return;
-        }
-        this.operationStack.pop();
-        this.undoBounding();
-        break;
-      case ToolType.Path:
-        this.undoPolygon();
-        break;
-    }
+    this.labelToolComponent.undo();
+    // switch (this.toolType) {
+    //   case ToolType.BoundingBox:
+    //     if (this.operationStack.length <= 0) {
+    //       return;
+    //     }
+    //     this.operationStack.pop();
+    //     this.undoBounding();
+    //     break;
+    //   case ToolType.Path:
+    //     this.undoPolygon();
+    //     break;
+    // }
   }
 
   undoPolygon() {

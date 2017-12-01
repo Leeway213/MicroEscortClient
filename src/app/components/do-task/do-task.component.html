@@ -1,2 +1,3 @@
 <app-mind-tool #mindTool [tasks]="tasks" (quizEvent)="getQuizResult($event)"></app-mind-tool>
 <app-task-submit class="action-panel" (onSubmit)="submit(mindTool)" (onNext)="next(mindTool)" [quizResult]="quizResult"></app-task-submit>
+<!-- <app-task-submit class="action-panel" [quizResult]="quizResult"></app-task-submit> -->

@@ -1,13 +1,26 @@
 <div class="work-panel">
-  <svg class="svg-container center align-self-center" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  <div #svgContainer class="svg-container center align-self-center"
+    [style.width]="width + 'px'"
+    [style.height]="height + 'px'"
+    [style.transform]="safeTransform"
+    (contextmenu)="disableMenu()">
+    <!-- <canvas #canvas></canvas> -->
+    <img [src]="imgSrc">
+    <div [style.width]="width + 'px'" [style.height]="height + 'px'" [style.margin-top]="(0-height) + 'px'">
+      <ng-template appToolSwitch></ng-template>
+    </div>
+  </div>
+<!--
+    <svg class="svg-container center align-self-center" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
     attr.viewBox="0 0 {{width}} {{height}}" [attr.width]="width" [attr.height]="height" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
     (mouseup)="onMouseUp($event)" (mousewheel)="onMouseWheel($event)" [attr.transform]="'scale('+ zoom + ') translate(' + transX + ',' + transY + ')'"
     (contextmenu)="disableMenu()" [style.cursor]="mode === 'draw' ? 'crosshair' : 'default'">
     <svg:image #image attr.xlink:href="{{imgSrc}}" attr.width="{{width}}" attr.height="{{height}}">
     </svg:image>
+-->
 
     <!--显示后端返回的boundingbox-->
-    <svg:g *ngIf="correctResult && correctResult.annotations" >
+    <!-- <svg:g *ngIf="correctResult && correctResult.annotations" >
       <svg:rect *ngFor="let item of correctResult.annotations" class="bounding-box" style="stroke: blue;" [style.stroke-width]="(1/zoom) + 'px'" [attr.x]="item.start.X" [attr.y]="item.start.Y"
         [attr.width]="item.width" [attr.height]="item.height"></svg:rect>
     </svg:g>
@@ -51,8 +64,11 @@
         <svg:circle class="path-point" *ngFor="let point of polygonCanvas.vertexs" [attr.r]="2 / zoom" [attr.cx]="point.X" [attr.cy]="point.Y"
           style="stroke: red; fill: white;" [attr.stroke-width]="2 / zoom" (mouseup)="onMouseUp($event)"></svg:circle>
       </svg:g>
-    </svg:g>
+    </svg:g> -->
+<!--
+    <ng-template appToolSwitch></ng-template>
   </svg>
+-->
 
   <div class="left-menu" *ngIf="currentTask.params.withLabels">
       <app-label-list [objects]="currentTask.params.objectsToAnnotate" (onLabeled)="label($event)"></app-label-list>
@@ -78,7 +94,7 @@
   <button mat-raised-button [style.height]="toolContainer.clientHeight + 'px'" color="accent" [disabled]="zoomTimes === 0"
     (click)="onZoomOutClick()">缩小-</button>
   <button mat-raised-button [style.height]="toolContainer.clientHeight + 'px'" color="accent" (click)="fitImage()">适应大小</button>
-  <button mat-raised-button [style.height]="toolContainer.clientHeight + 'px'" color="accent" (click)="undo()" [disabled]="operationStack.length === 0">撤销</button>
+  <button mat-raised-button [style.height]="toolContainer.clientHeight + 'px'" color="accent" (click)="undo()" [disabled]="!labelToolComponent.canUndo">撤销</button>
 </div>
 
 <!-- <div class="action-panel">

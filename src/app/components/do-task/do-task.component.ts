@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { LabelToolComponent } from './../label-tools/LabelToolComponent';
+import { ToolSwitchDirective } from '../../directives/tool-switch.directive';
+import { Component, ComponentFactoryResolver, OnInit, Type, ComponentFactory, ViewChild } from '@angular/core';
 import { TaskService } from '../../services/task.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TaskModel } from '../tasks/tasks.component';
@@ -13,12 +15,14 @@ import { ToolType } from '../mind-tool/models/ToolType';
 })
 export class DoTaskComponent implements OnInit {
 
+
   tasks: TaskModel[];
   quizResult: any;
 
   constructor(
     private taskService: TaskService,
-    private route: ActivatedRoute) { }
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit() {
     this.initialize();

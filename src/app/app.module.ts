@@ -32,6 +32,8 @@ import { QuizResultComponent } from './components/quiz-result/quiz-result.compon
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpProgressService, ProgressInterceptor } from './services/http-progress.service';
 import { LabelListComponent } from './components/label-list/label-list.component';
+import { ToolSwitchDirective } from './directives/tool-switch.directive';
+import { BoundingBoxComponent } from './components/label-tools/image-annotation/bounding-box/bounding-box.component';
 
 
 @NgModule({
@@ -48,7 +50,9 @@ import { LabelListComponent } from './components/label-list/label-list.component
     TaskSubmitComponent,
     DoTaskComponent,
     QuizResultComponent,
-    LabelListComponent
+    LabelListComponent,
+    ToolSwitchDirective,
+    BoundingBoxComponent
   ],
   imports: [
     BrowserModule,
@@ -83,6 +87,7 @@ import { LabelListComponent } from './components/label-list/label-list.component
       multi: true
     }
   ],
+  entryComponents: [BoundingBoxComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
