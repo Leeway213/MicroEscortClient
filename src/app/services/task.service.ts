@@ -26,8 +26,18 @@ export class TaskService {
     }).toPromise();
   }
 
-  skipTask(taskId: string): Promise<any> {
-    return this.finishTask(taskId, null);
+  skipTask(task: TaskModel): Promise<any> {
+    // if (task.params.result) {
+    //   task.status = 'verifying';
+    // } else {
+    //   task.status = 'pending';
+    // }
+    // return this.http.put(`${this.userService.baseUrl}/tasks`, task, {
+    //   headers: new HttpHeaders({
+    //     'Authorization': 'Bearer ' + this.userService.user.token
+    //   })
+    // }).toPromise();
+    return this.finishTask(task.id, null);
   }
 
 }
@@ -36,12 +46,12 @@ export class TaskModel {
   id: string;
   name: string;
   type: string;
-  params: object;
+  params: any;
   callbackUrl: string;
   introduction: string;
   tutorial: string;
   proiority: number;
-  status: 'pending' | 'doing' | 'completed';
+  status: 'pending' | 'doing' | 'verifying' | 'completed';
   project: string;
   createdAt: Date;
   updatedAt: Date;

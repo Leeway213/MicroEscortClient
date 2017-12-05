@@ -1,3 +1,3 @@
 
-export const TRAINER_SERVER = `http://localhost/api`;
-export const REQUESTER_SERVER = `http://localhost/api`;
+export const TRAINER_SERVER = `/api`;
+export const REQUESTER_SERVER = `/api`;

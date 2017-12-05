@@ -9,7 +9,17 @@
         <button mat-raised-button color="primary" (click)="submit()">不改了</button>
       </div>
     </div>
-    <button *ngIf="!submitConfirm" mat-raised-button color="accent" class="action-next" (click)="this.submitConfirm = true">Next</button>
+    <div *ngIf="skipConfirm" class="action-confirm">
+        <div class="action-confirm-text">
+          数据显示有问题？
+        </div>
+        <div class="action-confirm-buttons">
+          <button mat-raised-button (click)="skip()">没问题，我只是想跳过</button>
+          <button mat-raised-button color="primary" (click)="skip()">是的,报告错误</button>
+        </div>
+      </div>
+    <button *ngIf="!submitConfirm && !skipConfirm" mat-raised-button (click)="this.skipConfirm = true">跳过</button>
+    <button *ngIf="!submitConfirm && !skipConfirm" mat-raised-button color="accent" class="action-next" (click)="this.submitConfirm = true">提交</button>
   </div>
 
   <div *ngIf="quizResult !== undefined">

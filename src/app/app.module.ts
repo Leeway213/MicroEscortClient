@@ -7,6 +7,7 @@ import { NgModule } from '@angular/core';
 import { MatButtonModule, MatButtonToggleModule, MatIconModule, MatExpansionModule, MatListModule } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatInputModule, MatProgressBarModule, MatProgressSpinnerModule} from '@angular/material';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 import { AppComponent } from './app.component';
 import { MindToolComponent } from './components/mind-tool/mind-tool.component';
@@ -68,6 +69,7 @@ import { PointsToStringPipe } from './components/label-tools/image-annotation/po
     MatProgressBarModule,
     MatExpansionModule,
     MatListModule,
+    MatTooltipModule,
     ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,

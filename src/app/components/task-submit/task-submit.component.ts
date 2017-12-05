@@ -8,10 +8,12 @@ import { Component, EventEmitter, OnInit, Output, Input } from '@angular/core';
 export class TaskSubmitComponent implements OnInit {
 
   submitConfirm: boolean;
+  skipConfirm: boolean;
 
   @Input() quizResult: any;
 
   @Output() onSubmit = new EventEmitter();
+  @Output() onSkip = new EventEmitter();
   @Output() onNext = new EventEmitter();
 
   constructor() { }
@@ -22,6 +24,11 @@ export class TaskSubmitComponent implements OnInit {
   submit() {
     this.submitConfirm = false;
     this.onSubmit.emit();
+  }
+
+  skip() {
+    this.skipConfirm = false;
+    this.onSkip.emit();
   }
 
   next() {

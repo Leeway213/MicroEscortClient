@@ -3,15 +3,18 @@
   (mousedown)="onMouseDown($event)"
   (mousemove)="onMouseMove($event)"
   (mouseup)="onMouseUp($event)">
+
+  <!--显示后端返回的boundingbox-->
+  <svg:g *ngIf="showResult && data.params.result && data.params.result.annotations" >
+      <svg:rect *ngFor="let item of data.params.result.annotations" class="bounding-box" style="stroke: blue;" 
+      [style.stroke-width]="(1/zoom) + 'px'" [attr.x]="item.start.X" [attr.y]="item.start.Y"
+        [attr.width]="item.width" [attr.height]="item.height"
+      [matTooltip]="item.label"></svg:rect>
+  </svg:g>
   <svg:g #svgGroup *ngFor="let item of boundingBoxs; let i = index">
 
-    <!--显示后端返回的boundingbox-->
-    <svg:g *ngIf="showResult && data.params.result && data.params.result.annotations" >
-      <svg:rect *ngFor="let item of data.params.result.annotations" class="bounding-box" style="stroke: blue;" [style.stroke-width]="(1/zoom) + 'px'" [attr.x]="item.start.X" [attr.y]="item.start.Y"
-        [attr.width]="item.width" [attr.height]="item.height"></svg:rect>
-    </svg:g>
-
     <svg:rect class="bounding-box"
+      [matTooltip]="item.label"
       [style.stroke-width]="(1.5/zoom) + 'px'" [style.fill]="item.fillColor"
       [attr.x]="item.svgStart.X" [attr.y]="item.svgStart.Y"
       [attr.width]="item.svgWidth" [attr.height]="item.svgHeight"

@@ -3,18 +3,18 @@ import { labelTools } from './../label-tools/LabelToolComponent';
 import { LabelToolComponent } from '../label-tools/LabelToolComponent';
 import { Task } from 'protractor/built/taskScheduler';
 import {
-    AfterContentInit,
-    AfterViewInit,
-    Component,
-    ComponentFactoryResolver,
-    ElementRef,
-    EventEmitter,
-    Input,
-    OnDestroy,
-    OnInit,
-    Output,
-    ViewChild,
-    Type,
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  ComponentFactoryResolver,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+  Type,
 } from '@angular/core';
 import { TaskService } from '../../services/task.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -100,7 +100,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
     console.log(this.currentTask);
     this.removeSkipWhenWindowClosedHandler();
     if (this.currentTask) {
-      await this.taskService.skipTask(this.currentTask.id);
+      await this.taskService.skipTask(this.currentTask);
     }
   }
 
@@ -174,7 +174,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
    */
   private addSkipWhenWindowClosedHandler() {
     window.onbeforeunload = async e => {
-      await this.taskService.skipTask(this.currentTask.id);
+      await this.taskService.skipTask(this.currentTask);
       e.returnValue = '离开？';
     };
   }
@@ -187,45 +187,49 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   async submit() {
-      const annotations = this.labelToolComponent.getResult();
-      const result: any = {};
-      result.taskId = this.currentTask.id;
-      result.results = {
-        annotations: annotations,
-        quiz: this.currentTask.quiz
-      };
+    const annotations = this.labelToolComponent.getResult();
+    const result: any = {};
+    result.taskId = this.currentTask.id;
+    result.results = {
+      annotations: annotations,
+      quiz: this.currentTask.quiz
+    };
 
-      const response = await this.taskService.finishTask(
-        this.currentTask.id,
-        result
-      );
-      console.log(response);
-      if (this.currentTask.quiz) {
-        this.quizEvent.emit(response.data);
-      } else {
-        // 刷新任务
-        try {
-          const res: any = await this.taskService.getTask(
-            this.currentTask.project
-          );
-          console.log(res);
-          if (res.code === 1) {
-            this.tasks = res.data;
-            this.refresh();
-          }
-        } catch (error) {
-          this.tasks = undefined;
-          this.router.navigate(['/tasks']);
-        }
-      }
+    const response = await this.taskService.finishTask(
+      this.currentTask.id,
+      result
+    );
+    console.log(response);
+    if (this.currentTask.quiz) {
+      this.quizEvent.emit(response.data);
+    } else {
+      this.next();
+    }
   }
 
-  next() {
-    this.currentTaskIndex++;
-    if (this.currentTask) {
-      this.refresh();
+  async next() {
+    if (this.currentTask.quiz) {
+      this.currentTaskIndex++;
+      if (this.currentTask) {
+        this.refresh();
+      } else {
+        this.router.navigate(['/tasks']);
+      }
     } else {
-      this.router.navigate(['/tasks']);
+      // 刷新任务
+      try {
+        const res: any = await this.taskService.getTask(
+          this.currentTask.project
+        );
+        console.log(res);
+        if (res.code === 1) {
+          this.tasks = res.data;
+          this.refresh();
+        }
+      } catch (error) {
+        this.tasks = undefined;
+        this.router.navigate(['/tasks']);
+      }
     }
   }
 
@@ -300,7 +304,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
       this.translating = false;
       return false;
     }
- 
+
   }
 
   onMouseWheel(e: WheelEvent) {

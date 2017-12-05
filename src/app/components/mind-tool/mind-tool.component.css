@@ -32,18 +32,13 @@
     box-shadow: 0 0 1em white;
 }
 
-.bounding-box {
-    fill-opacity: 0.3;
-    stroke: rgb(0, 255, 0);
-}
-
-.bounding-point {
-    stroke: red;
-    fill: white;
-}
-
-.resize-point {
-    cursor: move;
+.task-introduction {
+    background-color: rgba(0,0,0,0.3);
+    color: lightblue;
+    padding: 1em;
+    border-radius: 2px;
+    box-shadow: 0 0 1em white;
+    margin: 1em;
 }
 
 .bottom-tools {
