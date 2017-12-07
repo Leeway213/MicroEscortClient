@@ -1,9 +1,9 @@
 <div class="container">
   <div class="row">
     <h2>任务大厅</h2>
-    <div style="display: inline-block;" *ngFor="let project of projectService.projects">
+    <div class="card-container" *ngFor="let project of (projectService.projects | filter: {field: 'quiz', value: false} : {field: 'type', value: 'foreign', negate: true})">
         <!-- *ngIf="!project.quiz && project.type !== 'foreign'" -->
-      <mat-card  class="col-sm-3 project-mat-card" (click)="onCardClick(project)" [@hover]="project.hover"
+      <mat-card class="col-sm-3 project-mat-card" (click)="onCardClick(project)" [@hover]="project.hover"
         (mouseover)="project.hover = 'yes'" (mouseleave)="project.hover = 'no'">
         <mat-card-header>
           <mat-card-title>{{project.name}}</mat-card-title>
@@ -19,7 +19,7 @@
 
   <div class="row">
       <h2>外部任务</h2>
-      <div *ngFor="let project of projectService.projects">
+      <div class="card-container" *ngFor="let project of projectService.projects | filter: {field: 'quiz', value: true} : { field: 'type', value: 'foreign' }">
         <mat-card *ngIf="project.quiz && project.type === 'foreign'" class="col-sm-3 project-mat-card" [@hover]="project.hover"
           (mouseover)="project.hover = 'yes'" (mouseleave)="project.hover = 'no'"
           (click)="onCardClick(project)">
@@ -37,7 +37,7 @@
 
   <div class="row">
       <h2>练功房</h2>
-      <div *ngFor="let project of projectService.projects">
+      <div class="card-container" *ngFor="let project of projectService.projects | filter: { field: 'quiz', value: true } : {field: 'type', value: 'foreign', negate: true}">
         <mat-card *ngIf="project.quiz && project.type !== 'foreign'" class="col-sm-3 project-mat-card" (click)="onCardClick(project)" [@hover]="project.hover"
           (mouseover)="project.hover = 'yes'" (mouseleave)="project.hover = 'no'">
           <mat-card-header>

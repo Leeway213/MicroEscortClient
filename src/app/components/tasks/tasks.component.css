@@ -10,6 +10,16 @@
 
 .row {
     margin-top: 1em;
+    padding: 1em;
+    border: 2px solid lightblue;
+    border-radius: 5px;
+    box-shadow: 0 0 1em lightcyan;
+    background-color: rgb(234, 255, 255);
+}
+
+.card-container {
+    display: inline-block;
+    margin-right: 1em;
 }
 
 /* .project-mat-card:hover {
