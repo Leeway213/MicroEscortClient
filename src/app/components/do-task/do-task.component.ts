@@ -1,9 +1,8 @@
 import { LabelToolComponent } from './../label-tools/LabelToolComponent';
 import { ToolSwitchDirective } from '../../directives/tool-switch.directive';
 import { Component, ComponentFactoryResolver, OnInit, Type, ComponentFactory, ViewChild } from '@angular/core';
-import { TaskService } from '../../services/task.service';
+import { TaskService, TaskModel } from '../../services/task.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TaskModel } from '../tasks/tasks.component';
 import { MindToolComponent } from '../mind-tool/mind-tool.component';
 
 @Component({

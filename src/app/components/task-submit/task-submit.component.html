@@ -1,6 +1,9 @@
 <div>
   <div *ngIf="quizResult === undefined">
     <div *ngIf="submitConfirm" class="action-confirm">
+        <div class="close" (click)="submitConfirm = false">
+            <span class="close-icon"></span>
+          </div>
       <div class="action-confirm-text">
         确定提交吗？要不要再确认一下。要做一个付责任的镖师哦~~
       </div>
@@ -10,6 +13,9 @@
       </div>
     </div>
     <div *ngIf="skipConfirm" class="action-confirm">
+      <div class="close" (click)="skipConfirm = false">
+        <span class="close-icon"></span>
+      </div>
         <div class="action-confirm-text">
           数据显示有问题？
         </div>

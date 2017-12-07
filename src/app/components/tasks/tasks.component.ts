@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { Component, OnInit, trigger, state, style, transition, animate } from '@angular/core';
-import { TaskService } from '../../services/task.service';
+import { TaskService, TaskModel } from '../../services/task.service';
 import { ProjectService } from '../../services/project.service';
 
 @Component({
@@ -36,22 +36,6 @@ export class TasksComponent implements OnInit {
     this.router.navigate(['tasks', project.id]);
   }
 
-}
-
-export class TaskModel {
-  id: string;
-  name: string;
-  type: string;
-  quiz: boolean;
-  params: any;
-  callbackUrl: string;
-  introduction: string;
-  tutorial: string;
-  proiority: number;
-  status: 'pending' | 'doing' | 'completed';
-  project: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export class ProjectModel {

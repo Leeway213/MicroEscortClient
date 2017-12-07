@@ -1,5 +1,4 @@
-import { TaskService } from '../services/task.service';
-import { TaskModel } from '../components/tasks/tasks.component';
+import { TaskService, TaskModel } from '../services/task.service';
 import {
   Resolve,
   ActivatedRouteSnapshot,

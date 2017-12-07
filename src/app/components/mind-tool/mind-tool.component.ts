@@ -16,9 +16,8 @@ import {
   ViewChild,
   Type,
 } from '@angular/core';
-import { TaskService } from '../../services/task.service';
+import { TaskService, TaskModel } from '../../services/task.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { TaskModel } from '../tasks/tasks.component';
 import { ToolSwitchDirective } from '../../directives/tool-switch.directive';
 import { BoundingBoxComponent } from '../label-tools/image-annotation/bounding-box/bounding-box.component';
 import { SafeStyle } from '@angular/platform-browser/src/security/dom_sanitization_service';
@@ -31,6 +30,8 @@ import { SafeStyle } from '@angular/platform-browser/src/security/dom_sanitizati
   styleUrls: ['./mind-tool.component.css']
 })
 export class MindToolComponent implements OnInit, OnDestroy {
+
+  verifyPass: boolean;
 
   @ViewChild(ToolSwitchDirective) toolSwitch: ToolSwitchDirective;
 
@@ -187,13 +188,19 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   async submit() {
-    const annotations = this.labelToolComponent.getResult();
     const result: any = {};
-    result.taskId = this.currentTask.id;
-    result.results = {
-      annotations: annotations,
-      quiz: this.currentTask.quiz
-    };
+    if (this.currentTask.status === 'doing' || this.currentTask.quiz) {
+      const annotations = this.labelToolComponent.getResult();
+      result.taskId = this.currentTask.id;
+      result.results = {
+        annotations: annotations,
+        quiz: this.currentTask.quiz
+      };
+    } else if (this.currentTask.status === 'verifying') {
+      result.results = {
+        pass: this.verifyPass
+      };
+    }
 
     const response = await this.taskService.finishTask(
       this.currentTask.id,
@@ -343,4 +350,9 @@ export class MindToolComponent implements OnInit, OnDestroy {
   undo() {
     this.labelToolComponent.undo();
   }
+
+  verifyResultChange(e: boolean) {
+    this.verifyPass = e;
+  }
+
 }

@@ -1,4 +1,3 @@
-import { TaskModel } from './../../../tasks/tasks.component';
 import { Component, OnInit, Input, ElementRef, ViewChild } from '@angular/core';
 import { LabelToolComponent } from '../../LabelToolComponent';
 import { BoundingBox } from '../models/BoundingBox';

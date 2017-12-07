@@ -26,3 +26,42 @@
     margin-bottom: 0.1em;
     text-align: right;
 }
+
+.close {
+    position: absolute;
+    top: 0.1em;
+    right: 0.3em;
+    cursor: pointer;
+    width: 1em;
+    height: 1em;
+}
+
+.close-icon {
+    position: absolute;
+    top: 0;
+    right: 0.5em;
+    width:0.2em;
+    height:1.2em;
+    background: #333;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+    display: block;
+}
+
+.close-icon:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0em;
+    width:0.2em;
+    height:1.2em;
+    background: #333;
+    -webkit-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+    transform: rotate(270deg);
+}

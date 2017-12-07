@@ -1,19 +1,55 @@
-<p>
-  tasks works!
-</p>
 <div class="container">
   <div class="row">
-    <mat-card *ngFor="let project of projectService.projects" class="col-sm-3 project-mat-card" (click)="onCardClick(project)"
-      [@hover]="project.hover" (mouseover)="project.hover = 'yes'" (mouseleave)="project.hover = 'no'">
-      <mat-card-header>
-        <mat-card-title>{{project.name}}</mat-card-title>
-      </mat-card-header>
-      <img mat-card-image src="http://via.placeholder.com/200x150">
-      <mat-card-content>
-        <p>{{project.description}}</p>
-      </mat-card-content>
-    </mat-card>
+    <h2>任务大厅</h2>
+    <div style="display: inline-block;" *ngFor="let project of projectService.projects">
+        <!-- *ngIf="!project.quiz && project.type !== 'foreign'" -->
+      <mat-card  class="col-sm-3 project-mat-card" (click)="onCardClick(project)" [@hover]="project.hover"
+        (mouseover)="project.hover = 'yes'" (mouseleave)="project.hover = 'no'">
+        <mat-card-header>
+          <mat-card-title>{{project.name}}</mat-card-title>
+        </mat-card-header>
+        <img mat-card-image src="http://via.placeholder.com/200x150">
+        <mat-card-content>
+          <p>{{project.description}}</p>
+        </mat-card-content>
+      </mat-card>
 
+    </div>
   </div>
+
+  <div class="row">
+      <h2>外部任务</h2>
+      <div *ngFor="let project of projectService.projects">
+        <mat-card *ngIf="project.quiz && project.type === 'foreign'" class="col-sm-3 project-mat-card" [@hover]="project.hover"
+          (mouseover)="project.hover = 'yes'" (mouseleave)="project.hover = 'no'"
+          (click)="onCardClick(project)">
+          <mat-card-header>
+            <mat-card-title>{{project.name}}</mat-card-title>
+          </mat-card-header>
+          <img mat-card-image src="http://via.placeholder.com/200x150">
+          <mat-card-content>
+            <p>{{project.description}}</p>
+          </mat-card-content>
+        </mat-card>
+  
+      </div>
+    </div>
+
+  <div class="row">
+      <h2>练功房</h2>
+      <div *ngFor="let project of projectService.projects">
+        <mat-card *ngIf="project.quiz && project.type !== 'foreign'" class="col-sm-3 project-mat-card" (click)="onCardClick(project)" [@hover]="project.hover"
+          (mouseover)="project.hover = 'yes'" (mouseleave)="project.hover = 'no'">
+          <mat-card-header>
+            <mat-card-title>{{project.name}}</mat-card-title>
+          </mat-card-header>
+          <img mat-card-image src="http://via.placeholder.com/200x150">
+          <mat-card-content>
+            <p>{{project.description}}</p>
+          </mat-card-content>
+        </mat-card>
+  
+      </div>
+    </div>
 
 </div>

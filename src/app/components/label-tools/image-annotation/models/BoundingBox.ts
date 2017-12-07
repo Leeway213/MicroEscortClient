@@ -66,9 +66,9 @@ export class BoundingBox {
 
   getResult() {
     return {
-      start: this.start,
-      width: this.width,
-      height: this.height,
+      start: this.svgStart,
+      width: this.svgWidth,
+      height: this.svgHeight,
       label: this.label
     };
   }

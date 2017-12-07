@@ -46,12 +46,13 @@ export class TaskModel {
   id: string;
   name: string;
   type: string;
+  quiz: boolean;
   params: any;
   callbackUrl: string;
   introduction: string;
   tutorial: string;
   proiority: number;
-  status: 'pending' | 'doing' | 'verifying' | 'completed';
+  status: 'pending' | 'doing' | 'pendingverify' | 'verifying' | 'completed';
   project: string;
   createdAt: Date;
   updatedAt: Date;

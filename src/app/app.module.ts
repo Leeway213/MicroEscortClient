@@ -35,6 +35,11 @@ import { ToolSwitchDirective } from './directives/tool-switch.directive';
 import { BoundingBoxComponent } from './components/label-tools/image-annotation/bounding-box/bounding-box.component';
 import { PolygonComponent } from './components/label-tools/image-annotation/polygon/polygon.component';
 import { PointsToStringPipe } from './components/label-tools/image-annotation/polygon/utils/point-to-string.pipe';
+import { VerifyPanelComponent } from './components/label-tools/verify-panel/verify-panel.component';
+import {MatRadioModule} from '@angular/material/radio';
+import { CovalentMarkdownModule } from '@covalent/markdown';
+import { IntroductionViewerComponent } from './components/label-tools/introduction-viewer/introduction-viewer.component';
+import { FilterPipe } from './utils/filter.pipe';
 
 
 @NgModule({
@@ -53,7 +58,10 @@ import { PointsToStringPipe } from './components/label-tools/image-annotation/po
     LabelListComponent,
     ToolSwitchDirective,
     BoundingBoxComponent,
-    PolygonComponent
+    PolygonComponent,
+    VerifyPanelComponent,
+    IntroductionViewerComponent,
+    FilterPipe
   ],
   imports: [
     BrowserModule,
@@ -70,6 +78,8 @@ import { PointsToStringPipe } from './components/label-tools/image-annotation/po
     MatExpansionModule,
     MatListModule,
     MatTooltipModule,
+    MatRadioModule,
+    CovalentMarkdownModule,
     ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,
