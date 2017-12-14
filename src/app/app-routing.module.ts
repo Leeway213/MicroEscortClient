@@ -3,9 +3,9 @@ import { NgModule } from '@angular/core';
 import { MindToolComponent } from './components/mind-tool/mind-tool.component';
 import { RouterModule, Routes } from '@angular/router';
 import { TaskPublisherComponent } from './components/task-publisher/task-publisher.component';
-import { TasksComponent } from './components/tasks/tasks.component';
 import { TaskResolver } from './utils/TaskResolver.guard';
 import { DoTaskComponent } from './components/do-task/do-task.component';
+import { TasksComponent } from './components/tasks/tasks/tasks.component';
 
 const routes: Routes = [
     {
@@ -18,7 +18,7 @@ const routes: Routes = [
         path: 'signup', loadChildren: 'app/components/signup/signup.module#SignupModule'
     },
     {
-        path: 'tasks', component: TasksComponent, canActivate: [AuthGuard]
+        path: 'tasks', loadChildren: 'app/components/tasks/tasks.module#TasksModule', canActivate: [AuthGuard]
     },
     {
         path: 'tasks/:id', component: DoTaskComponent, resolve: {task: TaskResolver}

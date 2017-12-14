@@ -16,7 +16,6 @@ import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import {MatDialogModule} from '@angular/material';
 import { CovalentLoadingModule } from '@covalent/core';
 import { TaskPublisherComponent } from './components/task-publisher/task-publisher.component';
-import { TasksComponent } from './components/tasks/tasks.component';
 import { AuthGuard } from './utils/auth.guard';
 import { HeaderComponent } from './components/header/header.component';
 import { UserService } from './services/user.service';
@@ -37,7 +36,6 @@ import { VerifyPanelComponent } from './components/label-tools/verify-panel/veri
 import {MatRadioModule} from '@angular/material/radio';
 import { CovalentMarkdownModule } from '@covalent/markdown';
 import { IntroductionViewerComponent } from './components/label-tools/introduction-viewer/introduction-viewer.component';
-import { FilterPipe } from './utils/filter.pipe';
 import { UserProfileModule } from './components/user-profile/user-profile.module';
 import { LoginModule } from './components/login/login.module';
 import { SignupModule } from './components/signup/signup.module';
@@ -49,7 +47,6 @@ import { SignupModule } from './components/signup/signup.module';
     AppComponent,
     MindToolComponent,
     TaskPublisherComponent,
-    TasksComponent,
     HeaderComponent,
     TaskSubmitComponent,
     DoTaskComponent,
@@ -59,13 +56,9 @@ import { SignupModule } from './components/signup/signup.module';
     BoundingBoxComponent,
     PolygonComponent,
     VerifyPanelComponent,
-    IntroductionViewerComponent,
-    FilterPipe
+    IntroductionViewerComponent
   ],
   imports: [
-    SignupModule,
-    LoginModule,
-    UserProfileModule,
     BrowserModule,
     FormsModule,
     MatButtonModule,
