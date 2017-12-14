@@ -11,9 +11,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 
 import { AppComponent } from './app.component';
 import { MindToolComponent } from './components/mind-tool/mind-tool.component';
-import { LoginComponent } from './components/login/login.component';
 import { AppRoutingModule } from './app-routing.module';
-import { SignupComponent } from './components/signup/signup.component';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import {MatDialogModule} from '@angular/material';
 import { CovalentLoadingModule } from '@covalent/core';
@@ -41,6 +39,8 @@ import { CovalentMarkdownModule } from '@covalent/markdown';
 import { IntroductionViewerComponent } from './components/label-tools/introduction-viewer/introduction-viewer.component';
 import { FilterPipe } from './utils/filter.pipe';
 import { UserProfileModule } from './components/user-profile/user-profile.module';
+import { LoginModule } from './components/login/login.module';
+import { SignupModule } from './components/signup/signup.module';
 
 
 @NgModule({
@@ -48,8 +48,6 @@ import { UserProfileModule } from './components/user-profile/user-profile.module
     PointsToStringPipe,
     AppComponent,
     MindToolComponent,
-    LoginComponent,
-    SignupComponent,
     TaskPublisherComponent,
     TasksComponent,
     HeaderComponent,
@@ -65,6 +63,8 @@ import { UserProfileModule } from './components/user-profile/user-profile.module
     FilterPipe
   ],
   imports: [
+    SignupModule,
+    LoginModule,
     UserProfileModule,
     BrowserModule,
     FormsModule,
