@@ -8,6 +8,7 @@ import { TaskPublisherComponent } from './components/task-publisher/task-publish
 import { TasksComponent } from './components/tasks/tasks.component';
 import { TaskResolver } from './utils/TaskResolver.guard';
 import { DoTaskComponent } from './components/do-task/do-task.component';
+import { ProfileComponent } from './components/user-profile/profile/profile.component';
 
 const routes: Routes = [
     {
@@ -24,6 +25,9 @@ const routes: Routes = [
     },
     {
         path: 'tasks/:id', component: DoTaskComponent, resolve: {task: TaskResolver}
+    },
+    {
+        path: 'profile', loadChildren: 'app/components/user-profile/user-profile.module#UserProfileModule'
     }
 ];
 

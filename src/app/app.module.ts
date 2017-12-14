@@ -40,6 +40,7 @@ import {MatRadioModule} from '@angular/material/radio';
 import { CovalentMarkdownModule } from '@covalent/markdown';
 import { IntroductionViewerComponent } from './components/label-tools/introduction-viewer/introduction-viewer.component';
 import { FilterPipe } from './utils/filter.pipe';
+import { UserProfileModule } from './components/user-profile/user-profile.module';
 
 
 @NgModule({
@@ -64,6 +65,7 @@ import { FilterPipe } from './utils/filter.pipe';
     FilterPipe
   ],
   imports: [
+    UserProfileModule,
     BrowserModule,
     FormsModule,
     MatButtonModule,
