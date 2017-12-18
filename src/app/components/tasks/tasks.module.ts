@@ -4,6 +4,7 @@ import { TasksComponent } from './tasks/tasks.component';
 import { TasksRoutingModule } from './tasks.routing';
 import { MatCardModule } from '@angular/material';
 import { FilterPipe } from './utils/filter.pipe';
+import { DoTaskModule } from '../do-task/do-task.module';
 
 @NgModule({
   imports: [

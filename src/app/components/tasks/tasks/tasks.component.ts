@@ -32,8 +32,8 @@ export class TasksComponent implements OnInit {
   }
 
   onCardClick(project: ProjectModel) {
-    console.log(project);
-    this.router.navigate(['tasks', project.id]);
+    // this.router.navigate(['/tasks'], {queryParams: {id: project.id}});
+    this.router.navigate(['/tasks', project.id]);
   }
 
 }

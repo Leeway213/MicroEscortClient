@@ -1,4 +1,3 @@
-import { TaskService, TaskModel } from '../services/task.service';
 import {
   Resolve,
   ActivatedRouteSnapshot,
@@ -8,6 +7,7 @@ import {
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { UserService } from '../services/user.service';
+import { TaskModel, TaskService } from '../services/task.service';
 
 @Injectable()
 export class TaskResolver implements Resolve<TaskModel> {
@@ -21,7 +21,6 @@ export class TaskResolver implements Resolve<TaskModel> {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Promise<TaskModel> {
-    console.log(route);
     const projectId = route.url[route.url.length - 1].path;
     console.log(projectId);
     try {

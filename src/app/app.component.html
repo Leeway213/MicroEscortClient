@@ -1,6 +1,6 @@
-<mat-progress-bar class="progress-bar" *ngIf="httpProgressService.loading" mode="determinate" [value]="httpProgressService.progress"></mat-progress-bar>
 <!--The content below is only a placeholder and can be replaced.-->
-<app-header [brand]="'粒微镖局'" [leftNavs]="leftNavs"></app-header>
+<mat-progress-bar class="progress-bar" *ngIf="httpProgressService.loading" mode="determinate" [value]="httpProgressService.progress"></mat-progress-bar>
+<app-header class="app-header" [brand]="'粒微镖局'" [leftNavs]="leftNavs"></app-header>
 
 <!-- <app-mind-tool imgSrc="../assets/main.jpg" srcWidth=960 srcHeight=400 [toolType]="'BoundingBox' | StringToToolType"></app-mind-tool> -->
 <router-outlet></router-outlet>

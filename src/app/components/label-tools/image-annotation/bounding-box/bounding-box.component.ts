@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, ElementRef, ViewChild } from '@angular/core';
 import { LabelToolComponent } from '../../LabelToolComponent';
 import { BoundingBox } from '../models/BoundingBox';
-import { ObjectHelper } from '../../../mind-tool/utils/StaticMethod';
 import { Point } from '../models/Point';
+import { ObjectHelper } from '../../../../utils/StaticMethod';
 
 @Component({
   selector: 'app-tool-bounding-box',
