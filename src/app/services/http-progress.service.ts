@@ -48,7 +48,7 @@ export class ProgressInterceptor implements HttpInterceptor {
             if (event instanceof HttpResponse) {
                 const elapsed = Date.now() - started;
                 console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`);
-                // this.httpProgressService.loading = false;
+                this.httpProgressService.loading = false;
             }
         });
     }
