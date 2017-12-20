@@ -42,7 +42,7 @@ export class ProgressInterceptor implements HttpInterceptor {
 
         return next.handle(req).do(event => {
             if (event.type === HttpEventType.DownloadProgress) {
-                this.httpProgressService.progress = event.loaded / event.total;
+                // this.httpProgressService.progress = event.loaded / event.total;
             }
 
             if (event instanceof HttpResponse) {
