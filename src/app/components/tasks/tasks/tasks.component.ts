@@ -25,7 +25,7 @@ export class TasksComponent implements OnInit {
   tasks: TaskModel[] = [];
   projects: ProjectModel[] = [];
 
-  constructor(private projectService: ProjectService, private router: Router) { }
+  constructor(public projectService: ProjectService, private router: Router) { }
 
   ngOnInit() {
     this.projectService.getProjects();
