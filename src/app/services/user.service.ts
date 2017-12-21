@@ -7,11 +7,14 @@ import {
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { TRAINER_SERVER, REQUESTER_SERVER } from './constants';
+import { UserProfile } from './models/UserProfile';
 
 
 @Injectable()
 export class UserService {
   role: 'Requester' | 'Trainer' = 'Requester';
+
+  profile: UserProfile;
 
   get user(): any {
     return JSON.parse(localStorage.getItem('user'));
@@ -21,7 +24,7 @@ export class UserService {
     return this.role === 'Trainer' ? TRAINER_SERVER : REQUESTER_SERVER;
   }
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) { }
 
   validateUsername(username: string): Promise<any> {
     return this.http
@@ -59,28 +62,28 @@ export class UserService {
     const promise = new Promise((resolve, reject) => {
       this.http
         .post(
-          `${this.baseUrl}/users/login`,
-          `username=${userinfo.username}&password=${userinfo.password}`,
-          {
-            headers: new HttpHeaders().set(
-              'Content-Type',
-              'application/x-www-form-urlencoded'
-            )
-          }
+        `${this.baseUrl}/users/login`,
+        `username=${userinfo.username}&password=${userinfo.password}`,
+        {
+          headers: new HttpHeaders().set(
+            'Content-Type',
+            'application/x-www-form-urlencoded'
+          )
+        }
         )
         .subscribe(
-          res => {
-            const result = res as any;
-            if (result.code === 1) {
-              localStorage.setItem('user', JSON.stringify(result.data));
-              resolve(result);
-            } else {
-              reject(result);
-            }
-          },
-          err => {
-            reject(err);
+        res => {
+          const result = res as any;
+          if (result.code === 1) {
+            localStorage.setItem('user', JSON.stringify(result.data));
+            resolve(result);
+          } else {
+            reject(result);
           }
+        },
+        err => {
+          reject(err);
+        }
         );
     });
     return promise;
@@ -99,5 +102,19 @@ export class UserService {
       return user.expire > now;
     }
     return false;
+  }
+
+  async getProfile(): Promise<UserProfile> {
+    try {
+      const response: any = await this.http.get(`${this.baseUrl}/users/profile`, {
+        headers: new HttpHeaders({
+          Authorization: 'Bearer ' + this.user.token
+        })
+      }).toPromise();
+      this.profile = response.data as UserProfile;
+      return this.profile;
+    } catch (error) {
+
+    }
   }
 }

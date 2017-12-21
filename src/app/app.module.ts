@@ -22,13 +22,15 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpProgressService, ProgressInterceptor } from './services/http-progress.service';
 import { TaskResolver } from './utils/TaskResolver.guard';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { UserPanelComponent } from './components/user-panel/user-panel.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     TaskPublisherComponent,
-    HeaderComponent
+    HeaderComponent,
+    UserPanelComponent
   ],
   imports: [
     BrowserModule,
