@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import {
-  HttpInterceptor,
-  HttpHeaderResponse,
-  HttpRequest,
-  HttpHandler,
-  HttpSentEvent,
-  HttpProgressEvent,
-  HttpResponse,
-  HttpUserEvent,
-  HttpEventType
+    HttpInterceptor,
+    HttpHeaderResponse,
+    HttpRequest,
+    HttpHandler,
+    HttpSentEvent,
+    HttpProgressEvent,
+    HttpResponse,
+    HttpUserEvent,
+    HttpEventType
 } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/do';
@@ -16,11 +16,11 @@ import 'rxjs/add/operator/do';
 @Injectable()
 export class HttpProgressService {
 
-  progress = 0;
+    progress = 0;
 
-  loading = false;
+    loading = false;
 
-  constructor() { }
+    constructor() { }
 
 }
 
@@ -30,7 +30,7 @@ export class ProgressInterceptor implements HttpInterceptor {
 
     constructor(
         private httpProgressService: HttpProgressService
-    ) {}
+    ) { }
 
     // tslint:disable-next-line:max-line-length
     intercept(req: HttpRequest<any>, next: HttpHandler):
@@ -48,7 +48,9 @@ export class ProgressInterceptor implements HttpInterceptor {
             if (event instanceof HttpResponse) {
                 const elapsed = Date.now() - started;
                 console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`);
-                this.httpProgressService.loading = false;
+                setTimeout(() => {
+                    this.httpProgressService.loading = false;
+                }, 500);
             }
         });
     }

@@ -11,38 +11,49 @@ export class ProjectService {
 
   constructor(private http: HttpClient, private userService: UserService) {}
 
-  getProjects() {
-    this.http.get(`${this.userService.baseUrl}/projects`, {
-      headers: new HttpHeaders({
-        Authorization: 'Bearer ' + this.userService.user.token
-      }),
-      reportProgress: true
-    }).subscribe(
-      res => {
-        const resData = res as any;
-        if (resData.code === 1) {
-          this.projects = resData.data;
-        } else {
-          window.alert(resData.msg);
+  getProjects(): Promise<ProjectModel[]> {
+    const p = new Promise<ProjectModel[]>((resolve, reject) => {
+      this.http.get(`${this.userService.baseUrl}/projects`, {
+        headers: new HttpHeaders({
+          Authorization: 'Bearer ' + this.userService.user.token
+        }),
+        reportProgress: true
+      }).subscribe(
+        res => {
+          const resData = res as any;
+          if (resData.code === 1) {
+            this.projects = resData.data;
+            resolve(this.projects as ProjectModel[]);
+          } else {
+            reject(resData.msg);
+          }
+        },
+        err => {
+          console.log(err);
+          if (err instanceof HttpErrorResponse && err.status === 401) {
+            this.userService.logout();
+          }
+          reject(err);
         }
-      },
-      err => {
-        console.log(err);
-        if (err instanceof HttpErrorResponse && err.status === 401) {
-          this.userService.logout();
-        }
-      }
-    );
+      );
+    });
+    return p;
+    
   }
 
 }
 
 
 
-export class ProjectModel {
+export interface ProjectModel {
   id: string;
   name: string;
+  dataType: string;
+  type: string;
   description: string;
+  labelPrice: number;
+  verificationPrice: number;
+  verificationTimes: number;
   quiz: boolean;
   requester: string;
   createdAt: Date;

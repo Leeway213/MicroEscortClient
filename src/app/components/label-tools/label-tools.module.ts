@@ -10,16 +10,16 @@ import {MatRadioModule} from '@angular/material/radio';
 import { PointsToStringPipe } from './image-annotation/polygon/utils/point-to-string.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CovalentMarkdownModule } from '@covalent/markdown';
+import { MySharedModule } from '../shared-module/shared.module';
 
 @NgModule({
   imports: [
     CovalentMarkdownModule,
-    FormsModule,
     ReactiveFormsModule,
     MatRadioModule,
     MatTooltipModule,
     MatButtonToggleModule,
-    CommonModule
+    MySharedModule
   ],
   declarations: [
     BoundingBoxComponent,

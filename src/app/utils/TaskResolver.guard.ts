@@ -21,8 +21,8 @@ export class TaskResolver implements Resolve<TaskModel> {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Promise<TaskModel> {
-    const projectId = route.url[route.url.length - 1].path;
-    console.log(projectId);
+    // const projectId = route.url[route.url.length - 1].path;
+    const projectId = route.params.id;
     try {
       const result = await this.taskService.getTask(projectId);
       if (result.code === 1) {

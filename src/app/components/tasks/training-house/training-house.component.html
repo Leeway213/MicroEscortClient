@@ -1,0 +1,17 @@
+<div class="root-panel">
+  <div nz-row [nzGutter]="8" nzType="flex" [nzJustify]="'center'">
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6" [nzXl]="4" *ngFor="let project of projects">
+      <div style="border-top:3px solid #02b28b;background-color: white;">
+        <div style="padding: 25px 20px;border-bottom: 1px solid #dadada;">
+          <span>{{project.name}}</span>
+          <span style="float:right;">难度系数</span>
+        </div>
+        <div style="text-align:center;padding: 20px 0;">
+          <p>{{project.description}}</p>
+          <button (click)="navigateTo(project.id)" style="border:none;background-color: #02b28b;padding:10px 10px;border-radius: 5px;color:white;margin:0 10px; width: 80%">开始训练</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

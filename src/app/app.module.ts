@@ -23,6 +23,8 @@ import { HttpProgressService, ProgressInterceptor } from './services/http-progre
 import { TaskResolver } from './utils/TaskResolver.guard';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UserPanelComponent } from './components/user-panel/user-panel.component';
+import { MySharedModule } from './components/shared-module/shared.module';
+import { NgZorroAntdModule } from 'ng-zorro-antd';
 
 
 @NgModule({
@@ -33,11 +35,12 @@ import { UserPanelComponent } from './components/user-panel/user-panel.component
     UserPanelComponent
   ],
   imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
+    NgZorroAntdModule.forRoot(),
     MatProgressBarModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserModule,
+    BrowserAnimationsModule
   ],
   providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},

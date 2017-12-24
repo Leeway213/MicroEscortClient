@@ -13,14 +13,14 @@
 
   <div class="left-menu">
     <!--Task Introduction-->
-      <div *ngIf="tasks[currentTaskIndex].introduction" class="task-introduction">
+      <div *ngIf="tasks !== undefined && tasks[currentTaskIndex] !== undefined && tasks[currentTaskIndex].introduction" class="task-introduction">
           <!-- <td-markdown [content]="tasks[currentTaskIndex].introduction"></td-markdown> -->
           <app-introduction-viewer [content]="tasks[currentTaskIndex].introduction"></app-introduction-viewer>
       </div>
-      <div *ngIf="tasks[currentTaskIndex].status === 'verifying'" class="task-introduction">
+      <div *ngIf="tasks !== undefined && tasks[currentTaskIndex] !== undefined && tasks[currentTaskIndex].status === 'verifying'" class="task-introduction">
         <app-verify-panel [message]="'当前标注是否正确??'" (resultChange)="verifyResultChange($event)"></app-verify-panel>
       </div>
-      <app-label-list *ngIf="currentTask.params.withLabels" [objects]="currentTask.params.objectsToAnnotate" (onLabeled)="label($event)"></app-label-list>
+      <app-label-list *ngIf="currentTask != undefined && currentTask.params.withLabels" [objects]="currentTask.params.objectsToAnnotate" (onLabeled)="label($event)"></app-label-list>
   </div>
 </div>
 <div #toolContainer class="container bottom-tools">
