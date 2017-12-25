@@ -4,6 +4,7 @@ import { NgModule } from "@angular/core";
 import { TaskResolver } from "../../utils/TaskResolver.guard";
 import { AuthGuard } from "../../utils/auth.guard";
 import { TaskListResolver } from "./utils/TaskListResolver.guard";
+import { UserProfileResolver } from "./utils/UserProfileResolver.guard";
 
 
 
@@ -11,7 +12,7 @@ const routes: Routes = [
     {
         path: '',
         component: TasksComponent,
-        resolve: {tasklist: TaskListResolver}
+        resolve: {tasklist: TaskListResolver, userprofile: UserProfileResolver}
     },
     {
         path: ':id',

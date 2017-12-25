@@ -11,6 +11,7 @@ import { TrainingHouseComponent } from './training-house/training-house.componen
 import { RecommendTaskComponent } from './recommend-task/recommend-task.component';
 import { TaskListComponent } from './task-list/task-list.component';
 import { TaskListResolver } from './utils/TaskListResolver.guard';
+import { UserProfileResolver } from './utils/UserProfileResolver.guard';
 
 @NgModule({
   imports: [
@@ -26,7 +27,7 @@ import { TaskListResolver } from './utils/TaskListResolver.guard';
     RecommendTaskComponent,
     TaskListComponent
   ],
-  providers: [FilterPipe, TaskListResolver],
+  providers: [FilterPipe, TaskListResolver, UserProfileResolver],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class TasksModule { }

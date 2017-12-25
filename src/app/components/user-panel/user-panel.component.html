@@ -1,3 +1,32 @@
-<p *ngIf="userService.profile">
-  {{userService.profile.username}}
-</p>
+<div *ngIf="userService.profile" class="root-panel">
+  <div class="hello-panel" nz-row>
+    <p>Hi, {{userService.profile.nickname ? userService.profile.nickname : userService.profile.username}}</p>
+  </div>
+  <div class="income-panel" nz-row>
+    <div nz-col [nzSpan]="12">
+      <p>本周收入</p>
+      <p style="color:rgb(0, 179, 138);">￥{{userService.weekMoney}}元</p>
+    </div>
+    <div nz-col [nzSpan]="12">
+      <p>总计收入</p>
+      <p style="color: rgb(0, 179, 138);">￥{{userService.totalMoney}}元</p>
+    </div>
+  </div>
+  <div class="link-panel" nz-row>
+    <div nz-col [nzSpan]="8" style="border-right: 1px solid black;">
+      <a routerLink="/profile">个人中心</a>
+    </div>
+    <div nz-col [nzSpan]="8" style="border-right: 1px solid rgb(37, 37, 37);">
+      <a>金钱提现</a>
+    </div>
+    <div nz-col [nzSpan]="8">
+      <a>等级权限</a>
+    </div>
+  </div>
+  <div class="logout-panel" nz-row>
+    <div nz-col [nzSpan]="24">
+      <button style="border:none;background-color: #02b28b;padding:10px 10px;border-radius: 5px;color:white;margin:0 10px; width: 60%"
+        (click)="userService.logout()">退出账户</button>
+    </div>
+  </div>
+</div>

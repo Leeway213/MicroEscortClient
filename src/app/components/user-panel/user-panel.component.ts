@@ -11,8 +11,7 @@ export class UserPanelComponent implements OnInit {
   constructor(public userService: UserService) { }
 
   async ngOnInit() {
-    await this.userService.getProfile();
-    console.log(this.userService.profile);
+    // await this.userService.getProfile();
   }
 
 }
