@@ -1,0 +1,19 @@
+<div class="container">
+  <div nz-row>
+    <div class="left-panel" nz-col [nzSpan]="4">
+      <div *ngFor="let nav of navs; let p = index">
+        <div class="nav-head">
+          {{nav.head}}
+        </div>
+        <div class="nav-item" *ngFor="let item of nav.items; let i = index" 
+          [class.selected]="currentPath === '/profile' + (item.link !== '' ? '/' + item.link : '')"
+          (click)="selectNavItem(i)">
+          {{item.desc}}
+        </div>
+      </div>
+    </div>
+    <div class="content-panel" nz-col [nzSpan]="20">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

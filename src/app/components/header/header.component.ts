@@ -22,7 +22,6 @@ export class HeaderComponent implements OnInit {
       data => {
         if (data instanceof NavigationEnd) {
           this.currentPath = data.urlAfterRedirects;
-          console.log(this.currentPath);
         }
       }
     );

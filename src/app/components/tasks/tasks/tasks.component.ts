@@ -31,7 +31,7 @@ export class TasksComponent implements OnInit {
         "文本任务",
         "语音任务",
       ],
-      data: null
+      link: null
     },
     {
       head: "练功房",
@@ -40,7 +40,7 @@ export class TasksComponent implements OnInit {
         "文本任务",
         "语音任务"
       ],
-      data: null
+      link: null
     }
   ];
 
