@@ -38,7 +38,8 @@ export class TasksComponent implements OnInit {
       items: [
         "图像任务",
         "文本任务",
-        "语音任务"
+        "语音任务",
+        "外联任务"
       ],
       link: null
     }
@@ -80,6 +81,8 @@ export class TasksComponent implements OnInit {
           return value.dataType === "text";
         case "语音任务":
           return value.dataType === "voice";
+        case "外联任务":
+          return value.type === "foreign";
         default:
           return false;
       }
