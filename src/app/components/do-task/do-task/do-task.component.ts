@@ -3,6 +3,7 @@ import { Component, ComponentFactoryResolver, OnInit, Type, ComponentFactory, Vi
 import { TaskService, TaskModel } from '../../../services/task.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MindToolComponent } from '../mind-tool/mind-tool.component';
+import { ProjectService, ProjectModel } from '../../../services/project.service';
 
 @Component({
   selector: 'app-do-task',
@@ -15,13 +16,18 @@ export class DoTaskComponent implements OnInit {
   tasks: TaskModel[];
   quizResult: any;
 
+  currentProject: ProjectModel;
+
   constructor(
     private taskService: TaskService,
-    private route: ActivatedRoute
-  ) { 
+    private route: ActivatedRoute,
+    public projectService: ProjectService
+  ) {
   }
 
   ngOnInit() {
+    this.currentProject = this.projectService.projects.find(value => value.id === this.route.snapshot.params.id);
+    console.log(this.currentProject);
     this.initialize();
   }
 

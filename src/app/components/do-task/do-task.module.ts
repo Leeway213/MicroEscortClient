@@ -12,9 +12,11 @@ import { DoTaskRoutingModule } from './do-task.routing';
 import { BoundingBoxComponent } from '../label-tools/image-annotation/bounding-box/bounding-box.component';
 import { PolygonComponent } from '../label-tools/image-annotation/polygon/polygon.component';
 import { ToolSwitchDirective } from './directives/tool-switch.directive';
+import { LongmaoTrainModule } from '../tmp-module/longmao-train/longmao-train.module';
 
 @NgModule({
   imports: [
+    LongmaoTrainModule,
     LabelToolsModule,
     MatButtonModule,
     MatButtonToggleModule,
