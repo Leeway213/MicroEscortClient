@@ -2,6 +2,7 @@
     display: flex;
     display: -webkit-flex;
     flex-direction: row;
+    padding: 4% 0 0 5%;
 }
 
 .basic-info-panel div {
@@ -44,5 +45,35 @@
     display: flex;
     display: -webkit-flex;
     flex-direction: column;
+    text-align: center;
+    padding-top: 5%;
+}
+
+.update-info-panel {
+    padding: 4% 0 0 5%;
+    font-size: 14px;
+}
+
+.update-info-item {
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: row;
+    height: 60px;
+    width: 100%;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding-top: 2.4%;
+    margin-top: 2%;
+}
+
+.update-info-item .modify {
+    float: right;
+}
+
+.icon {
+    text-align: center;
+}
+
+.modify {
     text-align: center;
 }

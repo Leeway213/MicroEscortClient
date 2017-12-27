@@ -12,6 +12,8 @@ export class AppComponent implements OnInit {
   title = 'app';
   imgSrc = 'https://images.spare5.com/instructions/spare5/building_blocks.png';
 
+  navigating: boolean;
+
   leftNavs: NavModel[] = [
     {
       title: '我的任务',
@@ -34,19 +36,15 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.router.events.subscribe(e => {
-    //   console.log(this.httpProgressService.progress);
-    //   if (e instanceof NavigationStart) {
-    //     this.httpProgressService.loading = true;
-    //   } else if (e instanceof NavigationEnd) {
-    //     setTimeout(() => {
-    //     this.httpProgressService.loading = false;
-    //     this.httpProgressService.progress = 0;
-    //     }, 2000);
-    //   } else {
-    //     this.httpProgressService.progress += 10;
-    //   }
-    // });
+    this.router.events.subscribe(e => {
+      if (e instanceof NavigationStart) {
+        this.navigating = true;
+      } else if (e instanceof NavigationEnd) {
+        setTimeout(() => {
+          this.navigating = false;
+        }, 80);
+      } 
+    });
   }
 }
 

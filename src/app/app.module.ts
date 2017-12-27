@@ -25,6 +25,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UserPanelComponent } from './components/user-panel/user-panel.component';
 import { MySharedModule } from './components/shared-module/shared.module';
 import { NgZorroAntdModule } from 'ng-zorro-antd';
+import { UserProfileResolver } from './utils/UserProfileResolver.guard';
 
 
 @NgModule({
@@ -46,6 +47,7 @@ import { NgZorroAntdModule } from 'ng-zorro-antd';
     {provide: LocationStrategy, useClass: HashLocationStrategy},
     UserService,
     AuthGuard,
+    UserProfileResolver,
     TaskService,
     ProjectService,
     HttpProgressService,
