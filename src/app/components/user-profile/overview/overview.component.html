@@ -6,10 +6,10 @@
       </div>
       <div class="username" nz-col [nzSpan]="12">
         <div>
-          <span style="font-size: 18px;">Username</span>
+          <span style="font-size: 18px;">{{userService.profile.username}}</span>
         </div>
         <div>
-          <span>ID: UserID</span>
+          <span>ID: {{userService.profile.id}}</span>
         </div>
       </div>
     </div>
@@ -33,17 +33,17 @@
         </span>
         <span>完成任务数量</span>
       </div>
-      <div class="register-time">
+      <div class="register-time" style="display: flex; justify-content: center;">
         <span>
-          <strong>2017/12/25 15:30:00</strong>
+          <strong>{{userService.profile.createdAt | date: 'yyyy-MM-dd HH:mm'}}</strong>
         </span>
         <span>注册时间</span>
       </div>
     </div>
   </div>
   <div class="update-info-panel">
-    <div class="nickname-panel update-info-item" nz-row>
-      <div class="icon" nz-col [nzSpan]="2">
+    <div class="nickname-panel update-info-item" nz-row [style.color]="userService.profile.nickname ? '' : 'red'">
+      <div class="icon vertical-center" nz-col [nzSpan]="2">
         <svg t="1514356723671" class="icon" style="fill: gray;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
           p-id="2111" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20">
           <defs>
@@ -53,19 +53,24 @@
             p-id="2112"></path>
         </svg>
       </div>
-      <div class="nickname" nz-col [nzSpan]="20">
-        <span>
-          <strong>昵称：</strong>
-        </span>
-        <span>平凉一把刀</span>
+      <div class="nickname" nz-col [nzSpan]="20" style="display: flex; flex-direction: row;">
+        <div class="vertical-center">
+          <span>
+            <strong>昵称：</strong>
+          </span>
+        </div>
+        <div class="vertical-center">
+          <span>{{userService.profile.nickname ? userService.profile.nickname : '尚未设置昵称'}}</span>
+        </div>
       </div>
-      <div class="modify" nz-col [nzSpan]="2">
-        <a href="#">修改</a>
+      <div class="modify vertical-center" nz-col [nzSpan]="2">
+        <a *ngIf="!userService.profile.nickname" (click)="nicknameVisible = true">添加昵称</a>
+        <a *ngIf="userService.profile.nickname" (click)="nicknameVisible = true">修改昵称</a>
       </div>
     </div>
 
-    <div class="email-panel update-info-item" nz-row>
-      <div class="icon" nz-col [nzSpan]="2">
+    <div class="email-panel update-info-item" nz-row [style.color]="userService.profile.email ? '' : 'red'">
+      <div class="icon vertical-center" nz-col [nzSpan]="2">
         <svg t="1514358691073" class="icon" style="fill: gray;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
           p-id="3338" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20">
           <defs>
@@ -75,19 +80,24 @@
             p-id="3339"></path>
         </svg>
       </div>
-      <div class="email" nz-col [nzSpan]="20">
-        <span>
-          <strong>邮箱：</strong>
-        </span>
-        <span>sample@outlook.com</span>
+      <div class="email" nz-col [nzSpan]="20" style="display: flex; flex-direction: row;">
+        <div class="vertical-center">
+          <span>
+            <strong>邮箱：</strong>
+          </span>
+        </div>
+        <div class="vertical-center">
+          <span>{{userService.profile.email ? userService.profile.email : '尚未绑定邮箱'}}</span>
+        </div>
       </div>
-      <div class="modify" nz-col [nzSpan]="2">
-        <a href="#">修改</a>
+      <div class="modify vertical-center" nz-col [nzSpan]="2">
+        <a *ngIf="userService.profile.email" (click)="emailVisible = true">修改</a>
+        <a *ngIf="!userService.profile.email" (click)="emailVisible = true">绑定</a>
       </div>
     </div>
 
-    <div class="phone-panel update-info-item" nz-row>
-      <div class="icon" nz-col [nzSpan]="2">
+    <div class="phone-panel update-info-item" nz-row [style.color]="userService.profile.phone ? '' : 'red'">
+      <div class="icon vertical-center" nz-col [nzSpan]="2">
         <svg t="1514359079005" class="icon" style="fill: gray;" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
           p-id="3991" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20">
           <defs>
@@ -97,19 +107,24 @@
             p-id="3992"></path>
         </svg>
       </div>
-      <div class="phone" nz-col [nzSpan]="20">
-        <span>
-          <strong>手机：</strong>
-        </span>
-        <span>18888888888</span>
+      <div class="phone" nz-col [nzSpan]="20" style="display: flex; flex-direction: row;">
+        <div class="vertical-center">
+          <span>
+            <strong>手机：</strong>
+          </span>
+        </div>
+        <div class="vertical-center">
+          <span>{{userService.profile.phone ? userService.profile.phone : '尚未绑定手机'}}</span>
+        </div>
       </div>
-      <div class="modify" nz-col [nzSpan]="2">
-        <a href="#">修改</a>
+      <div class="modify vertical-center" nz-col [nzSpan]="2">
+        <a *ngIf="userService.profile.email" (click)="phoneVisible = true">修改</a>
+        <a *ngIf="!userService.profile.email" (click)="phoneVisible = true">绑定</a>
       </div>
     </div>
 
     <div class="password-panel update-info-item" nz-row>
-      <div class="icon" nz-col [nzSpan]="2">
+      <div class="icon vertical-center" nz-col [nzSpan]="2">
         <svg t="1514359299523" class="icon" style="fill: gray;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
           p-id="4648" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20">
           <defs>
@@ -119,21 +134,25 @@
             p-id="4649"></path>
         </svg>
       </div>
-      <div class="password" nz-col [nzSpan]="20">
-        <span>
-          <strong>密码：</strong>
-        </span>
-        <span>***************</span>
+      <div class="password" nz-col [nzSpan]="20" style="display: flex; flex-direction: row;">
+        <div class="vertical-center">
+          <span>
+            <strong>密码：</strong>
+          </span>
+        </div>
+        <div class="vertical-center">
+          <span>***************</span>
+        </div>
       </div>
-      <div class="modify" nz-col [nzSpan]="2">
-        <a href="#">修改</a>
+      <div class="modify vertical-center" nz-col [nzSpan]="2">
+        <a (click)="passwordVisible = true">修改</a>
       </div>
     </div>
 
-    <div class="identification-panel update-info-item" nz-row>
-      <div class="icon" nz-col [nzSpan]="2">
-        <svg t="1514359485002" class="icon" style="fill: gray;" viewBox="0 0 1365 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5410"
-          xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20">
+    <div class="identification-panel update-info-item" nz-row [style.color]="userService.profile.certificationPassed ? '' : 'red'">
+      <div class="icon vertical-center" nz-col [nzSpan]="2">
+        <svg t="1514359485002" class="icon" style="fill: gray;" viewBox="0 0 1365 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+          p-id="5410" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20">
           <defs>
             <style type="text/css"></style>
           </defs>
@@ -141,16 +160,92 @@
             p-id="5411"></path>
         </svg>
       </div>
-      <div class="identification" nz-col [nzSpan]="20">
-        <span>
-          <strong>实名认证：</strong>
-        </span>
-        <span>131*********9923</span>
+      <div class="identification" nz-col [nzSpan]="20" style="display: flex; flex-direction: center;">
+        <div class="vertical-center">
+          <span>
+            <strong>实名认证：</strong>
+          </span>
+        </div>
+        <div class="vertical-center">
+          <span>{{userService.profile.passportId ? userService.profile.passportId : '尚未进行实名认证'}}</span>
+        </div>
+        <div class="vertical-center">
+          <span *ngIf="!userService.profile.certificationPassed && userService.profile.passportId && (!userService.profile.passportPhotoFront || !userService.profile.passportPhotoBack)">(未完成身份证件上传)</span>
+        </div>
       </div>
-      <div class="modify" nz-col [nzSpan]="2">
-        <a href="#">修改</a>
+      <div class="modify vertical-center" nz-col [nzSpan]="2">
+        <a *ngIf="!userService.profile.passportId" (click)="identificationVisible = true">点击认证</a>
+        <a *ngIf="!userService.profile.certificationPassed && userService.profile.passportId && (!userService.profile.passportPhotoFront || !userService.profile.passportPhotoBack)" (click)="identificationVisible = true">点击上传</a>
+        <span *ngIf="!userService.profile.certificationPassed && userService.profile.passportId && userService.profile.passportPhotoFront && userService.profile.passportPhotoBack">等待审核中</span>
+        <span *ngIf="userService.profile.certificationPassed" style="color: green;">已完成</span>
       </div>
     </div>
 
   </div>
 </div>
+
+<!-- <app-update-nickname [(visible)]="nicknameVisible"></app-update-nickname> -->
+<nz-modal 
+  [nzTitle]="'设置或更新昵称'"
+  [nzWrapClassName]="'vertical-center-modal'" 
+  [nzVisible]="nicknameVisible" 
+  [nzConfirmLoading]="nicknameConfirmLoading"
+  (nzOnCancel)="nicknameVisible = false"
+  (nzOnOk)="update($event)"
+  [nzContent]="nicknameContent">
+  <ng-template #nicknameContent>
+    <!-- <app-update-nickname #nicknameComponent></app-update-nickname> -->
+  </ng-template>
+</nz-modal>
+
+<nz-modal 
+  [nzTitle]="'设置或更新邮箱'"
+  [nzWrapClassName]="'vertical-center-modal'" 
+  [nzVisible]="emailVisible" 
+  [nzConfirmLoading]="emailConfirmLoading"
+  (nzOnCancel)="emailVisible = false"
+  (nzOnOk)="update($event)"
+  [nzContent]="emailContent">
+  <ng-template #emailContent>
+    <app-update-email #emailComponent></app-update-email>
+  </ng-template>
+</nz-modal>
+
+<nz-modal 
+  [nzTitle]="'设置或更新手机号'"
+  [nzWrapClassName]="'vertical-center-modal'" 
+  [nzVisible]="phoneVisible" 
+  [nzConfirmLoading]="phoneConfirmLoading"
+  (nzOnCancel)="phoneVisible = false"
+  (nzOnOk)="update($event)"
+  [nzContent]="phoneContent">
+  <ng-template #phoneContent>
+    <app-update-phone #phoneComponent></app-update-phone>
+  </ng-template>
+</nz-modal>
+
+<nz-modal 
+  [nzTitle]="'更新密码'"
+  [nzWrapClassName]="'vertical-center-modal'" 
+  [nzVisible]="passwordVisible" 
+  [nzConfirmLoading]="passwordConfirmLoading"
+  (nzOnCancel)="passwordVisible = false"
+  (nzOnOk)="update($event)"
+  [nzContent]="passwordContent">
+  <ng-template #passwordContent>
+    <app-update-password #passwordComponent></app-update-password>
+  </ng-template>
+</nz-modal>
+
+<nz-modal 
+  [nzTitle]="'身份认证'"
+  [nzWrapClassName]="'vertical-center-modal'" 
+  [nzVisible]="identificationVisible" 
+  [nzConfirmLoading]="identificationConfirmLoading"
+  (nzOnCancel)="identificationVisible = false"
+  (nzOnOk)="update($event)"
+  [nzContent]="identificationContent">
+  <ng-template #identificationContent>
+    <app-update-identification #identificationComponent></app-update-identification>
+  </ng-template>
+</nz-modal>

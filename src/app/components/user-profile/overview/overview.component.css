@@ -46,7 +46,8 @@
     display: -webkit-flex;
     flex-direction: column;
     text-align: center;
-    padding-top: 5%;
+    /* padding-top: 5%; */
+    justify-content: center;
 }
 
 .update-info-panel {
@@ -62,8 +63,15 @@
     width: 100%;
     border: 2px solid rgba(0, 0, 0, 0.2);
     border-radius: 12px;
-    padding-top: 2.4%;
+    /* padding-top: 2.4%; */
     margin-top: 2%;
+}
+
+.vertical-center {
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .update-info-item .modify {
@@ -72,8 +80,15 @@
 
 .icon {
     text-align: center;
+    align-items: center;
 }
 
 .modify {
     text-align: center;
 }
+
+:host ::ng-deep .vertical-center-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }

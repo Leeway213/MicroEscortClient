@@ -16,9 +16,6 @@ const routes: Routes = [
     {
         path: 'tasks', loadChildren: 'app/components/tasks/tasks.module#TasksModule', canActivate: [AuthGuard], resolve: { userProfile: UserProfileResolver }
     },
-    // {
-    //     path: 'do', loadChildren: 'app/components/do-task/do-task.module#DoTaskModule', resolve: {do: TaskResolver}
-    // },
     {
         path: 'profile', loadChildren: 'app/components/user-profile/user-profile.module#UserProfileModule', canActivate: [AuthGuard], resolve: {userProfile: UserProfileResolver}
     },

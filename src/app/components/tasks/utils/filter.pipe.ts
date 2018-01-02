@@ -10,9 +10,6 @@ export class FilterPipe implements PipeTransform {
     for (let arg of args) {
       items = items.filter(item => arg.negate ? item[arg.field] !== arg.value : item[arg.field] === arg.value);
     }
-    console.log("********");
-    console.log(items);
-    console.log("********");
     return items;
   }
 

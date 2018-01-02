@@ -1,0 +1,14 @@
+<div style="margin: 0 15%;">
+    <form nz-form [formGroup]="validateForm">
+      <div nz-form-item>
+        <div nz-form-control nzHasFeedback>
+          <nz-input [nzSize]="'large'" formControlName="phone" [nzId]="'phone'" [nzPlaceHolder]="'请输入手机号'"></nz-input>
+        </div>
+      </div>
+      <div nz-form-item style="display: flex; flex-direction: row;">
+        <nz-input formControlName="verCode" [nzPlaceHolder]="'验证码'" style="width: 60%;"></nz-input>
+        <button nz-button (click)="getVerCode($event)">{{verButtonContent}}</button>
+      </div>
+    </form>
+  
+  </div>

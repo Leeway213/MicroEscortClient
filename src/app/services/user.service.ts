@@ -28,7 +28,7 @@ export class UserService {
     return this.role === 'Trainer' ? TRAINER_SERVER : REQUESTER_SERVER;
   }
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(public http: HttpClient, protected router: Router) { }
 
   validateUsername(username: string): Promise<any> {
     return this.http

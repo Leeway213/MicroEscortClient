@@ -18,4 +18,6 @@ export class UserProfile {
     currency: "CNY" | "USD";
     createdAt: Date;
     updatedat: Date;
+    fu() {
+    }
 }
