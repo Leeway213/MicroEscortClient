@@ -176,7 +176,7 @@
       <div class="modify vertical-center" nz-col [nzSpan]="2">
         <a *ngIf="!userService.profile.passportId" (click)="identificationVisible = true">点击认证</a>
         <a *ngIf="!userService.profile.certificationPassed && userService.profile.passportId && (!userService.profile.passportPhotoFront || !userService.profile.passportPhotoBack)" (click)="identificationVisible = true">点击上传</a>
-        <span *ngIf="!userService.profile.certificationPassed && userService.profile.passportId && userService.profile.passportPhotoFront && userService.profile.passportPhotoBack">等待审核中</span>
+        <span *ngIf="!userService.profile.certificationPassed && userService.profile.passportId !== null && userService.profile.passportPhotoFront !== null && userService.profile.passportPhotoBack !== null">等待审核中</span>
         <span *ngIf="userService.profile.certificationPassed" style="color: green;">已完成</span>
       </div>
     </div>
