@@ -12,6 +12,7 @@ import { DoTaskRoutingModule } from './do-task.routing';
 import { BoundingBoxComponent } from '../label-tools/image-annotation/bounding-box/bounding-box.component';
 import { PolygonComponent } from '../label-tools/image-annotation/polygon/polygon.component';
 import { ToolSwitchDirective } from './directives/tool-switch.directive';
+import { PointComponent } from '../label-tools/image-annotation/point/point.component';
 
 @NgModule({
   imports: [
@@ -34,7 +35,8 @@ import { ToolSwitchDirective } from './directives/tool-switch.directive';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [
     BoundingBoxComponent,
-    PolygonComponent
+    PolygonComponent,
+    PointComponent
   ]
 })
 export class DoTaskModule { }

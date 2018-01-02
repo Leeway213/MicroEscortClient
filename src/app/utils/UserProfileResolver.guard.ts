@@ -10,8 +10,13 @@ export class UserProfileResolver implements Resolve<UserProfile> {
     
     constructor(private userService: UserService) {}
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): UserProfile | Observable<UserProfile> | Promise<UserProfile> {
-        return this.userService.getProfile();
+    async resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): UserProfile | Observable<UserProfile> | Promise<UserProfile> {
+        try{
+            const resData: UserProfile = await this.userService.getProfile();
+            return resData;
+        } catch (error) {
+            this.userService.logout();
+        }
     }
 
 }

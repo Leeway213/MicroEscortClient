@@ -10,6 +10,7 @@ import { ObjectHelper } from '../../../../utils/StaticMethod';
   styleUrls: ['./bounding-box.component.css']
 })
 export class BoundingBoxComponent implements OnInit, LabelToolComponent {
+
   @Input() blockKeyInMouseEvent: "ctrlKey" | "shiftKey" | "altKey";
   @Input() zoom: number;
   @Input() mode: 'draw' | 'select' | 'delete';

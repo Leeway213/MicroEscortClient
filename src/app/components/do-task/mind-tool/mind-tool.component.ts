@@ -99,6 +99,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   async ngOnDestroy(): Promise<void> {
     console.log(this.currentTask);
+
     this.removeSkipWhenWindowClosedHandler();
     if (this.currentTask) {
       await this.taskService.skipTask(this.currentTask);
@@ -315,7 +316,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   onMouseWheel(e: WheelEvent) {
-    if (e.ctrlKey) {
+    // if (e.ctrlKey) {
       if (e.deltaY < 0 && this.zoomTimes < 10) {
         this.zoomIn();
       } else if (e.deltaY > 0 && this.zoomTimes > 0) {
@@ -323,7 +324,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
       }
       console.log(`zoom: ${this.zoomTimes}`);
       e.preventDefault();
-    }
+    // }
   }
 
   zoomIn() {
