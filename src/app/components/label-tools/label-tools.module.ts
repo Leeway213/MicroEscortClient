@@ -12,6 +12,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CovalentMarkdownModule } from '@covalent/markdown';
 import { MySharedModule } from '../shared-module/shared.module';
 import { PointComponent } from './image-annotation/point/point.component';
+import { LineComponent } from './image-annotation/line/line.component';
 
 @NgModule({
   imports: [
@@ -28,7 +29,8 @@ import { PointComponent } from './image-annotation/point/point.component';
     IntroductionViewerComponent,
     VerifyPanelComponent,
     PointsToStringPipe,
-    PointComponent
+    PointComponent,
+    LineComponent
   ],
   exports: [
     BoundingBoxComponent,
