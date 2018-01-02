@@ -12,6 +12,9 @@ import {
 } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/observable/throw';
+import { ObservableInput } from 'rxjs/Observable';
 
 @Injectable()
 export class HttpProgressService {
@@ -41,6 +44,7 @@ export class ProgressInterceptor implements HttpInterceptor {
         this.httpProgressService.loading = true;
 
         return next.handle(req).do(event => {
+            console.log(event);
             if (event.type === HttpEventType.DownloadProgress) {
                 // this.httpProgressService.progress = event.loaded / event.total;
             }
@@ -50,6 +54,11 @@ export class ProgressInterceptor implements HttpInterceptor {
                 console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`);
                 this.httpProgressService.loading = false;
             }
-        });
+        }).catch((err, caught) => {
+            const elapsed = Date.now() - started;
+            console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`);
+            this.httpProgressService.loading = false;
+            return Observable.throw(err);
+        }) as any;
     }
 }

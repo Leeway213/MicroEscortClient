@@ -44,7 +44,9 @@ export class PointComponent implements OnInit, LabelToolComponent {
   }
 
   getResult() {
-    throw new Error("Method not implemented.");
+    return this.points.map(value => {
+      return { label: value.label, point: value.point }
+    });
   }
 
   refresh() {
@@ -53,7 +55,12 @@ export class PointComponent implements OnInit, LabelToolComponent {
   }
 
   label(args: any) {
-    throw new Error("Method not implemented.");
+    this.points.map(value => {
+      if (value.selected) {
+        value.label = args.label;
+      }
+    });
+    this.logOperation();
   }
 
   constructor() { }

@@ -11,7 +11,6 @@ import { PointsToStringPipe } from './image-annotation/polygon/utils/point-to-st
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CovalentMarkdownModule } from '@covalent/markdown';
 import { MySharedModule } from '../shared-module/shared.module';
-import { PointComponentComponent } from './image-annotation/point-component/point-component.component';
 import { PointComponent } from './image-annotation/point/point.component';
 
 @NgModule({
