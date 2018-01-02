@@ -1,4 +1,4 @@
-<nz-input [(ngModel)]="nickname" [nzPlaceHolder]="'请输入昵称'"></nz-input>
+<!-- <nz-input [(ngModel)]="nickname" [nzPlaceHolder]="'请输入昵称'"></nz-input> -->
 
 <form nz-form [formGroup]="validateForm">
   <div nz-form-item>
@@ -6,7 +6,6 @@
       <nz-input formControlName="nickname" [nzPlaceHolder]="'请输入昵称'" [nzSize]="'large'">
       </nz-input>
       <div nz-form-explain *ngIf="getFormControl('nickname').dirty&&getFormControl('nickname').hasError('required')">请输入昵称!</div>
-      <div nz-form-explain *ngIf="getFormControl('nickname').dirty&&getFormControl('nickname').hasError('notUnique')">该昵称已被其他人使用!</div>
     </div>
   </div>
 </form>
