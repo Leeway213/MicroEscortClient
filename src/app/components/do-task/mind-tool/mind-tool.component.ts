@@ -55,7 +55,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   @ViewChild('toolContainer') toolRef: any;
 
-  @Input() imgSrc: string;
+  @Input() dataSrc: string;
 
   @Input() srcWidth: number;
   @Input() srcHeight: number;
@@ -134,10 +134,9 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   private async refresh() {
-    this.imgSrc = '';
+    this.dataSrc = '';
     this.width = this.height = 0;
     await this.loadImage(this.currentTask.params.attachment);
-    console.log(this.imgSrc);
     this.fitImage();
     this.refreshTool();
   }
@@ -153,7 +152,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
     const image: HTMLImageElement = await promise;
     this.width = image.width;
     this.height = image.height;
-    this.imgSrc = src;
+    this.dataSrc = src;
 
     this.labelToolComponent.width = this.width;
     this.labelToolComponent.height = this.height;

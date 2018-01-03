@@ -13,6 +13,7 @@ import { CovalentMarkdownModule } from '@covalent/markdown';
 import { MySharedModule } from '../shared-module/shared.module';
 import { PointComponent } from './image-annotation/point/point.component';
 import { LineComponent } from './image-annotation/line/line.component';
+import { AudioTranscriptComponent } from './audio/audio-transcript/audio-transcript.component';
 
 @NgModule({
   imports: [
@@ -30,13 +31,15 @@ import { LineComponent } from './image-annotation/line/line.component';
     VerifyPanelComponent,
     PointsToStringPipe,
     PointComponent,
-    LineComponent
+    LineComponent,
+    AudioTranscriptComponent
   ],
   exports: [
     BoundingBoxComponent,
     PolygonComponent,
     IntroductionViewerComponent,
-    VerifyPanelComponent
+    VerifyPanelComponent,
+    AudioTranscriptComponent
   ]
 })
 export class LabelToolsModule { }

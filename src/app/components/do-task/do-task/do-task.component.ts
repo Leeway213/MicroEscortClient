@@ -3,6 +3,7 @@ import { Component, ComponentFactoryResolver, OnInit, Type, ComponentFactory, Vi
 import { TaskService, TaskModel } from '../../../services/task.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MindToolComponent } from '../mind-tool/mind-tool.component';
+import { ProjectService, ProjectModel } from '../../../services/project.service';
 
 @Component({
   selector: 'app-do-task',
