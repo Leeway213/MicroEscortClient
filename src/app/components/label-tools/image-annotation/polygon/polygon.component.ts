@@ -62,6 +62,7 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
       const y = parseInt(e.srcElement.getAttribute('cy'));
       console.log(`draw on point ${x},${y}`);
       this.polygonCanvas.drawOnPoint(new Point(x, y));
+      e.stopPropagation();
     } else {
       // const p = new Point(Math.round(e.offsetX), Math.round(e.offsetY));
       const p = new Point(e.offsetX, e.offsetY);

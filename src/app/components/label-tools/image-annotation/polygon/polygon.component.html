@@ -1,6 +1,6 @@
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
   attr.viewBox="0 0 {{width}} {{height}}" [attr.width]="width" [attr.height]="height"
-  (click)="onSvgClick($event)">
+  (mouseup)="onSvgClick($event)">
   <svg:g class="polygon-group" *ngIf="polygonCanvas">
     <svg:g>
       <svg:polygon style="fill-opacity: 0.2; fill: white;" 
@@ -19,7 +19,7 @@
       <svg:circle class="path-point" *ngFor="let point of polygonCanvas.vertexs" 
         [attr.r]="2 / zoom" [attr.cx]="point.X" [attr.cy]="point.Y"
         style="stroke: red; fill: white;" 
-        [attr.stroke-width]="1 / zoom" (click)="onSvgClick($event)"></svg:circle>
+        [attr.stroke-width]="1 / zoom" (mouseup)="onSvgClick($event)"></svg:circle>
     </svg:g>
   </svg:g>
 </svg>

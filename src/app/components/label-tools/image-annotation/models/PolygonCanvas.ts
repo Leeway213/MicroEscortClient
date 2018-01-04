@@ -29,11 +29,11 @@ export class PolygonCanvas extends Graph {
       // 查找是否有与新点的距离小于5的线
       for (const value of this.lines) {
         const tmp = this.getNeareastPointFromPointToLine(p, value);
-        if (tmp) {
+        if (tmp && value.isOnLine(tmp)) {
           // 获取点到直线的距离
           const distance = this.getDistanceBetween(tmp, p);
-          if (distance <= 5 / this.zoom) {
-            // 如果距离小于5，则用直线上的投射替代p
+          if (distance <= 1 / this.zoom) {
+            // 如果距离小于1，则用直线上的投射替代p
             p = tmp;
             onLine = value;
             break;
@@ -104,6 +104,8 @@ export class PolygonCanvas extends Graph {
 
   drawOnPoint(p: Point) {
     const found = this.findVertex(p);
+    console.log(found);
+    console.log(this.preVertex);
     if (!p.equal(this.preVertex)) {
       if (this.preVertex) {
         this.addEdge(this.preVertex, found);

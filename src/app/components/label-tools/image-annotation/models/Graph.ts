@@ -4,7 +4,7 @@ export class Graph {
   vertexCount: number;
   edgeCount: number;
   vertexs: Vertex[];
-  rings: Vertex[][];
+  rings: Vertex[][] = [];
 
   constructor() {
     this.vertexCount = this.edgeCount = 0;
@@ -116,7 +116,16 @@ export class Graph {
 
     // this.getRingsRFS(this.vertexs[0], result).next();
 
-    this.rings = result.sort((x, y) => {
+    for(let item of result) {
+      if (!this.rings.find(value => this.isSameRing(value, item))) {
+        this.rings.push(item);
+      }
+    }
+
+    // this.rings = result.sort((x, y) => {
+    //   return this.getRingArea(y) - this.getRingArea(x);
+    // });
+    this.rings.sort((x, y) => {
       return this.getRingArea(y) - this.getRingArea(x);
     });
 
