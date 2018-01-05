@@ -7,9 +7,35 @@ export class PolygonCanvas extends Graph {
 
   preVertex: Vertex;
 
+
   constructor() {
     super();
     this.lines = [];
+  }
+
+  isVisible(p: Point) {
+    // 遍历所有的polygon
+    // 1. 如果在polygon中找到了p，则判定p所在的polygon是否为selected
+    //    (1). 如果selected为true，返回true;
+    //    (2). 如果selected为false，返回false.
+    // 2. 如果在polygon中未找到p，返回true.
+    for(const item of this.polygons) {
+      if (item.polygon.includes(p)) {
+        return item.selected;
+      }
+    }
+    return true;
+
+  }
+
+  clearSelection() {
+    this.polygons.map(value => value.selected = false);
+  }
+
+  clean() {
+    this.vertexCount = 0;
+    this.vertexs = [];
+    this.polygons = [];
   }
 
   /**
@@ -17,6 +43,8 @@ export class PolygonCanvas extends Graph {
    * @param p
    */
   draw(p: Point) {
+
+    this.clearSelection();
 
     // 查找是否是已经存在的点
     const found = this.findVertex(p);

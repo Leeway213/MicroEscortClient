@@ -4,7 +4,9 @@ export class Graph {
   vertexCount: number;
   edgeCount: number;
   vertexs: Vertex[];
-  rings: Vertex[][] = [];
+  polygons: { polygon: Point[], selected: boolean, label: string }[] = [];
+
+  
 
   constructor() {
     this.vertexCount = this.edgeCount = 0;
@@ -100,7 +102,7 @@ export class Graph {
     });
   }
 
-  getRings(): Vertex[][] {
+  getRings(): any[] {
     const result: Vertex[][] = [];
 
     this.vertexs.forEach(value => {
@@ -116,26 +118,26 @@ export class Graph {
 
     // this.getRingsRFS(this.vertexs[0], result).next();
 
+
     for(let item of result) {
-      if (!this.rings.find(value => this.isSameRing(value, item))) {
-        this.rings.push(item);
+      if (!this.polygons.find(value => this.isSameRing(value.polygon, item))) {
+        this.polygons.push({polygon: item, selected: true, label: null });
       }
     }
+
+    this.polygons.sort((x, y) => this.getRingArea(y.polygon) - this.getRingArea(x.polygon));
 
     // this.rings = result.sort((x, y) => {
     //   return this.getRingArea(y) - this.getRingArea(x);
     // });
-    this.rings.sort((x, y) => {
-      return this.getRingArea(y) - this.getRingArea(x);
-    });
 
-    return this.rings;
+    return this.polygons;
   }
 
-  private isSameRing(ring1: Vertex[], ring2: Vertex[]): boolean {
-    if (ring1.length !== ring2.length) {
-      return false;
-    }
+  private isSameRing(ring1: Point[], ring2: Point[]): boolean {
+    // if (ring1.length !== ring2.length) {
+    //   return false;
+    // }
     for (let i = 0; i < ring1.length; i++) {
       if (!ring2.includes(ring1[i])) {
         return false;
@@ -176,7 +178,7 @@ export class Graph {
     yield* result;
   }
 
-  private getRingArea(ring: Vertex[]): number {
+  private getRingArea(ring: Point[]): number {
     let s = 0;
     const len = ring.length;
     let j = len - 1;

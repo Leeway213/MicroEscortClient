@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { LabelToolComponent } from '../../LabelToolComponent';
 import { PolygonCanvas } from '../models/PolygonCanvas';
 import { Point } from '../models/Point';
+import { ObjectHelper } from '../../../../utils/StaticMethod';
 
 @Component({
   selector: 'app-polygon',
@@ -9,15 +10,16 @@ import { Point } from '../models/Point';
   styleUrls: ['./polygon.component.css']
 })
 export class PolygonComponent implements OnInit, LabelToolComponent {
-  data: any;
-  width: number;
-  height: number;
-  mode: "draw" | "select" | "delete";
-  zoom: number;
-  blockKeyInMouseEvent: "ctrlKey" | "shiftKey" | "altKey";
-  canUndo: boolean;
+  @Input() data: any;
+  @Input() width: number;
+  @Input() height: number;
+  @Input() mode: "draw" | "select" | "delete";
+  @Input() zoom: number;
+  @Input() blockKeyInMouseEvent: "ctrlKey" | "shiftKey" | "altKey";
+  get canUndo(): boolean {
+    return this.operationStack && this.operationStack.length > 0;
+  }
   undo() {
-    throw new Error("Method not implemented.");
   }
   getResult() {
     throw new Error("Method not implemented.");
@@ -30,6 +32,8 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
   }
 
   polygonCanvas: PolygonCanvas;
+
+  operationStack: any[] = [];
 
   initDraw() {
     try {
@@ -48,7 +52,7 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
   onSvgClick(e: MouseEvent) {
     console.log(this.blockKeyInMouseEvent);
     console.log(e[this.blockKeyInMouseEvent]);
-    if (e[this.blockKeyInMouseEvent]) {
+    if (e[this.blockKeyInMouseEvent] || this.mode !== "draw") {
       return;
     }
     if (
@@ -62,18 +66,32 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
       const y = parseInt(e.srcElement.getAttribute('cy'));
       console.log(`draw on point ${x},${y}`);
       this.polygonCanvas.drawOnPoint(new Point(x, y));
+      this.logOperation();
       e.stopPropagation();
     } else {
       // const p = new Point(Math.round(e.offsetX), Math.round(e.offsetY));
       const p = new Point(e.offsetX, e.offsetY);
       console.log(`${p.X}, ${p.Y}`);
       this.polygonCanvas.draw(p);
+      this.logOperation();
+    }
+  }
+
+  selectPolygon(i: number, e: MouseEvent) {
+    if (this.mode === "select") {
+      // this.polygonCanvas.clearSelection();
+      this.polygonCanvas.polygons[i].selected = !this.polygonCanvas.polygons[i].selected;
     }
   }
 
   constructor() { }
 
   ngOnInit() {
+  }
+
+  logOperation() {
+    this.operationStack.push(ObjectHelper.objClone(this.polygonCanvas, {}));
+    console.log(this.operationStack);
   }
 
 }

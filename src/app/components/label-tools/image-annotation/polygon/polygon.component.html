@@ -3,8 +3,10 @@
   (mouseup)="onSvgClick($event)">
   <svg:g class="polygon-group" *ngIf="polygonCanvas">
     <svg:g>
-      <svg:polygon style="fill-opacity: 0.2; fill: white;" 
-        *ngFor="let ring of polygonCanvas.rings" [attr.points]="ring | PointsToString"></svg:polygon>
+      <svg:polygon style="fill-opacity: 0; fill: white;"
+        *ngFor="let polygon of polygonCanvas.polygons; let i = index" [attr.points]="polygon.polygon | PointsToString"
+        [style.fill-opacity]="polygon.selected ? 0.2 : 0"
+        (click)="selectPolygon(i, $event)"></svg:polygon>
     </svg:g>
     <svg:g>
       <svg:line class="path-line" 
@@ -15,8 +17,9 @@
         [attr.y2]="line.end.Y"
         [attr.stroke-width]="1.5 / zoom" stroke="green"></svg:line>
     </svg:g>
-    <svg:g>
-      <svg:circle class="path-point" *ngFor="let point of polygonCanvas.vertexs" 
+    <svg:g *ngFor="let point of polygonCanvas.vertexs">
+      <svg:circle class="path-point" 
+        *ngIf="polygonCanvas.isVisible(point)"
         [attr.r]="2 / zoom" [attr.cx]="point.X" [attr.cy]="point.Y"
         style="stroke: red; fill: white;" 
         [attr.stroke-width]="1 / zoom" (mouseup)="onSvgClick($event)"></svg:circle>
