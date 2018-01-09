@@ -19,13 +19,13 @@ export class PolygonCanvas extends Graph {
     //    (1). 如果selected为true，返回true;
     //    (2). 如果selected为false，返回false.
     // 2. 如果在polygon中未找到p，返回true.
-    for(const item of this.polygons) {
-      if (item.polygon.includes(p)) {
-        return item.selected;
-      }
-    }
-    return true;
 
+    const filter = this.polygons.filter(value => value.polygon.includes(p));
+    if (filter && filter.length > 0) {
+      return filter.some(value => value.selected);
+    } else {
+      return true;
+    }
   }
 
   clearSelection() {

@@ -28,7 +28,13 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
     this.initDraw();
   }
   label(args: any) {
-    throw new Error("Method not implemented.");
+    console.log(args);
+    this.polygonCanvas.polygons.map(value => {
+      if (value.selected) {
+        value.label = args.label;
+        value.color = args.color;
+      }
+    });
   }
 
   polygonCanvas: PolygonCanvas;
@@ -90,7 +96,7 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
   }
 
   logOperation() {
-    this.operationStack.push(ObjectHelper.objClone(this.polygonCanvas, {}));
+    // this.operationStack.push(ObjectHelper.objClone(this.polygonCanvas, {}));
     console.log(this.operationStack);
   }
 

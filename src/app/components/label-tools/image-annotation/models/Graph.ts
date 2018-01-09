@@ -4,7 +4,7 @@ export class Graph {
   vertexCount: number;
   edgeCount: number;
   vertexs: Vertex[];
-  polygons: { polygon: Point[], selected: boolean, label: string }[] = [];
+  polygons: { polygon: Point[], selected: boolean, label: string, color: string }[] = [];
 
   
 
@@ -119,10 +119,23 @@ export class Graph {
     // this.getRingsRFS(this.vertexs[0], result).next();
 
 
+    const tmp = [];
     for(let item of result) {
       if (!this.polygons.find(value => this.isSameRing(value.polygon, item))) {
-        this.polygons.push({polygon: item, selected: true, label: null });
+        tmp.push(item);
+        // this.polygons.push({polygon: item, selected: true, label: null });
       }
+    }
+    
+    tmp.sort((x, y) => this.getRingArea(y) - this.getRingArea(x));
+    for(let i = 0; i < tmp.length; i++) {
+      let item;
+      if (i === tmp.length - 1) {
+        item = { polygon: tmp[i], selected: true, label: null };
+      } else {
+        item = { polygon: tmp[i], selected: false, label: null };
+      }
+      this.polygons.push(item);
     }
 
     this.polygons.sort((x, y) => this.getRingArea(y.polygon) - this.getRingArea(x.polygon));
@@ -229,7 +242,7 @@ export class Vertex extends Point {
 
   findNeighborIndex(v: Vertex): number {
     return this.neighbors.findIndex((item, i, arr) => {
-      return v.equal(item);
+      return item && v && v.equal(item);
     });
   }
   
