@@ -17,39 +17,52 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
   @Input() zoom: number;
   @Input() blockKeyInMouseEvent: "ctrlKey" | "shiftKey" | "altKey";
   get canUndo(): boolean {
-    return this.operationStack && this.operationStack.length > 0;
+    return this.polygonCanvas.log && this.polygonCanvas.log.length > 1;
   }
+
   undo() {
+    this.polygonCanvas.undo();
   }
+
   getResult() {
-    throw new Error("Method not implemented.");
+    return this.polygonCanvas.polygons.map(value => {
+      return { polygon: value.polygon, label: value.label };
+    });
   }
   refresh() {
     this.initDraw();
   }
   label(args: any) {
-    console.log(args);
+    let changed: boolean = false;
     this.polygonCanvas.polygons.map(value => {
       if (value.selected) {
-        value.label = args.label;
-        value.color = args.color;
+        if (value.label != args.label) {
+          value.label = args.label;
+          changed = true;
+        }
+        if (value.color != args.color) {
+          value.color = args.color;
+          changed = true;
+        }
       }
     });
+    if (changed) {
+      this.polygonCanvas.logOperation();
+    }
   }
 
   polygonCanvas: PolygonCanvas;
 
-  operationStack: any[] = [];
-
   initDraw() {
     try {
-    this.polygonCanvas = new PolygonCanvas();
+      this.polygonCanvas = new PolygonCanvas();
 
-    this.polygonCanvas.draw(new Point(2, 2));
-    this.polygonCanvas.draw(new Point(2, this.height - 2));
-    this.polygonCanvas.draw(new Point(this.width - 2, this.height - 2));
-    this.polygonCanvas.draw(new Point(this.width - 2, 2));
-    this.polygonCanvas.draw(new Point(2, 2));
+      this.polygonCanvas.draw(new Point(2, 2));
+      this.polygonCanvas.draw(new Point(2, this.height - 2));
+      this.polygonCanvas.draw(new Point(this.width - 2, this.height - 2));
+      this.polygonCanvas.draw(new Point(this.width - 2, 2));
+      this.polygonCanvas.draw(new Point(2, 2));
+      this.polygonCanvas.logOperation();
     } catch (err) {
       console.log(err);
     }
@@ -97,7 +110,7 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
 
   logOperation() {
     // this.operationStack.push(ObjectHelper.objClone(this.polygonCanvas, {}));
-    console.log(this.operationStack);
+    this.polygonCanvas.logOperation();
   }
 
 }

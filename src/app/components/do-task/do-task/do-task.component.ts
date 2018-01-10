@@ -12,6 +12,11 @@ import { ProjectService, ProjectModel } from '../../../services/project.service'
 })
 export class DoTaskComponent implements OnInit {
 
+  private mindToolComponent: MindToolComponent;
+  @ViewChild("mindTool") 
+  set mindToolComponentSetter(content: MindToolComponent) {
+    this.mindToolComponent = content;
+  }
 
   tasks: TaskModel[];
   quizResult: any;
@@ -34,22 +39,22 @@ export class DoTaskComponent implements OnInit {
     );
   }
 
-  submit(mindToolComponent: MindToolComponent) {
-    mindToolComponent.submit();
+  submit() {
+    this.mindToolComponent.submit();
   }
 
-  async skip(mindToolComponent: MindToolComponent) {
+  async skip() {
     try {
-      await this.taskService.skipTask(mindToolComponent.currentTask);
+      await this.taskService.skipTask(this.mindToolComponent.currentTask);
     } catch (err) {
       console.log(err);
     }
-    mindToolComponent.next();
+    this.mindToolComponent.next();
   }
 
-  next(mindToolComponent: MindToolComponent) {
+  next() {
     this.quizResult = undefined;
-    mindToolComponent.next();
+    this.mindToolComponent.next();
   }
 
   getQuizResult(quizResult: any) {

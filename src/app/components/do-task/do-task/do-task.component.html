@@ -6,7 +6,7 @@
       <app-audio-transcript></app-audio-transcript>
   </div>
   <div class="action-panel">
-    <app-task-submit (onSubmit)="submit(mindTool)" (onSkip)="skip(mindTool)" (onNext)="next(mindTool)" [quizResult]="quizResult"></app-task-submit>
+    <app-task-submit (onSubmit)="submit()" (onSkip)="skip()" (onNext)="next()" [quizResult]="quizResult"></app-task-submit>
   </div>
 </div>
 <div *ngIf="tasks && tasks.length > 0 && tasks[0].type === 'foreign'">

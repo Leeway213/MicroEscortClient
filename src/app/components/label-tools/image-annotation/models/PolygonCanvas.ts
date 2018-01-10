@@ -1,12 +1,16 @@
-import { Graph, Vertex } from "./Graph";
+import { Graph, Vertex, PolygonWithProperty } from "./Graph";
 import { Line } from "./Line";
 import { Point } from "./Point";
+import { ObjectHelper } from "../../../../utils/StaticMethod";
 export class PolygonCanvas extends Graph {
   lines: Line[];
   zoom: number = 1;
 
   preVertex: Vertex;
 
+  pointsHistory: Point[] = [];
+
+  log: PolygonLog[] = [];
 
   constructor() {
     super();
@@ -20,7 +24,7 @@ export class PolygonCanvas extends Graph {
     //    (2). 如果selected为false，返回false.
     // 2. 如果在polygon中未找到p，返回true.
 
-    const filter = this.polygons.filter(value => value.polygon.includes(p));
+    const filter = this.polygons.filter(value => value.polygon.some(item => item.equal(p)));
     if (filter && filter.length > 0) {
       return filter.some(value => value.selected);
     } else {
@@ -107,6 +111,7 @@ export class PolygonCanvas extends Graph {
           intersection.Y &&
           !intersection.equal(this.preVertex)
         ) {
+          p = new Point(intersection.X, intersection.Y);
           intersection.addNeighbor(this.preVertex);
           this.insertVertexBetweenLine(
             intersection,
@@ -128,6 +133,9 @@ export class PolygonCanvas extends Graph {
         }
       }
     }
+
+    this.pointsHistory.push(p);
+
   }
 
   drawOnPoint(p: Point) {
@@ -150,13 +158,37 @@ export class PolygonCanvas extends Graph {
 
   drawLine(start: Vertex, end: Vertex) {
     const line = new Line();
-    line.start = start;
-    line.end = end;
+    line.start = new Point(start.X, start.Y);
+    line.end = new Point(end.X, end.Y);
     this.lines.push(line);
   }
 
   undo() {
-    this.removeVertex(this.vertexs[this.vertexCount - 1]);
+    if (this.log.length <= 0) {
+      return;
+    }
+
+    const tmp = this.log.pop();
+
+    if (this.log.length > 0) {
+      this.polygons = ObjectHelper.objClone(this.log[this.log.length - 1].polygons) as PolygonWithProperty[];
+      this.pointsHistory = ObjectHelper.objClone(this.log[this.log.length - 1].points) as Point[];
+      this.lines = ObjectHelper.objClone(this.log[this.log.length - 1].lines) as Line[];
+    }
+
+    if (tmp.points.length > this.pointsHistory.length) {
+      this.removeVertex(tmp.points[tmp.points.length - 1] as Vertex);
+      this.preVertex = this.vertexs.length > 4 ? this.vertexs[this.vertexs.length - 1] : undefined;
+    }
+
+    if (tmp.lines.length > this.lines.length) {
+      const lastLine = tmp.lines[tmp.lines.length - 1];
+      this.removeEdge(lastLine.start, lastLine.end);
+    }
+  }
+
+  logOperation() {
+    this.log.push(ObjectHelper.objClone({ polygons: this.polygons, lines: this.lines, points: this.pointsHistory }) as PolygonLog);
   }
 
   /**
@@ -178,7 +210,7 @@ export class PolygonCanvas extends Graph {
       const reverseGradient = 1 / gradient;
       const nearX = // Math.round(
         (p.Y - l.start.Y + gradient * l.start.X - reverseGradient * p.X) /
-          (gradient - reverseGradient);
+        (gradient - reverseGradient);
       // );
       const nearY = // Math.round(
         p.Y - reverseGradient * (p.X - nearX);
@@ -220,7 +252,7 @@ export class PolygonCanvas extends Graph {
           result =
             Math.pow(value.X - line.start.X, 2) +
               Math.pow(value.Y - line.start.Y, 2) <
-            Math.pow(result.X - line.start.X, 2) +
+              Math.pow(result.X - line.start.X, 2) +
               Math.pow(result.Y - line.start.Y, 2)
               ? value
               : result;
@@ -241,8 +273,8 @@ export class PolygonCanvas extends Graph {
         const intersection = CanvasUtils.getIntersection(line, value);
         if (intersection) {
           console.log(`cross lines is ${index}`);
-          intersection.left = value.start as Vertex;
-          intersection.right = value.end as Vertex;
+          intersection.left = this.findVertex(value.start);
+          intersection.right = this.findVertex(value.end);
           intersections.push(intersection);
         }
       }
@@ -268,9 +300,8 @@ export class PolygonCanvas extends Graph {
   //   }
 
   private onWhichLine(p: Point): Line {
-    return this.lines.find((value, index, arr) => {
-      return value.isOnLine(p);
-    });
+    const line = this.lines.find(value => value.isOnLine(p));
+    return line;
   }
 
   //   private onWhichGraphIndex(args: any): number {
@@ -306,13 +337,13 @@ export class CanvasUtils {
   static isRectCross(line1: Line, line2: Line): boolean {
     return (
       Math.min(line1.start.X, line1.end.X) <=
-        Math.max(line1.start.X, line2.end.X) &&
+      Math.max(line1.start.X, line2.end.X) &&
       Math.min(line1.start.X, line2.end.X) <=
-        Math.max(line1.start.X, line1.end.X) &&
+      Math.max(line1.start.X, line1.end.X) &&
       Math.min(line1.start.Y, line1.end.Y) <=
-        Math.max(line1.start.Y, line2.end.Y) &&
+      Math.max(line1.start.Y, line2.end.Y) &&
       Math.min(line1.start.Y, line2.end.Y) <=
-        Math.max(line1.start.Y, line1.end.Y)
+      Math.max(line1.start.Y, line1.end.Y)
     );
   }
 
@@ -324,11 +355,11 @@ export class CanvasUtils {
   static isLineSegmentCross(line1: Line, line2: Line): boolean {
     if (
       this.multi(line1.start, line1.end, line2.start) *
-        this.multi(line1.start, line1.end, line2.end) <=
-        0 &&
+      this.multi(line1.start, line1.end, line2.end) <=
+      0 &&
       this.multi(line2.start, line2.end, line1.start) *
-        this.multi(line2.start, line2.end, line1.end) <=
-        0
+      this.multi(line2.start, line2.end, line1.end) <=
+      0
     ) {
       return true;
     } else {
@@ -352,14 +383,14 @@ export class CanvasUtils {
           (line1.end.X - line1.start.X) * (line2.start.Y - line2.end.Y);
         const tmpxRight =
           (line1.start.Y - line2.start.Y) *
-            (line1.end.X - line1.start.X) *
-            (line2.end.X - line2.start.X) +
+          (line1.end.X - line1.start.X) *
+          (line2.end.X - line2.start.X) +
           line2.start.X *
-            (line2.end.Y - line2.start.Y) *
-            (line1.end.X - line1.start.X) -
+          (line2.end.Y - line2.start.Y) *
+          (line1.end.X - line1.start.X) -
           line1.start.X *
-            (line1.end.Y - line1.start.Y) *
-            (line2.end.X - line2.start.X);
+          (line1.end.Y - line1.start.Y) *
+          (line2.end.X - line2.start.X);
 
         // x = Math.round(tmpxRight / tmpxLeft);
         x = tmpxRight / tmpxLeft;
@@ -369,14 +400,14 @@ export class CanvasUtils {
           (line1.end.Y - line1.start.Y) * (line2.start.X - line2.end.X);
         const tmpRight =
           line1.end.Y *
-            (line1.start.X - line1.end.X) *
-            (line2.end.Y - line2.start.Y) +
+          (line1.start.X - line1.end.X) *
+          (line2.end.Y - line2.start.Y) +
           (line2.end.X - line1.end.X) *
-            (line2.end.Y - line2.start.Y) *
-            (line1.start.Y - line1.end.Y) -
+          (line2.end.Y - line2.start.Y) *
+          (line1.start.Y - line1.end.Y) -
           line2.end.Y *
-            (line2.start.X - line2.end.X) *
-            (line1.end.Y - line1.start.Y);
+          (line2.start.X - line2.end.X) *
+          (line1.end.Y - line1.start.Y);
 
         // y = Math.round(tmpRight / tmpLeft);
         y = tmpRight / tmpLeft;
@@ -391,4 +422,11 @@ export class CanvasUtils {
   private static multi(p1: Point, p2: Point, p3: Point): number {
     return (p1.X - p3.X) * (p2.Y - p3.Y) - (p2.X - p3.X) * (p1.Y - p3.Y);
   }
+}
+
+
+export class PolygonLog {
+  polygons: PolygonWithProperty[];
+  lines: Line[];
+  points: Point[];
 }

@@ -27,7 +27,7 @@ export class PointComponent implements OnInit, LabelToolComponent {
   operationStack: any[] = [];
 
   logOperation() {
-    this.operationStack.push(ObjectHelper.objClone(this.points, []) as { label: string, point: Point, selected: boolean });
+    this.operationStack.push(ObjectHelper.objClone(this.points) as { label: string, point: Point, selected: boolean });
     this.canUndo = this.operationStack.length > 0;
   }
 

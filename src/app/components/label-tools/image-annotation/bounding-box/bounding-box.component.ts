@@ -72,10 +72,7 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
     } else if (this.mode === 'delete') {
       this.boundingBoxs.splice(i, 1);
     }
-    this.operationStack.push(ObjectHelper.objClone(
-      this.boundingBoxs,
-      []
-    ) as BoundingBox[]);
+    this.operationStack.push(ObjectHelper.objClone(this.boundingBoxs));
   }
 
   startResize(e: any) {
@@ -194,9 +191,6 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
   }
 
   undo() {
-    console.log('undo');
-    console.log(this.operationStack);
-
     if (this.operationStack.length <= 0) {
       return;
     }
@@ -209,10 +203,7 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
   }
 
   logOperation() {
-    this.operationStack.push(ObjectHelper.objClone(
-      this.boundingBoxs,
-      []
-    ) as BoundingBox[]);
+    this.operationStack.push(ObjectHelper.objClone(this.boundingBoxs));
     this.canUndo = this.operationStack.length > 0;
   }
 

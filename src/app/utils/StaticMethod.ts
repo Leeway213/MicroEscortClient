@@ -1,16 +1,14 @@
 export class ObjectHelper {
-  static objClone(src: object, dst: object): object {
-    dst = dst || {};
-    // tslint:disable-next-line:forin
-    for (const i in src) {
-      if (src[i] instanceof Object) {
-        dst[i] = src[i].constructor === Array ? [] : {};
-        ObjectHelper.objClone(src[i], dst[i]);
-      } else {
-        dst[i] = src[i];
-      }
-    }
-    return dst;
+  static objClone(src: object): object {
+    var newObj = {};  
+    if (src instanceof Array) {  
+        newObj = [];  
+    }  
+    for (var key in src) {  
+        var val = src[key];  
+        newObj[key] = typeof val === 'object' ? ObjectHelper.objClone(val): val;  
+    }  
+    return newObj;  
   }
 }
 

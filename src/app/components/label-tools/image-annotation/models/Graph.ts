@@ -4,9 +4,7 @@ export class Graph {
   vertexCount: number;
   edgeCount: number;
   vertexs: Vertex[];
-  polygons: { polygon: Point[], selected: boolean, label: string, color: string }[] = [];
-
-  
+  polygons: PolygonWithProperty[] = [];
 
   constructor() {
     this.vertexCount = this.edgeCount = 0;
@@ -24,6 +22,7 @@ export class Graph {
       // });
       return;
     }
+
     v.neighbors = v.neighbors || [];
     this.vertexCount++;
     if (v.neighbors.length > 0) {
@@ -50,13 +49,15 @@ export class Graph {
   }
 
   removeVertex(v: Vertex) {
+    const tmp = this.findVertex(v);
     this.vertexs.splice(this.findVertexIndex(v), 1);
 
-    v.neighbors.forEach((value, index, arr) => {
-      value.neighbors.splice(value.findNeighborIndex(v), 1);
-    });
+    for(const item of tmp.neighbors) {
+      item.neighbors.splice(item.findNeighborIndex(tmp), 1);
+    }
+
     this.vertexCount--;
-    this.edgeCount -= v.neighbors.length;
+    this.edgeCount -= tmp.neighbors.length;
   }
 
   findVertex(p: Point): Vertex {
@@ -119,16 +120,16 @@ export class Graph {
     // this.getRingsRFS(this.vertexs[0], result).next();
 
 
-    const tmp = [];
-    for(let item of result) {
-      if (!this.polygons.find(value => this.isSameRing(value.polygon, item))) {
-        tmp.push(item);
+    const tmp: Point[][] = [];
+    for (let item of result) {
+      if (!this.polygons.some(value => this.isSameRing(value.polygon, item))) {
+        tmp.push(item.map(value => new Point(value.X, value.Y)));
         // this.polygons.push({polygon: item, selected: true, label: null });
       }
     }
-    
+
     tmp.sort((x, y) => this.getRingArea(y) - this.getRingArea(x));
-    for(let i = 0; i < tmp.length; i++) {
+    for (let i = 0; i < tmp.length; i++) {
       let item;
       if (i === tmp.length - 1) {
         item = { polygon: tmp[i], selected: true, label: null };
@@ -152,7 +153,7 @@ export class Graph {
     //   return false;
     // }
     for (let i = 0; i < ring1.length; i++) {
-      if (!ring2.includes(ring1[i])) {
+      if (!ring2.some(value => value.equal(ring1[i]))) {
         return false;
       }
     }
@@ -241,10 +242,21 @@ export class Vertex extends Point {
   }
 
   findNeighborIndex(v: Vertex): number {
-    return this.neighbors.findIndex((item, i, arr) => {
-      return item && v && v.equal(item);
-    });
+    if (v) {
+      return this.neighbors.findIndex((item, i, arr) => {
+        return item && v && v.equal(item);
+      });
+    } else {
+      return -1;
+    }
   }
-  
 
+
+}
+
+export class PolygonWithProperty {
+  polygon: Point[];
+  selected: boolean;
+  label: string;
+  color: string;
 }
