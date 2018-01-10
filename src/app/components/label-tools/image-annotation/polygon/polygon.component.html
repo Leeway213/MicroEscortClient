@@ -5,7 +5,7 @@
     <svg:g>
       <svg:polygon style="fill-opacity: 0;"
         *ngFor="let polygon of polygonCanvas.polygons; let i = index" [attr.points]="polygon.polygon | PointsToString"
-        [style.fill-opacity]="polygon.selected ? 0.2 : 0"
+        [style.fill-opacity]="polygon.selected || polygon.color !== 'white' ? 0.2 : 0"
         [style.fill]="polygon.color ? polygon.color : 'white'"
         (click)="selectPolygon(i, $event)"></svg:polygon>
     </svg:g>

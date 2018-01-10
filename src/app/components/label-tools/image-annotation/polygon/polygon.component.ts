@@ -97,7 +97,7 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
   }
 
   selectPolygon(i: number, e: MouseEvent) {
-    if (this.mode === "select") {
+    if (!e[this.blockKeyInMouseEvent] && this.mode === "select") {
       // this.polygonCanvas.clearSelection();
       this.polygonCanvas.polygons[i].selected = !this.polygonCanvas.polygons[i].selected;
     }

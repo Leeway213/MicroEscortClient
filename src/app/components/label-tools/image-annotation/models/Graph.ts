@@ -132,9 +132,9 @@ export class Graph {
     for (let i = 0; i < tmp.length; i++) {
       let item;
       if (i === tmp.length - 1) {
-        item = { polygon: tmp[i], selected: true, label: null };
+        item = { polygon: tmp[i], selected: true, label: null, color: "white" };
       } else {
-        item = { polygon: tmp[i], selected: false, label: null };
+        item = { polygon: tmp[i], selected: false, label: null, color: "white" };
       }
       this.polygons.push(item);
     }
@@ -258,5 +258,5 @@ export class PolygonWithProperty {
   polygon: Point[];
   selected: boolean;
   label: string;
-  color: string;
+  color: string = "white";
 }
