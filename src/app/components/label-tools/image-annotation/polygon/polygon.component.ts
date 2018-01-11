@@ -16,6 +16,9 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
   @Input() mode: "draw" | "select" | "delete";
   @Input() zoom: number;
   @Input() blockKeyInMouseEvent: "ctrlKey" | "shiftKey" | "altKey";
+
+  pointSize: number = 1;
+
   get canUndo(): boolean {
     return this.polygonCanvas.log && this.polygonCanvas.log.length > 1;
   }
@@ -47,6 +50,7 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
       }
     });
     if (changed) {
+      this.polygonCanvas.clearSelection();
       this.polygonCanvas.logOperation();
     }
   }
@@ -111,6 +115,14 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
   logOperation() {
     // this.operationStack.push(ObjectHelper.objClone(this.polygonCanvas, {}));
     this.polygonCanvas.logOperation();
+  }
+
+  zoomPointWhenMouseEnter() {
+    this.pointSize = 1.3;
+  }
+
+  resumePointWhenMouseLeave() {
+    this.pointSize = 1;
   }
 
 }

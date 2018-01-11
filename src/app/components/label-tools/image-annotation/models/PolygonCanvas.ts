@@ -6,7 +6,18 @@ export class PolygonCanvas extends Graph {
   lines: Line[];
   zoom: number = 1;
 
-  preVertex: Vertex;
+  private _preVertex: Vertex;
+  get preVertex() {
+    return this._preVertex;
+  }
+  set preVertex(value: Vertex) {
+    if ((this._preVertex === undefined && value !== undefined) || !this._preVertex.equal(value)) {
+      this._preVertex = value;
+      this.preVertexHistory.push(value ? new Point(value.X, value.Y) : undefined);
+    }
+  }
+
+  preVertexHistory: Point[] = [];
 
   pointsHistory: Point[] = [];
 
@@ -176,14 +187,22 @@ export class PolygonCanvas extends Graph {
       this.lines = ObjectHelper.objClone(this.log[this.log.length - 1].lines) as Line[];
     }
 
+    let pointOrLineChanged: boolean = false;
+
     if (tmp.points.length > this.pointsHistory.length) {
       this.removeVertex(tmp.points[tmp.points.length - 1] as Vertex);
-      this.preVertex = this.vertexs.length > 4 ? this.vertexs[this.vertexs.length - 1] : undefined;
+      pointOrLineChanged = true;
     }
 
     if (tmp.lines.length > this.lines.length) {
       const lastLine = tmp.lines[tmp.lines.length - 1];
       this.removeEdge(lastLine.start, lastLine.end);
+      pointOrLineChanged = true;
+    }
+
+    if (pointOrLineChanged) {
+      this.preVertexHistory.pop();
+      this._preVertex = this.preVertexHistory[this.preVertexHistory.length - 1] as Vertex;
     }
   }
 

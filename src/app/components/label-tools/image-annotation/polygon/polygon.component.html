@@ -21,9 +21,12 @@
     <svg:g *ngFor="let point of polygonCanvas.vertexs">
       <svg:circle class="path-point" 
         *ngIf="polygonCanvas.isVisible(point)"
-        [attr.r]="2 / zoom" [attr.cx]="point.X" [attr.cy]="point.Y"
+        [attr.r]="2 * pointSize / zoom" [attr.cx]="point.X" [attr.cy]="point.Y"
         style="stroke: red; fill: white;" 
-        [attr.stroke-width]="1 / zoom" (mouseup)="onSvgClick($event)"></svg:circle>
+        [attr.stroke-width]="1 * pointSize / zoom" 
+        (mouseenter)="zoomPointWhenMouseEnter()"
+        (mouseleave)="resumePointWhenMouseLeave()"
+        (mouseup)="onSvgClick($event)"></svg:circle>
     </svg:g>
   </svg:g>
 </svg>

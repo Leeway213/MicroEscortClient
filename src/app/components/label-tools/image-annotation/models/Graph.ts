@@ -53,7 +53,9 @@ export class Graph {
     this.vertexs.splice(this.findVertexIndex(v), 1);
 
     for(const item of tmp.neighbors) {
-      item.neighbors.splice(item.findNeighborIndex(tmp), 1);
+      if (item.neighbors) {
+        item.neighbors.splice(item.findNeighborIndex(tmp), 1);
+      }
     }
 
     this.vertexCount--;
@@ -106,13 +108,18 @@ export class Graph {
   getRings(): any[] {
     const result: Vertex[][] = [];
 
-    this.vertexs.forEach(value => {
-      if (!value.traversed) {
-        this.getRingsRFS(value, result).next();
+    for (const item of this.vertexs) {
+      if (!item.traversed) {
+        this.getRingsRFS(item, result).next();
       }
-    });
+    }
+    // this.vertexs.forEach(value => {
+    //   if (!value.traversed) {
+    //     this.getRingsRFS(value, result).next();
+    //   }
+    // });
 
-    this.vertexs.forEach(value => {
+    this.vertexs.map(value => {
       value.visited = false;
       value.traversed = false;
     });
@@ -171,6 +178,7 @@ export class Graph {
     v.traversed = true;
     cache.push(v);
 
+    v.neighbors = v.neighbors || [];
     for (const item of v.neighbors) {
       if (item.visited) {
         const index = cache.findIndex(p => p.equal(item));
@@ -222,6 +230,9 @@ export class Vertex extends Point {
   }
 
   addNeighbor(v: Vertex): number {
+    if (!v) {
+      return 0;
+    }
     this.neighbors = this.neighbors || [];
 
     if (this.findNeighborIndex(v) !== -1 || v.equal(this)) {
