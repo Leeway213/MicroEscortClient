@@ -26,6 +26,7 @@ import { UserPanelComponent } from './components/user-panel/user-panel.component
 import { MySharedModule } from './components/shared-module/shared.module';
 import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { UserProfileResolver } from './utils/UserProfileResolver.guard';
+import { TaskSetService } from './services/taskset.service';
 
 
 @NgModule({
@@ -49,6 +50,7 @@ import { UserProfileResolver } from './utils/UserProfileResolver.guard';
     AuthGuard,
     UserProfileResolver,
     TaskService,
+    TaskSetService,
     ProjectService,
     HttpProgressService,
     TaskResolver,

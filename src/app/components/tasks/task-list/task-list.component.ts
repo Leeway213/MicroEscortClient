@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ProjectModel } from '../../../services/project.service';
+import { TaskSetModel } from '../../../services/taskset.service';
 
 @Component({
   selector: 'app-task-list',
@@ -8,13 +8,12 @@ import { ProjectModel } from '../../../services/project.service';
 })
 export class TaskListComponent implements OnInit {
 
-  @Input() projects: ProjectModel[] = [];
+  @Input() tasksets: TaskSetModel[] = [];
 
   @Input() type: string;
 
   constructor() { }
 
   ngOnInit() {
-    console.log(this.projects);
   }
 }

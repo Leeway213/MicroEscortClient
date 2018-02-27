@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ProjectModel } from '../../../services/project.service';
 import { Router } from '@angular/router';
+import { TaskSetModel } from '../../../services/taskset.service';
 
 @Component({
   selector: 'app-training-house',
@@ -9,9 +10,10 @@ import { Router } from '@angular/router';
 })
 export class TrainingHouseComponent implements OnInit {
 
-  @Input() projects: ProjectModel[] = [];
+  @Input() project: ProjectModel;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router) {
+  }
 
   ngOnInit() {
   }

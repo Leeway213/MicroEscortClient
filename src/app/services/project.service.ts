@@ -8,7 +8,7 @@ import { TaskSetModel } from './taskset.service';
 @Injectable()
 export class ProjectService {
 
-  projects: ProjectModel[];
+  project: ProjectModel;
 
   constructor(private http: HttpClient, private userService: UserService) { }
 
@@ -22,7 +22,8 @@ export class ProjectService {
         data => {
           const resData = data as any;
           if (resData.code === 200) {
-            resolve(resData.data);
+            this.project = resData.data.project;
+            resolve(resData.data.project);
           } else {
             reject(resData.msg);
           }

@@ -8,7 +8,7 @@
       <div nz-carousel-content *ngFor="let recommend of recommends">
         <div class="row">
           <div class="col-md-4" *ngFor="let project of recommend">
-            <app-recommend-task [project]="project"></app-recommend-task>
+            <app-recommend-task [taskset]="project"></app-recommend-task>
           </div>
         </div>
       </div>
@@ -16,7 +16,7 @@
   </div>
 
   <div class="task-list-panel">
-    <app-task-list [projects]="projects"></app-task-list>
+    <app-task-list [tasksets]="tasksets"></app-task-list>
   </div>
 
 </div>

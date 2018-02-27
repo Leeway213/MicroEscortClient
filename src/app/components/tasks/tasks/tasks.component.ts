@@ -1,8 +1,9 @@
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit, trigger, state, style, transition, animate } from '@angular/core';
 import { TaskModel } from '../../../services/task.service';
 import { ProjectService, ProjectModel } from '../../../services/project.service';
 import { LeftNav } from '../../shared-module/left-nav-panel/LeftNav';
+import { TaskSetModel, TaskSetService } from '../../../services/taskset.service';
 
 @Component({
   selector: 'app-tasks',
@@ -22,6 +23,8 @@ import { LeftNav } from '../../shared-module/left-nav-panel/LeftNav';
   ]
 })
 export class TasksComponent implements OnInit {
+
+  selectedNav: number = 0;
 
   navs: LeftNav[] = [
     {
@@ -46,14 +49,35 @@ export class TasksComponent implements OnInit {
   ];
 
   tasks: TaskModel[] = [];
-  candoProjects: ProjectModel[] = [];
-  quizProjects: ProjectModel[] = []
 
-  constructor(public projectService: ProjectService, private router: Router) { }
+  candoTaskSets: TaskSetModel[] = [];
+  trainingProject: ProjectModel = this.projectService.project;
+  // candoProjects: ProjectModel[] = [];
+  // quizProjects: ProjectModel[] = []
+
+  constructor(
+    public projectService: ProjectService,
+    private tasksetService: TaskSetService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) { 
+    this.candoTaskSets = this.tasksetService.tasksets;
+    // this.trainingProject = this.projectService.project;
+  }
 
   ngOnInit() {
-    this.candoProjects = this.projectService.projects.filter(value => !value.quiz);
-    this.quizProjects = this.projectService.projects.filter(value => value.quiz);
+    // this.route.data.subscribe(
+    //   data => {
+    //     if (data.tasklist) {
+    //       this.candoTaskSets = data.tasklist;
+    //     }
+    //     if (data.trainingProject) {
+    //       this.trainingProject = data.trainingProject;
+    //     }
+    //   }
+    // );
+    // this.candoProjects = this.projectService.projects.filter(value => !value.quiz);
+    // this.quizProjects = this.projectService.projects.filter(value => value.quiz);
   }
 
   onCardClick(project: ProjectModel) {
@@ -62,18 +86,24 @@ export class TasksComponent implements OnInit {
   }
 
   navChanged(event: any) {
+    this.selectedNav = event.nav;
+
     if (event.item === -1) {
-      this.candoProjects = this.projectService.projects.filter(value => !value.quiz);
-      this.quizProjects = this.projectService.projects.filter(value => value.quiz);
+      this.candoTaskSets = this.tasksetService.tasksets;
+      this.trainingProject = this.projectService.project;
+      // this.candoProjects = this.projectService.projects.filter(value => !value.quiz);
+      // this.quizProjects = this.projectService.projects.filter(value => value.quiz);
       return;
     }
     console.log(event);
-    this.candoProjects = this.filtProjects(this.projectService.projects.filter(value => !value.quiz), this.navs[event.nav].items[event.item]);
-    this.quizProjects = this.filtProjects(this.projectService.projects.filter(value => value.quiz), this.navs[event.nav].items[event.item]);
+    this.candoTaskSets = this.filtTaskSets(this.tasksetService.tasksets, this.navs[event.nav].items[event.item]);
+    this.trainingProject = this.filtProjects(this.projectService.project, this.navs[event.nav].items[event.item]) as ProjectModel;
+    // this.candoProjects = this.filtProjects(this.projectService.projects.filter(value => !value.quiz), this.navs[event.nav].items[event.item]);
+    // this.quizProjects = this.filtProjects(this.projectService.projects.filter(value => value.quiz), this.navs[event.nav].items[event.item]);
   }
 
-  private filtProjects(projects: ProjectModel[], str: string) {
-    return projects.filter(value => {
+  private filtTaskSets(tasksets: TaskSetModel[], str: string) {
+    return tasksets.filter(value => {
       switch (str) {
         case "图像任务":
           return value.dataType === "image";
@@ -86,7 +116,26 @@ export class TasksComponent implements OnInit {
         default:
           return false;
       }
-    })
+    });
+  }
+  private filtProjects(project: ProjectModel, str: string) {
+    return {
+      tasksets: this.filtTaskSets(project.tasksets, str)
+    };
+    // return projects.filter(value => {
+    //   switch (str) {
+    //     case "图像任务":
+    //       return value.dataType === "image";
+    //     case "文本任务":
+    //       return value.dataType === "text";
+    //     case "语音任务":
+    //       return value.dataType === "voice";
+    //     case "外联任务":
+    //       return value.type === "foreign";
+    //     default:
+    //       return false;
+    //   }
+    // })
   }
 
 }

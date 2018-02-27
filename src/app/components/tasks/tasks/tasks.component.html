@@ -1,15 +1,15 @@
 <div class="container">
   <div class="row">
     <div class="col-md-2 col-xl-2">
-      <app-left-nav-panel #leftPanel [navs]="navs" [selectedNav]="0" (navChanged)="navChanged($event)"></app-left-nav-panel>
+      <app-left-nav-panel #leftPanel [navs]="navs" [selectedNav]="selectedNav" (navChanged)="navChanged($event)"></app-left-nav-panel>
     </div>
 
     <div class="col-md-10 col-xl-10">
       <div *ngIf="leftPanel.selectedNav === 0">
-        <app-task-house [projects]="candoProjects"></app-task-house>
+        <app-task-house [tasksets]="candoTaskSets"></app-task-house>
       </div>
       <div *ngIf="leftPanel.selectedNav === 1">
-        <app-training-house [projects]="quizProjects"></app-training-house>
+        <app-training-house [project]="trainingProject"></app-training-house>
       </div>
     </div>
   </div>
