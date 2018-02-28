@@ -50,6 +50,7 @@ export class TasksComponent implements OnInit {
 
   tasks: TaskModel[] = [];
 
+  originCandoTaskSets: TaskSetModel[] = [];
   candoTaskSets: TaskSetModel[] = [];
   trainingProject: ProjectModel = this.projectService.project;
   // candoProjects: ProjectModel[] = [];
@@ -61,21 +62,21 @@ export class TasksComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute
   ) { 
-    this.candoTaskSets = this.tasksetService.tasksets;
+    // this.candoTaskSets = this.tasksetService.tasksets;
     // this.trainingProject = this.projectService.project;
   }
 
   ngOnInit() {
-    // this.route.data.subscribe(
-    //   data => {
-    //     if (data.tasklist) {
-    //       this.candoTaskSets = data.tasklist;
-    //     }
-    //     if (data.trainingProject) {
-    //       this.trainingProject = data.trainingProject;
-    //     }
-    //   }
-    // );
+    this.route.data.subscribe(
+      data => {
+        if (data.tasklist) {
+          this.originCandoTaskSets = this.candoTaskSets = data.tasklist;
+        }
+        if (data.trainingProject) {
+          this.trainingProject = data.trainingProject;
+        }
+      }
+    );
     // this.candoProjects = this.projectService.projects.filter(value => !value.quiz);
     // this.quizProjects = this.projectService.projects.filter(value => value.quiz);
   }
@@ -86,17 +87,18 @@ export class TasksComponent implements OnInit {
   }
 
   navChanged(event: any) {
+    console.log(this.trainingProject);
     this.selectedNav = event.nav;
 
     if (event.item === -1) {
-      this.candoTaskSets = this.tasksetService.tasksets;
+      this.candoTaskSets = this.originCandoTaskSets;
       this.trainingProject = this.projectService.project;
       // this.candoProjects = this.projectService.projects.filter(value => !value.quiz);
       // this.quizProjects = this.projectService.projects.filter(value => value.quiz);
       return;
     }
     console.log(event);
-    this.candoTaskSets = this.filtTaskSets(this.tasksetService.tasksets, this.navs[event.nav].items[event.item]);
+    this.candoTaskSets = this.filtTaskSets(this.originCandoTaskSets, this.navs[event.nav].items[event.item]);
     this.trainingProject = this.filtProjects(this.projectService.project, this.navs[event.nav].items[event.item]) as ProjectModel;
     // this.candoProjects = this.filtProjects(this.projectService.projects.filter(value => !value.quiz), this.navs[event.nav].items[event.item]);
     // this.quizProjects = this.filtProjects(this.projectService.projects.filter(value => value.quiz), this.navs[event.nav].items[event.item]);
@@ -110,7 +112,7 @@ export class TasksComponent implements OnInit {
         case "文本任务":
           return value.dataType === "text";
         case "语音任务":
-          return value.dataType === "voice";
+          return value.dataType === "audio";
         case "外联任务":
           return value.type === "foreign";
         default:

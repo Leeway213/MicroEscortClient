@@ -10,7 +10,7 @@ import { UserService } from '../services/user.service';
 import { TaskModel, TaskService } from '../services/task.service';
 
 @Injectable()
-export class TaskResolver implements Resolve<TaskModel> {
+export class TaskResolver implements Resolve<TaskModel[]> {
   constructor(
     private userService: UserService,
     private taskService: TaskService,
@@ -20,7 +20,7 @@ export class TaskResolver implements Resolve<TaskModel> {
   async resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Promise<TaskModel> {
+  ): Promise<TaskModel[]> {
     // const projectId = route.url[route.url.length - 1].path;
     const projectId = route.params.id;
     try {

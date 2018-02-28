@@ -39,7 +39,11 @@ export class TaskService {
     // }).toPromise();
     // return this.finishTask(task.id, null);
     const p = new Promise<any>((resolve, reject) => {
-      this.http.get(`${this.userService.baseUrl}/tasks/skip?task_id=${task.id}`)
+      this.http.get(`${this.userService.baseUrl}/tasks/skip?task_id=${task.id}`, {
+        headers: new HttpHeaders({
+          Authorization: `Bearer ${this.userService.user.token}`
+        })
+      })
       .subscribe(
         data => {
           resolve(data);
@@ -65,7 +69,9 @@ export class TaskModel {
   tutorial: string;
   proiority: number;
   status: 'pending' | 'doing' | 'pendingverify' | 'verifying' | 'completed';
+  taskset: string;
   project: string;
+  requester: string;
   createdAt: Date;
   updatedAt: Date;
 }

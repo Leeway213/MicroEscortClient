@@ -13,6 +13,7 @@ import { BoundingBoxComponent } from '../label-tools/image-annotation/bounding-b
 import { PolygonComponent } from '../label-tools/image-annotation/polygon/polygon.component';
 import { ToolSwitchDirective } from './directives/tool-switch.directive';
 import { PointComponent } from '../label-tools/image-annotation/point/point.component';
+import { TaskSetResolver } from './utils/TaskSetResolver.guard';
 
 @NgModule({
   imports: [
@@ -31,6 +32,9 @@ import { PointComponent } from '../label-tools/image-annotation/point/point.comp
     DoTaskComponent,
     MindToolComponent,
     TaskSubmitComponent
+  ],
+  providers: [
+    TaskSetResolver
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

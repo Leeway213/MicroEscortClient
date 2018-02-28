@@ -226,11 +226,11 @@ export class MindToolComponent implements OnInit, OnDestroy {
       // 刷新任务
       try {
         const res: any = await this.taskService.getTask(
-          this.currentTask.project
+          this.currentTask.taskset
         );
         console.log(res);
-        if (res.code === 1) {
-          this.tasks = res.data;
+        if (res.code === 200) {
+          this.tasks = res.data.tasks;
           this.refresh();
         }
       } catch (error) {

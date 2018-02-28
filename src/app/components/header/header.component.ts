@@ -1,5 +1,5 @@
 import { UserService } from '../../services/user.service';
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnInit, OnDestroy } from "@angular/core";
 import { NavModel } from "../../app.component";
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
@@ -9,6 +9,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
   styleUrls: ["./header.component.css"]
 })
 export class HeaderComponent implements OnInit {
+  
   @Input() brand: string;
 
   @Input() leftNavs: NavModel[];

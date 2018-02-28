@@ -14,11 +14,12 @@ import { TaskSetModel, TaskSetService } from '../../../services/taskset.service'
 export class DoTaskComponent implements OnInit {
 
   private mindToolComponent: MindToolComponent;
-  @ViewChild("mindTool") 
+  @ViewChild("mindTool")
   set mindToolComponentSetter(content: MindToolComponent) {
     this.mindToolComponent = content;
   }
 
+  currentTaskSet: TaskSetModel;
   tasks: TaskModel[] = [];
   quizResult: any;
 
@@ -26,7 +27,7 @@ export class DoTaskComponent implements OnInit {
     private tasksetService: TaskSetService,
     private taskService: TaskService,
     private route: ActivatedRoute
-  ) { 
+  ) {
   }
 
   ngOnInit() {
@@ -37,9 +38,7 @@ export class DoTaskComponent implements OnInit {
     this.route.data.subscribe(
       res => {
         this.tasks = res.task.tasks;
-
-        console.log('**********');
-        console.log(this.tasks);
+        this.currentTaskSet = res.taskset;
       }
     );
   }
@@ -53,8 +52,9 @@ export class DoTaskComponent implements OnInit {
       await this.taskService.skipTask(this.mindToolComponent.currentTask);
     } catch (err) {
       console.log(err);
+    } finally {
+      this.mindToolComponent.next();
     }
-    this.mindToolComponent.next();
   }
 
   next() {

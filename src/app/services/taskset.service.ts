@@ -5,16 +5,21 @@ import { UserService } from "./user.service";
 @Injectable()
 export class TaskSetService {
 
-    tasksets: TaskSetModel[] = [];
-
     constructor(
         private http: HttpClient,
         private userService: UserService
-    ) {}
+    ) { }
 
-    getTaskSets(): Promise<TaskSetModel[]> {
+    getTaskSets(query?: any): Promise<TaskSetModel[]> {
         const p = new Promise<TaskSetModel[]>((resolve, reject) => {
-            this.http.get(`${this.userService.baseUrl}/tasksets`, {
+            let url = `${this.userService.baseUrl}/tasksets?`;
+            if (query) {
+                for (const key in query) {
+                    url += `${key}=${query[key]}&`;
+                }
+            }
+            url = url.substr(0, url.length - 1);
+            this.http.get(url, {
                 headers: new HttpHeaders({
                     Authorization: `Bearer ${this.userService.user.token}`
                 })
@@ -22,7 +27,6 @@ export class TaskSetService {
                 data => {
                     const resData = data as any;
                     if (resData.code === 200) {
-                        this.tasksets = resData.data;
                         resolve(resData.data);
                     } else {
                         reject(resData.msg);
@@ -34,6 +38,15 @@ export class TaskSetService {
             );
         });
         return p;
+    }
+
+    async getTaskSetById(id: string) {
+        const result = await this.getTaskSets({id: id});
+        if (result && result.length > 0)  {
+            return result[0];
+        } else {
+            return null;
+        }
     }
 }
 
