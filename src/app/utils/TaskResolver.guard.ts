@@ -25,7 +25,7 @@ export class TaskResolver implements Resolve<TaskModel> {
     const projectId = route.params.id;
     try {
       const result = await this.taskService.getTask(projectId);
-      if (result.code === 1) {
+      if (result.code === 200) {
         return result.data;
       } else {
         throw new Error(result.msg);

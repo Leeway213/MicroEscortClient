@@ -9,9 +9,9 @@ export class TaskService {
 
   constructor(private http: HttpClient, private userService: UserService) {}
 
-  // 从对应projectId的project中获取一条任务
-  getTask(projectId: string): Promise<any> {
-    return this.http.get(`${this.userService.baseUrl}/projects/${projectId}`, {
+  // 从对应tasksetId的project中获取一条任务
+  getTask(tasksetId: string): Promise<any> {
+    return this.http.get(`${this.userService.baseUrl}/tasksets/${tasksetId}`, {
       headers: new HttpHeaders({
         'Authorization': 'Bearer ' + this.userService.user.token
       })
@@ -37,7 +37,19 @@ export class TaskService {
     //     'Authorization': 'Bearer ' + this.userService.user.token
     //   })
     // }).toPromise();
-    return this.finishTask(task.id, null);
+    // return this.finishTask(task.id, null);
+    const p = new Promise<any>((resolve, reject) => {
+      this.http.get(`${this.userService.baseUrl}/tasks/skip?task_id=${task.id}`)
+      .subscribe(
+        data => {
+          resolve(data);
+        },
+        error => {
+          reject(error);
+        }
+      )
+    });
+    return p;
   }
 
 }
