@@ -46,7 +46,11 @@ export class TaskService {
       })
       .subscribe(
         data => {
-          resolve(data);
+          if ((data as any).code === 200) {
+            resolve(data);
+          } else {
+            reject(data);
+          }
         },
         error => {
           reject(error);

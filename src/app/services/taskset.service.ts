@@ -41,7 +41,7 @@ export class TaskSetService {
     }
 
     async getTaskSetById(id: string) {
-        const result = await this.getTaskSets({id: id});
+        const result = await this.getTaskSets({taskset_id: id});
         if (result && result.length > 0)  {
             return result[0];
         } else {

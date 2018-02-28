@@ -232,6 +232,8 @@ export class MindToolComponent implements OnInit, OnDestroy {
         if (res.code === 200) {
           this.tasks = res.data.tasks;
           this.refresh();
+        } else {
+          throw new Error("no avaiable tasks");
         }
       } catch (error) {
         this.tasks = undefined;
