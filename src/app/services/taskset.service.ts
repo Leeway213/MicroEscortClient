@@ -5,7 +5,7 @@ import { UserService } from "./user.service";
 @Injectable()
 export class TaskSetService {
 
-    tasksets: TaskSetModel[];
+    tasksets: TaskSetModel[] = [];
 
     constructor(
         private http: HttpClient,

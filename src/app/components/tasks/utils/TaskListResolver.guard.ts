@@ -16,7 +16,7 @@ export class TaskListResolver implements Resolve<TaskSetModel[]> {
             return result;
         } catch (error) {
             console.error(error);
-            throw error;
+            // throw error;
         }
     }
 

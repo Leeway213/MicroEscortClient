@@ -4,6 +4,7 @@ import { TaskService, TaskModel } from '../../../services/task.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MindToolComponent } from '../mind-tool/mind-tool.component';
 import { ProjectService, ProjectModel } from '../../../services/project.service';
+import { TaskSetModel, TaskSetService } from '../../../services/taskset.service';
 
 @Component({
   selector: 'app-do-task',
@@ -18,10 +19,11 @@ export class DoTaskComponent implements OnInit {
     this.mindToolComponent = content;
   }
 
-  tasks: TaskModel[];
+  tasks: TaskModel[] = [];
   quizResult: any;
 
   constructor(
+    private tasksetService: TaskSetService,
     private taskService: TaskService,
     private route: ActivatedRoute
   ) { 
@@ -34,7 +36,10 @@ export class DoTaskComponent implements OnInit {
   private initialize() {
     this.route.data.subscribe(
       res => {
-        this.tasks = res.task;
+        this.tasks = res.task.tasks;
+
+        console.log('**********');
+        console.log(this.tasks);
       }
     );
   }
