@@ -1,6 +1,6 @@
 <div *ngIf="tasks && tasks.length > 0 && tasks[0].type !== 'foreign'">
   <div *ngIf="tasks[0] && currentTaskSet && currentTaskSet.dataType === 'image'">
-    <app-mind-tool #mindTool [tasks]="tasks" (quizEvent)="getQuizResult($event)"></app-mind-tool>
+    <app-mind-tool #mindTool [tasks]="tasks" [taskset]="currentTaskSet" (quizEvent)="getQuizResult($event)"></app-mind-tool>
   </div>
   <div *ngIf="tasks[0] && currentTaskSet && currentTaskSet.dataType === 'audio'">
       <app-audio-transcript></app-audio-transcript>

@@ -21,6 +21,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BoundingBoxComponent } from '../../label-tools/image-annotation/bounding-box/bounding-box.component';
 import { SafeStyle } from '@angular/platform-browser/src/security/dom_sanitization_service';
 import { ToolSwitchDirective } from '../directives/tool-switch.directive';
+import { TaskSetModel } from '../../../services/taskset.service';
 
 
 
@@ -50,6 +51,8 @@ export class MindToolComponent implements OnInit, OnDestroy {
   get currentTask(): TaskModel {
     return this.tasks ? this.tasks[this.currentTaskIndex] : null;
   }
+
+  @Input() taskset: TaskSetModel;
 
   mode: 'draw' | 'select' | 'delete' = 'draw';
 
@@ -108,7 +111,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   private initialize() {
     this.currentTaskIndex = 0;
-    this.loadTool(labelTools[this.currentTask.type]);
+    this.loadTool(labelTools[this.taskset.type]);
     this.refresh();
   }
 

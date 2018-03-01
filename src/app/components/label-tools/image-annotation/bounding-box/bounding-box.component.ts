@@ -37,7 +37,8 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
   // 是否时resizing状态
   resizing: boolean;
 
-  constructor () {}
+  constructor () {
+  }
 
 
   ngOnInit(): void {
