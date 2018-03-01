@@ -40,7 +40,7 @@
     </mat-button-toggle>
   </mat-button-toggle-group>
   <button mat-raised-button [style.height]="toolContainer.clientHeight + 'px'" color="accent" (click)="onZoomInClick()" [disabled]="zoomTimes === 10">放大+</button>
-  <button mat-raised-button [style.height]="toolContainer.clientHeight + 'px'" color="accent" [disabled]="zoomTimes === 0"
+  <button mat-raised-button [style.height]="toolContainer.clientHeight + 'px'" color="accent" [disabled]="zoomTimes === -8"
     (click)="onZoomOutClick()">缩小-</button>
   <button mat-raised-button [style.height]="toolContainer.clientHeight + 'px'" color="accent" (click)="fitImage()">适应大小</button>
   <button mat-raised-button [style.height]="toolContainer.clientHeight + 'px'" color="accent" (click)="undo()" [disabled]="!labelToolComponent.canUndo">撤销</button>

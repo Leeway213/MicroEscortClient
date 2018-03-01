@@ -150,10 +150,10 @@ export class MindToolComponent implements OnInit, OnDestroy {
       tmp.src = src;
     });
     const image: HTMLImageElement = await promise;
-    // this.width = image.width;
-    // this.height = image.height;
-    this.width = 600;
-    this.height = this.width * image.height / image.width;
+    this.width = image.width;
+    this.height = image.height;
+    // this.width = 600;
+    // this.height = this.width * image.height / image.width;
     this.dataSrc = src;
 
     this.labelToolComponent.width = this.width;
@@ -320,26 +320,41 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   onMouseWheel(e: WheelEvent) {
     // if (e.ctrlKey) {
-      if (e.deltaY < 0 && this.zoomTimes < 10) {
-        this.zoomIn();
-      } else if (e.deltaY > 0 && this.zoomTimes > 0) {
-        this.zoomOut();
-      }
-      console.log(`zoom: ${this.zoomTimes}`);
-      e.preventDefault();
+    if (e.deltaY < 0 && this.zoomTimes < 10) {
+      this.zoomIn();
+    } else if (e.deltaY > 0 && this.zoomTimes > -8) {
+      this.zoomOut();
+    }
+    console.log(`zoom: ${this.zoomTimes}`);
+    e.preventDefault();
     // }
   }
 
   zoomIn() {
-    this.zoom += 0.2 * (this.zoomTimes++ + 1);
+    this.zoomTimes++;
+    if (this.zoomTimes > 0) {
+      this.zoom += 0.2;
+    } else if (this.zoomTimes < 0) {
+      this.zoom = Math.pow(1 - 0.2 * this.zoomTimes, -1);
+    } else {
+      this.zoom = 1;
+    }
+    console.log(this.zoom);
 
     this.refreshTransform();
     console.log(this.labelToolComponent.zoom);
   }
 
   zoomOut() {
-    console.log(`${this.zoom} - 0.2 * (${this.zoomTimes})`);
-    this.zoom -= 0.2 * this.zoomTimes--;
+    this.zoomTimes--;
+    if (this.zoomTimes > 0) {
+      this.zoom -= 0.2;
+    } else if (this.zoomTimes < 0) {
+      this.zoom = Math.pow(1 - 0.2 * this.zoomTimes, -1);
+    } else {
+      this.zoom = 1;
+    }
+    console.log(this.zoom);
 
     this.refreshTransform();
   }
