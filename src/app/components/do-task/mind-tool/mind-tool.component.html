@@ -5,7 +5,7 @@
     [style.transform]="safeTransform"
     (contextmenu)="disableMenu()">
     <!-- <canvas #canvas></canvas> -->
-    <img [src]="dataSrc">
+    <img [src]="dataSrc" [style.width]="width + 'px'" [style.height]="height + 'px'">
     <div [style.width]="width + 'px'" [style.height]="height + 'px'" [style.margin-top]="(0-height) + 'px'">
       <ng-template appToolSwitch></ng-template>
     </div>

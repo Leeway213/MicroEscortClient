@@ -150,8 +150,10 @@ export class MindToolComponent implements OnInit, OnDestroy {
       tmp.src = src;
     });
     const image: HTMLImageElement = await promise;
-    this.width = image.width;
-    this.height = image.height;
+    // this.width = image.width;
+    // this.height = image.height;
+    this.width = 600;
+    this.height = this.width * image.height / image.width;
     this.dataSrc = src;
 
     this.labelToolComponent.width = this.width;

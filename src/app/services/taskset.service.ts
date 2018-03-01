@@ -40,13 +40,34 @@ export class TaskSetService {
         return p;
     }
 
-    async getTaskSetById(id: string) {
-        const result = await this.getTaskSets({taskset_id: id});
-        if (result && result.length > 0)  {
-            return result[0];
-        } else {
-            return null;
-        }
+    async getTaskSetById(id: string): Promise<TaskSetModel> {
+        const p = new Promise<TaskSetModel>((resolve, reject) => {
+            this.http.get(`${this.userService.baseUrl}/tasksets/detail?taskset_id=${id}`, {
+                headers: new HttpHeaders({
+                    Authorization: `Bearer ${this.userService.user.token}`
+                })
+            }).subscribe(
+                data => {
+                    const objData = data as any;
+                    if (objData.code === 200) {
+                        resolve(objData.data.taskset);
+                    } else {
+                        reject(objData.msg);
+                    }
+                },
+                error => {
+                    reject(error);
+                }
+            )
+        });
+
+        return p;
+        // const result = await this.getTaskSets({taskset_id: id});
+        // if (result && result.length > 0)  {
+            // return result[0];
+        // } else {
+            // return null;
+        // }
     }
 }
 
