@@ -7,8 +7,9 @@ import { PipeTransform, Pipe } from "@angular/core";
 })
 export class PointsToStringPipe implements PipeTransform {
     transform(value: any, ...args: any[]) {
+        const zoom = args[0];
         const tmp = value as Vertex[];
-        return tmp.map(v => `${v.X},${v.Y}`).join(' ');
+        return tmp.map(v => `${v.X * zoom},${v.Y * zoom}`).join(' ');
     }
 
 }

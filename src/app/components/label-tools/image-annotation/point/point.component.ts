@@ -82,7 +82,7 @@ export class PointComponent implements OnInit, LabelToolComponent {
     console.log(e);
     if (this.mode === 'draw') {
       this.points.map(value => value.selected ? value.selected = false : undefined);
-      this.points.push({ label: null, point: new Point(e.offsetX, e.offsetY), selected: true });
+      this.points.push({ label: null, point: new Point(e.offsetX / this.zoom, e.offsetY / this.zoom), selected: true });
       this.logOperation();
     }
   }
@@ -108,8 +108,8 @@ export class PointComponent implements OnInit, LabelToolComponent {
     if (this.dragging) {
       // this.points[this.draggingIndex].point.X += e.movementX / this.zoom;
       // this.points[this.draggingIndex].point.Y += e.movementY / this.zoom;
-      this.points[this.draggingIndex].point.X = e.offsetX;
-      this.points[this.draggingIndex].point.Y = e.offsetY;
+      this.points[this.draggingIndex].point.X = e.offsetX / this.zoom;
+      this.points[this.draggingIndex].point.Y = e.offsetY / this.zoom;
       e.stopPropagation();
       e.preventDefault();
     }

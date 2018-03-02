@@ -1,29 +1,28 @@
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-  attr.viewBox="0 0 {{width}} {{height}}" [attr.width]="width" [attr.height]="height"
+  attr.viewBox="0 0 {{width * zoom}} {{height * zoom}}" [attr.width]="width * zoom" [attr.height]="height * zoom"
   (mouseup)="onSvgClick($event)">
   <svg:g class="polygon-group" *ngIf="polygonCanvas">
     <svg:g>
       <svg:polygon style="fill-opacity: 0;"
-        *ngFor="let polygon of polygonCanvas.polygons; let i = index" [attr.points]="polygon.polygon | PointsToString"
+        *ngFor="let polygon of polygonCanvas.polygons; let i = index" [attr.points]="polygon.polygon | PointsToString: zoom"
         [style.fill-opacity]="polygon.selected || polygon.color !== 'white' ? 0.2 : 0"
         [style.fill]="polygon.color ? polygon.color : 'white'"
         (click)="selectPolygon(i, $event)"></svg:polygon>
     </svg:g>
     <svg:g>
       <svg:line class="path-line" 
-        *ngFor="let line of polygonCanvas.lines" 
-        [attr.x1]="line.start.X"
-        [attr.y1]="line.start.Y"
-        [attr.x2]="line.end.X"
-        [attr.y2]="line.end.Y"
-        [attr.stroke-width]="1.5 / zoom" stroke="green"></svg:line>
+        *ngFor="let line of polygonCanvas.lines" [attr.x1]="line.start.X * zoom"
+        [attr.y1]="line.start.Y * zoom"
+        [attr.x2]="line.end.X * zoom"
+        [attr.y2]="line.end.Y * zoom"
+        [attr.stroke-width]="1.5" stroke="green"></svg:line>
     </svg:g>
     <svg:g *ngFor="let point of polygonCanvas.vertexs">
       <svg:circle class="path-point" 
         *ngIf="polygonCanvas.isVisible(point)"
-        [attr.r]="2 * pointSize / zoom" [attr.cx]="point.X" [attr.cy]="point.Y"
+        [attr.r]="2 * pointSize" [attr.cx]="point.X * zoom" [attr.cy]="point.Y * zoom"
         style="stroke: red; fill: white;" 
-        [attr.stroke-width]="1 * pointSize / zoom" 
+        [attr.stroke-width]="1 * pointSize" 
         (mouseenter)="zoomPointWhenMouseEnter()"
         (mouseleave)="resumePointWhenMouseLeave()"
         (mouseup)="onSvgClick($event)"></svg:circle>
