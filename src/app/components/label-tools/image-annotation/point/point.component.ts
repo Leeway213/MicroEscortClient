@@ -101,9 +101,9 @@ export class PointComponent implements OnInit, LabelToolComponent {
   }
 
   onPointMouseMove(e: MouseEvent) {
-    if (e[this.blockKeyInMouseEvent]) {
-      return;
-    }
+    // if (e[this.blockKeyInMouseEvent]) {
+    //   return;
+    // }
 
     if (this.dragging) {
       // this.points[this.draggingIndex].point.X += e.movementX / this.zoom;
@@ -116,9 +116,9 @@ export class PointComponent implements OnInit, LabelToolComponent {
   }
 
   onPointMouseUp(e: MouseEvent, i: number) {
-    if (e[this.blockKeyInMouseEvent]) {
-      return;
-    }
+    // if (e[this.blockKeyInMouseEvent]) {
+    //   return;
+    // }
 
     if (this.mode === "select") {
       this.points.map(value => value.selected ? value.selected = false : undefined);

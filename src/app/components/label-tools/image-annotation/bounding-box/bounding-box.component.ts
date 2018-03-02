@@ -113,19 +113,21 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
     }
   }
 
-  onMouseDown(e: MouseEvent) {
+  bounding: boolean = false;
+  onMouseDown = (e: MouseEvent) => {
     if (e[this.blockKeyInMouseEvent]) {
       return;
     }
     if (e.buttons === 1 && this.mode === 'draw') {
+      this.bounding = true;
         this.startBounding(e);
     }
   }
 
-  onMouseMove(e: MouseEvent) {
-    if (e[this.blockKeyInMouseEvent]) {
-      return;
-    }
+  onMouseMove = (e: MouseEvent) => {
+    // if (e[this.blockKeyInMouseEvent]) {
+    //   return;
+    // }
     // if in resizing mode
     if (this.resizing) {
       this.resizeBound(e);
@@ -135,16 +137,17 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
     if (
       e.buttons === 1 &&
       this.boundingBoxs.length >= 1 &&
-      this.mode === 'draw'
+      this.mode === 'draw' &&
+      this.bounding
     ) {
       this.moveBounding(e);
     }
   }
 
-  onMouseUp(e: MouseEvent) {
-    if (e[this.blockKeyInMouseEvent]) {
-      return;
-    }
+  onMouseUp = (e: MouseEvent) => {
+    // if (e[this.blockKeyInMouseEvent]) {
+    //   return;
+    // }
     if (this.resizing) {
       this.resizing = false;
       this.logOperation();
@@ -152,10 +155,16 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
     }
 
     if (e.button === 0) {
-      if (this.boundingBoxs.length >= 1 && this.mode === 'draw') {
+      if (this.boundingBoxs.length >= 1 && this.mode === 'draw' && this.bounding) {
         this.endBounding(e);
+        this.bounding = false;
       }
     }
+  }
+
+  onMouseLeave = (e: MouseEvent) => {
+    console.log(e);
+    this.onMouseUp(e);
   }
 
   startBounding(e: MouseEvent) {
