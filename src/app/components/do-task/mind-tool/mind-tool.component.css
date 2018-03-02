@@ -63,3 +63,11 @@
     max-width: 280px;
 }
 
+.mat-button-toggle {
+    background-color: lightblue;
+    margin: 0 0.5px;
+} 
+
+.mat-button-toggle-checked {
+    background-color: lightcoral;
+}
