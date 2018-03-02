@@ -94,21 +94,21 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
     switch (this.resizingBound) {
       case `left`:
         this.resizingBoundingBox.svgWidth +=
-          this.resizingBoundingBox.svgStart.X - e.offsetX;
-        this.resizingBoundingBox.svgStart.X = e.offsetX;
+          this.resizingBoundingBox.svgStart.X - e.offsetX / this.zoom;
+        this.resizingBoundingBox.svgStart.X = e.offsetX / this.zoom;
         break;
       case `right`:
         this.resizingBoundingBox.svgWidth =
-          e.offsetX - this.resizingBoundingBox.svgStart.X;
+          e.offsetX / this.zoom - this.resizingBoundingBox.svgStart.X;
         break;
       case `top`:
         this.resizingBoundingBox.svgHeight +=
-          this.resizingBoundingBox.svgStart.Y - e.offsetY;
-        this.resizingBoundingBox.svgStart.Y = e.offsetY;
+          this.resizingBoundingBox.svgStart.Y - e.offsetY / this.zoom;
+        this.resizingBoundingBox.svgStart.Y = e.offsetY / this.zoom;
         break;
       case `bottom`:
         this.resizingBoundingBox.svgHeight =
-          e.offsetY - this.resizingBoundingBox.svgStart.Y;
+          e.offsetY / this.zoom - this.resizingBoundingBox.svgStart.Y;
         break;
     }
   }
@@ -174,8 +174,8 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
     }
 
     const boundingbox: BoundingBox = new BoundingBox();
-    boundingbox.start = new Point(e.offsetX, e.offsetY);
-    boundingbox.svgStart = new Point(e.offsetX, e.offsetY);
+    boundingbox.start = new Point(e.offsetX / this.zoom, e.offsetY / this.zoom);
+    boundingbox.svgStart = new Point(e.offsetX / this.zoom, e.offsetY / this.zoom);
     boundingbox.strokeColor = '#555555';
     boundingbox.selected = true;
     this.boundingBoxs.push(boundingbox);
@@ -185,8 +185,8 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
     const boundingbox: BoundingBox = this.boundingBoxs[
       this.boundingBoxs.length - 1
     ];
-    boundingbox.width = e.offsetX - boundingbox.start.X;
-    boundingbox.height = e.offsetY - boundingbox.start.Y;
+    boundingbox.width = e.offsetX / this.zoom - boundingbox.start.X;
+    boundingbox.height = e.offsetY / this.zoom - boundingbox.start.Y;
   }
 
   endBounding(e: MouseEvent) {

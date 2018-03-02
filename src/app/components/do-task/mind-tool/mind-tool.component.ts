@@ -84,7 +84,8 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   private refreshTransform() {
-    this.safeTransform = this.sanitizer.bypassSecurityTrustStyle(`scale(${this.zoom}) translate(${this.transX}px, ${this.transY}px)`);
+    // scale(${this.zoom}) 
+    this.safeTransform = this.sanitizer.bypassSecurityTrustStyle(`translate(${this.transX * this.zoom}px, ${this.transY * this.zoom}px)`);
     this.labelToolComponent.zoom = this.zoom;
   }
 

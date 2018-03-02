@@ -1,12 +1,14 @@
 <div class="work-panel">
+
+    <!-- [style.transform]="safeTransform" -->
   <div #svgContainer class="svg-container center align-self-center"
-    [style.width]="width + 'px'"
-    [style.height]="height + 'px'"
+    [style.width]="width * zoom + 'px'"
+    [style.height]="height * zoom + 'px'"
     [style.transform]="safeTransform"
     (contextmenu)="disableMenu()">
     <!-- <canvas #canvas></canvas> -->
-    <img [src]="dataSrc" [style.width]="width + 'px'" [style.height]="height + 'px'">
-    <div [style.width]="width + 'px'" [style.height]="height + 'px'" [style.margin-top]="(0-height) + 'px'">
+    <img [src]="dataSrc" [style.width]="width * zoom + 'px'" [style.height]="height * zoom + 'px'">
+    <div [style.width]="width * zoom + 'px'" [style.height]="height * zoom + 'px'" [style.margin-top]="(0 - height * zoom) + 'px'">
       <ng-template appToolSwitch></ng-template>
     </div>
   </div>
