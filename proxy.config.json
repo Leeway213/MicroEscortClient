@@ -1,11 +1,11 @@
 {
     "/api": {
-        "target": "http://localhost:8080",
+        "target": "http://59.110.155.156",
         "secure": false,
         "changeOrigin": true
     },
     "/static": {
-        "target": "http://localhost:8080",
+        "target": "http://59.110.155.156",
         "secure": false,
         "changeOrigin": true
     }
