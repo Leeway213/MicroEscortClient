@@ -139,7 +139,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
     this.labelToolComponent.data = this.currentTask;
     this.labelToolComponent.mode = this.mode;
     this.labelToolComponent.zoom = this.zoom;
-    this.labelToolComponent.blockKeyInMouseEvent = 'altKey';
+    this.labelToolComponent.blockKeyInMouseEvent = 'ctrlKey';
     this.labelToolComponent.refresh();
   }
 
@@ -176,7 +176,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
    */
   private addShotcut() {
     document.onkeydown = e => {
-      console.log(e);
       // ctrl+z: 撤销
       if (e.ctrlKey && e.key === 'z') {
         this.undo();
@@ -326,7 +325,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   onMouseDown(e: MouseEvent) {
-    if (e.buttons === 1 && e.altKey) {
+    if (e.buttons === 1 && e.ctrlKey) {
       // 开始拖动
       this.translating = true;
 
@@ -363,7 +362,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   onMouseWheel(e: WheelEvent) {
     console.log(e);
-    // if (e.altKey) {
+    // if (e.ctrlKey) {
     if (e.deltaY < 0 && this.zoomTimes < 10) {
       this.zoomIn();
     } else if (e.deltaY > 0 && this.zoomTimes > -8) {
