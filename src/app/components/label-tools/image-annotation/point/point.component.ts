@@ -17,7 +17,9 @@ export class PointComponent implements OnInit, LabelToolComponent {
   @Input() zoom: number;
   @Input() blockKeyInMouseEvent: "ctrlKey" | "shiftKey" | "altKey";
 
-  canUndo: boolean;
+  get canUndo(): boolean {
+    return this.operationStack.length > 0;
+  }
 
   points: { label: string, point: Point, selected: boolean }[] = [];
 
@@ -28,7 +30,7 @@ export class PointComponent implements OnInit, LabelToolComponent {
 
   logOperation() {
     this.operationStack.push(ObjectHelper.objClone(this.points) as { label: string, point: Point, selected: boolean });
-    this.canUndo = this.operationStack.length > 0;
+    // this.canUndo = this.operationStack.length > 0;
   }
 
   undo() {
@@ -40,7 +42,7 @@ export class PointComponent implements OnInit, LabelToolComponent {
     if (!this.points) {
       this.points = [];
     }
-    this.canUndo = this.operationStack.length > 0;
+    // this.canUndo = this.operationStack.length > 0;
   }
 
   getResult() {

@@ -4,7 +4,7 @@
   (mouseup)="onClick($event)">
 
   <svg:g *ngFor="let point of points; let i = index">
-    <svg:circle class="major-point" [attr.r]="3" [attr.cx]="point.point.X * zoom" [attr.cy]="point.point.Y * zoom"
+    <svg:circle class="major-point" [matTooltip]="point.label" [attr.r]="3" [attr.cx]="point.point.X * zoom" [attr.cy]="point.point.Y * zoom"
       [style.fill]="point.selected ? 'red' : ''"
       (mousedown)="onPointMouseDown($event, i)"
       (mouseup)="onPointMouseUp($event, i)"

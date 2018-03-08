@@ -18,7 +18,9 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
   @Input() height: number;
   @Input() data: any;
 
-  canUndo: boolean;
+  get canUndo(): boolean {
+    return this.operationStack.length > 0;
+  }
 
   @ViewChild('svgContainer') svgContainerRef: ElementRef;
 
@@ -53,7 +55,6 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
   refresh() {
     this.boundingBoxs = [];
     this.operationStack = [];
-    this.canUndo = false;
     this.showResult = !this.data.quiz;
   }
 
@@ -209,12 +210,10 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
     if (!this.boundingBoxs) {
       this.boundingBoxs = [];
     }
-    this.canUndo = this.operationStack.length > 0;
   }
 
   logOperation() {
     this.operationStack.push(ObjectHelper.objClone(this.boundingBoxs));
-    this.canUndo = this.operationStack.length > 0;
   }
 
   getResult(): any {

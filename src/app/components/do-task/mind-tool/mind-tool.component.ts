@@ -384,6 +384,10 @@ export class MindToolComponent implements OnInit, OnDestroy {
     this.labelToolComponent.undo();
   }
 
+  reset() {
+    this.labelToolComponent.refresh();
+  }
+
   verifyResultChange(e: boolean) {
     this.verifyPass = e;
   }
