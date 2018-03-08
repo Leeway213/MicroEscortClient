@@ -1,32 +1,34 @@
 <div>
   <svg [style.cursor]="mode === 'draw' ? 'crosshair' : 'default'" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-    attr.viewBox="0 0 {{width * zoom}} {{height * zoom}}" [attr.width]="width * zoom" [attr.height]="height * zoom" (mousedown)="onMouseDown($event)" (mousemove)="onMouseMove($event)"
-    (mouseup)="onMouseUp($event)" (mouseleave)="onMouseLeave($event)">
+    attr.viewBox="0 0 {{width * zoom}} {{height * zoom}}" [attr.width]="width * zoom" [attr.height]="height * zoom" (mousedown)="onMouseDown($event)"
+    (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp($event)" (mouseleave)="onMouseLeave($event)">
 
     <!--显示后端返回的boundingbox-->
     <svg:g *ngIf="showResult && data.params.result && data.params.result.annotations">
       <svg:rect *ngFor="let item of data.params.result.annotations" class="bounding-box" style="stroke: blue;" [style.stroke-width]="(1) + 'px'"
-        [attr.x]="item.start.X * zoom" [attr.y]="item.start.Y * zoom" [attr.width]="item.width * zoom" [attr.height]="item.height * zoom" [matTooltip]="item.label"></svg:rect>
+        [attr.x]="item.start.X * zoom" [attr.y]="item.start.Y * zoom" [attr.width]="item.width * zoom" [attr.height]="item.height * zoom"
+        [matTooltip]="item.label"></svg:rect>
     </svg:g>
     <svg:g #svgGroup *ngFor="let item of boundingBoxs; let i = index">
 
       <svg:rect class="bounding-box" [matTooltip]="item.label" [style.stroke-width]="(1.5) + 'px'" [style.fill]="item.fillColor"
-        [attr.x]="item.svgStart.X * zoom" [attr.y]="item.svgStart.Y * zoom" [attr.width]="item.svgWidth * zoom" [attr.height]="item.svgHeight * zoom" (click)="clickBox(i)"></svg:rect>
+        [attr.x]="item.svgStart.X * zoom" [attr.y]="item.svgStart.Y * zoom" [attr.width]="item.svgWidth * zoom" [attr.height]="item.svgHeight * zoom"
+        (mousedown)="clickBox(i, $event)"></svg:rect>
       <svg:g *ngIf="item.svgWidth * zoom > 0 && item.svgHeight * zoom > 0 && item.selected">
         <svg:circle id="left-top" class="bounding-point" [style.stroke-width]="(1) + 'px'" [attr.r]="2" [attr.cx]="item.svgStart.X * zoom"
           [attr.cy]="item.svgStart.Y * zoom"></svg:circle>
-        <svg:circle id="left-center-{{i}}" class="bounding-point resize-point" [style.stroke-width]="(1) + 'px'" [attr.r]="3"
-          [attr.cx]="item.svgStart.X * zoom" [attr.cy]="item.svgStart.Y * zoom + (item.svgHeight * zoom / 2)" (mousedown)="startResize($event)"></svg:circle>
+        <svg:circle id="left-center-{{i}}" class="bounding-point resize-point" [style.stroke-width]="(1) + 'px'" [attr.r]="3" [attr.cx]="item.svgStart.X * zoom"
+          [attr.cy]="item.svgStart.Y * zoom + (item.svgHeight * zoom / 2)" (mousedown)="startResize($event)"></svg:circle>
         <svg:circle id="left-bottom" class="bounding-point" [style.stroke-width]="(1) + 'px'" [attr.r]="2" [attr.cx]="item.svgStart.X * zoom"
           [attr.cy]="item.svgStart.Y * zoom + item.svgHeight * zoom"></svg:circle>
-        <svg:circle id="top-center-{{i}}" class="bounding-point resize-point" [style.stroke-width]="(1) + 'px'" [attr.r]="3"
-          [attr.cx]="item.svgStart.X * zoom + (item.svgWidth * zoom / 2)" [attr.cy]="item.svgStart.Y * zoom" (mousedown)="startResize($event)"></svg:circle>
-        <svg:circle id="bottom-center-{{i}}" class="bounding-point resize-point" [style.stroke-width]="(1) + 'px'" [attr.r]="3"
-          [attr.cx]="item.svgStart.X * zoom + (item.svgWidth * zoom / 2)" [attr.cy]="item.svgStart.Y * zoom + item.svgHeight * zoom" (mousedown)="startResize($event)"></svg:circle>
+        <svg:circle id="top-center-{{i}}" class="bounding-point resize-point" [style.stroke-width]="(1) + 'px'" [attr.r]="3" [attr.cx]="item.svgStart.X * zoom + (item.svgWidth * zoom / 2)"
+          [attr.cy]="item.svgStart.Y * zoom" (mousedown)="startResize($event)"></svg:circle>
+        <svg:circle id="bottom-center-{{i}}" class="bounding-point resize-point" [style.stroke-width]="(1) + 'px'" [attr.r]="3" [attr.cx]="item.svgStart.X * zoom + (item.svgWidth * zoom / 2)"
+          [attr.cy]="item.svgStart.Y * zoom + item.svgHeight * zoom" (mousedown)="startResize($event)"></svg:circle>
         <svg:circle id="right-top" class="bounding-point" [style.stroke-width]="(1) + 'px'" [attr.r]="2" [attr.cx]="item.svgStart.X * zoom + item.svgWidth * zoom"
           [attr.cy]="item.svgStart.Y * zoom"></svg:circle>
-        <svg:circle id="right-center-{{i}}" class="bounding-point resize-point" [style.stroke-width]="(1) + 'px'" [attr.r]="3"
-          [attr.cx]="item.svgStart.X * zoom + item.svgWidth * zoom" [attr.cy]="item.svgStart.Y * zoom + (item.svgHeight * zoom / 2)" (mousedown)="startResize($event)"></svg:circle>
+        <svg:circle id="right-center-{{i}}" class="bounding-point resize-point" [style.stroke-width]="(1) + 'px'" [attr.r]="3" [attr.cx]="item.svgStart.X * zoom + item.svgWidth * zoom"
+          [attr.cy]="item.svgStart.Y * zoom + (item.svgHeight * zoom / 2)" (mousedown)="startResize($event)"></svg:circle>
         <svg:circle id="right-bottom" class="bounding-point" [style.stroke-width]="(1) + 'px'" [attr.r]="2" [attr.cx]="item.svgStart.X * zoom + item.svgWidth * zoom"
           [attr.cy]="item.svgStart.Y * zoom + item.svgHeight * zoom"></svg:circle>
 

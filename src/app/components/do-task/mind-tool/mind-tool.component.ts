@@ -99,6 +99,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
     (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mousewheel', event => { this.onMouseWheel(event) }, true);
     (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mouseleave', event => { this.onMouseLeave(event) }, true);
 
+
     this.addSkipWhenWindowClosedHandler();
     this.initialize();
     this.addShotcut();
@@ -108,6 +109,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
   async ngOnDestroy(): Promise<void> {
     console.log(this.currentTask);
 
+    this.removeShotcut();
     this.removeSkipWhenWindowClosedHandler();
     if (this.currentTask) {
       await this.taskService.skipTask(this.currentTask);
@@ -137,7 +139,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
     this.labelToolComponent.data = this.currentTask;
     this.labelToolComponent.mode = this.mode;
     this.labelToolComponent.zoom = this.zoom;
-    this.labelToolComponent.blockKeyInMouseEvent = 'ctrlKey';
+    this.labelToolComponent.blockKeyInMouseEvent = 'altKey';
     this.labelToolComponent.refresh();
   }
 
@@ -174,11 +176,31 @@ export class MindToolComponent implements OnInit, OnDestroy {
    */
   private addShotcut() {
     document.onkeydown = e => {
+      console.log(e);
       // ctrl+z: 撤销
       if (e.ctrlKey && e.key === 'z') {
         this.undo();
       }
+
+      // "1，2，3"切换标注、选择、删除模式
+      if (e.code === "Digit1") {
+        this.labelToolComponent.mode = this.mode = "draw";
+      } else if (e.code === "Digit2") {
+        this.labelToolComponent.mode = this.mode = "select";
+      } else if (e.code === "Digit3") {
+        this.labelToolComponent.mode = this.mode = "delete";
+      } else if (e.code === "KeyA") {
+        this.onZoomInClick();
+      } else if (e.code === "KeyS") {
+        this.onZoomOutClick();
+      } else if (e.code === "KeyD") {
+        this.fitImage();
+      }
     };
+  }
+
+  private removeShotcut() {
+    document.onkeydown = undefined;
   }
 
   /**
@@ -277,14 +299,18 @@ export class MindToolComponent implements OnInit, OnDestroy {
    * 放大按钮点击事件
    */
   onZoomInClick() {
-    this.zoomIn();
+    if (this.zoomTimes < 10) {
+      this.zoomIn();
+    }
   }
 
   /**
    * 缩小按钮点击事件
    */
   onZoomOutClick() {
-    this.zoomOut();
+    if (this.zoomTimes > -8) {
+      this.zoomOut();
+    }
   }
 
   /**
@@ -300,7 +326,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   onMouseDown(e: MouseEvent) {
-    if (e.buttons === 1 && e.ctrlKey) {
+    if (e.buttons === 1 && e.altKey) {
       // 开始拖动
       this.translating = true;
 
@@ -337,7 +363,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   onMouseWheel(e: WheelEvent) {
     console.log(e);
-    // if (e.ctrlKey) {
+    // if (e.altKey) {
     if (e.deltaY < 0 && this.zoomTimes < 10) {
       this.zoomIn();
     } else if (e.deltaY > 0 && this.zoomTimes > -8) {

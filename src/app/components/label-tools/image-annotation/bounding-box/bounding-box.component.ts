@@ -48,7 +48,6 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
     // (this.svgContainerRef.nativeElement as HTMLElement).addEventListener('mousemove', event => { this.onMouseMove(event) }, true);
     // (this.svgContainerRef.nativeElement as HTMLElement).addEventListener('mouseup', event => { this.onMouseUp(event) }, true);
 
-    console.log(this.data);
     this.refresh();
   }
 
@@ -68,7 +67,10 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
     this.logOperation();
   }
 
-  clickBox(i: number) {
+  clickBox(i: number, e: MouseEvent) {
+    if (e[this.blockKeyInMouseEvent]) {
+      return;
+    }
     if (this.mode === 'select') {
       this.boundingBoxs[i].selected = !this.boundingBoxs[i].selected;
     } else if (this.mode === 'delete') {
@@ -155,7 +157,7 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
       return;
     }
 
-    if (e.button === 0) {
+    if (e.button === 0 && this.bounding) {
       if (this.boundingBoxs.length >= 1 && this.mode === 'draw' && this.bounding) {
         this.endBounding(e);
         this.bounding = false;
