@@ -88,8 +88,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   private refreshTransform() {
     // scale(${this.zoom}) 
-    this.safeTransform = this.sanitizer.bypassSecurityTrustStyle(`translate(${this.transX}px, ${this.transY}px)`);
-    // this.safeTransform = this.sanitizer.bypassSecurityTrustStyle(`translate(${this.transX * this.zoom}px, ${this.transY * this.zoom}px)`);
+    this.safeTransform = this.sanitizer.bypassSecurityTrustStyle(`translate(${this.transX * this.zoom}px, ${this.transY * this.zoom}px)`);
     this.labelToolComponent.zoom = this.zoom;
   }
 
@@ -358,12 +357,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
     } else {
       this.zoom = 1;
     }
-    console.log(this.zoom);
-
-    this.transX += (this.zoom - 1) * this.width / 2 + this.scaleCenter.X - (this.zoom * this.scaleCenter.X);
-    this.transY += (this.zoom - 1) * this.height / 2 + this.scaleCenter.Y - (this.zoom * this.scaleCenter.Y);
-    this.scaleCenter.X *= this.zoom;
-    this.scaleCenter.Y *= this.zoom;
 
     this.refreshTransform();
   }
@@ -377,11 +370,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
     } else {
       this.zoom = 1;
     }
-    console.log(this.zoom);
-    this.transX += (this.zoom - 1) * this.width / 2 + this.scaleCenter.X - (this.zoom * this.scaleCenter.X);
-    this.transY += (this.zoom - 1) * this.height / 2 + this.scaleCenter.Y - (this.zoom * this.scaleCenter.Y);
-    this.scaleCenter.X /= this.zoom;
-    this.scaleCenter.Y /= this.zoom;
 
     this.refreshTransform();
   }
@@ -390,7 +378,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
     this.transX += e.movementX / this.zoom;
     this.transY += e.movementY / this.zoom;
     this.refreshTransform();
-    console.log(this.transX + '--' + this.transY);
   }
 
   undo() {
