@@ -57,7 +57,7 @@ export class PolygonCanvas extends Graph {
    * draw point
    * @param p
    */
-  draw(p: Point) {
+  draw(p: Point, onLine?: Line) {
 
     this.clearSelection();
 
@@ -65,25 +65,26 @@ export class PolygonCanvas extends Graph {
     const found = this.findVertex(p);
 
     // 计算新的点是否在已有的线上，并获得这条线
-    let onLine: Line = this.onWhichLine(p);
+    // let onLine: Line = this.onWhichLine(p);
+    // console.log(onLine);
 
-    if (!onLine) {
+    // if (!onLine) {
 
-      // 查找是否有与新点的距离小于5的线
-      for (const value of this.lines) {
-        const tmp = this.getNeareastPointFromPointToLine(p, value);
-        if (tmp && value.isOnLine(tmp)) {
-          // 获取点到直线的距离
-          const distance = this.getDistanceBetween(tmp, p);
-          if (distance <= 1 / this.zoom) {
-            // 如果距离小于1，则用直线上的投射替代p
-            p = tmp;
-            onLine = value;
-            break;
-          }
-        }
-      }
-    }
+    //   // 查找是否有与新点的距离小于5的线
+    //   for (const value of this.lines) {
+    //     const tmp = this.getNeareastPointFromPointToLine(p, value);
+    //     if (tmp && value.isOnLine(tmp)) {
+    //       // 获取点到直线的距离
+    //       const distance = this.getDistanceBetween(tmp, p);
+    //       if (distance <= 1 / this.zoom) {
+    //         // 如果距离小于1，则用直线上的投射替代p
+    //         p = tmp;
+    //         onLine = value;
+    //         break;
+    //       }
+    //     }
+    //   }
+    // }
 
     // 如果前一个顶点为空，则重新开始画一条路径
     if (!this.preVertex) {
@@ -97,8 +98,8 @@ export class PolygonCanvas extends Graph {
         const newVertex = new Vertex(p.X, p.Y);
         this.insertVertexBetweenLine(
           newVertex,
-          <Vertex>onLine.start,
-          <Vertex>onLine.end
+          this.findVertex(onLine.start),
+          this.findVertex(onLine.end)
         );
         this.preVertex = newVertex;
       }
@@ -137,16 +138,36 @@ export class PolygonCanvas extends Graph {
           this.getRings();
         } else {
           const newVertex = new Vertex(p.X, p.Y);
-          newVertex.addNeighbor(this.preVertex);
-          this.addVertex(newVertex);
           this.drawLine(this.preVertex, newVertex);
-          this.preVertex = newVertex;
+          newVertex.addNeighbor(this.preVertex);
+          if (onLine) {
+            this.insertVertexBetweenLine(
+              newVertex,
+              this.findVertex(onLine.start),
+              this.findVertex(onLine.end)
+            );
+            this.preVertex = undefined;
+            this.getRings();
+          } else {
+            this.addVertex(newVertex);
+            this.preVertex = newVertex;
+          }
         }
       }
     }
 
     this.pointsHistory.push(p);
 
+  }
+
+  drawOnLine(p: Point, line: Line) {
+    const near = this.getNeareastPointFromPointToLine(p, line);
+    console.log('****');
+    console.log(p);
+    console.log(near);
+    console.log('****');
+
+    this.draw(near, line);
   }
 
   drawOnPoint(p: Point) {

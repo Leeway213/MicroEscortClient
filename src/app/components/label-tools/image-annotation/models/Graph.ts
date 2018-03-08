@@ -243,6 +243,10 @@ export class Vertex extends Point {
   }
 
   removeNeighbor(v: Vertex) {
+    console.log(this);
+    console.log(this.neighbors);
+    console.log(v);
+    console.log(this.findNeighborIndex(v));
     this.neighbors.splice(this.findNeighborIndex(v), 1);
   }
 

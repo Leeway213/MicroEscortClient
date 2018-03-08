@@ -3,6 +3,7 @@ import { LabelToolComponent } from '../../LabelToolComponent';
 import { PolygonCanvas } from '../models/PolygonCanvas';
 import { Point } from '../models/Point';
 import { ObjectHelper } from '../../../../utils/StaticMethod';
+import { Line } from '../models/Line';
 
 @Component({
   selector: 'app-polygon',
@@ -18,6 +19,7 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
   @Input() blockKeyInMouseEvent: "ctrlKey" | "shiftKey" | "altKey";
 
   pointSize: number = 1;
+  lineSize: number = 1;
 
   get canUndo(): boolean {
     return this.polygonCanvas.log && this.polygonCanvas.log.length > 1;
@@ -73,8 +75,6 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
   }
 
   onSvgClick(e: MouseEvent) {
-    console.log(this.blockKeyInMouseEvent);
-    console.log(e[this.blockKeyInMouseEvent]);
     if (e[this.blockKeyInMouseEvent] || this.mode !== "draw") {
       return;
     }
@@ -91,7 +91,21 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
       this.polygonCanvas.drawOnPoint(new Point(x, y));
       this.logOperation();
       e.stopPropagation();
-    } else {
+    } else if(e.srcElement && e.srcElement.classList.contains('path-line') && this.mode === 'draw') {
+      const x1 = parseInt(e.srcElement.getAttribute('x1')) / this.zoom;
+      const y1 = parseInt(e.srcElement.getAttribute('y1')) / this.zoom;
+      const x2 = parseInt(e.srcElement.getAttribute('x2')) / this.zoom;
+      const y2 = parseInt(e.srcElement.getAttribute('y2')) / this.zoom;
+      const line = new Line();
+      line.start = new Point(x1, y1);
+      line.end = new Point(x2, y2);
+
+      const p = new Point(e.offsetX / this.zoom, e.offsetY / this.zoom);
+      this.polygonCanvas.drawOnLine(p, line);
+      this.logOperation();
+      e.stopPropagation();
+    }
+    else {
       // const p = new Point(Math.round(e.offsetX), Math.round(e.offsetY));
       const p = new Point(e.offsetX / this.zoom, e.offsetY / this.zoom);
       console.log(`${p.X}, ${p.Y}`);
@@ -123,6 +137,14 @@ export class PolygonComponent implements OnInit, LabelToolComponent {
 
   resumePointWhenMouseLeave() {
     this.pointSize = 1;
+  }
+
+  zoomLineWhenMouseEnter() {
+    this.lineSize = 2.8;
+  }
+
+  resumeLineWhenMouseLeave() {
+    this.lineSize = 1;
   }
 
 }
