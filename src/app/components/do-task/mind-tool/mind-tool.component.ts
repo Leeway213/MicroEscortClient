@@ -22,6 +22,7 @@ import { BoundingBoxComponent } from '../../label-tools/image-annotation/boundin
 import { SafeStyle } from '@angular/platform-browser/src/security/dom_sanitization_service';
 import { ToolSwitchDirective } from '../directives/tool-switch.directive';
 import { TaskSetModel } from '../../../services/taskset.service';
+import { Point } from '../../label-tools/image-annotation/models/Point';
 
 
 
@@ -72,6 +73,8 @@ export class MindToolComponent implements OnInit, OnDestroy {
   transX = 0;
   transY = 0;
 
+  scaleCenter: Point;
+
   @Output() quizEvent = new EventEmitter();
 
   constructor(
@@ -85,7 +88,8 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   private refreshTransform() {
     // scale(${this.zoom}) 
-    this.safeTransform = this.sanitizer.bypassSecurityTrustStyle(`translate(${this.transX * this.zoom}px, ${this.transY * this.zoom}px)`);
+    this.safeTransform = this.sanitizer.bypassSecurityTrustStyle(`translate(${this.transX}px, ${this.transY}px)`);
+    // this.safeTransform = this.sanitizer.bypassSecurityTrustStyle(`translate(${this.transX * this.zoom}px, ${this.transY * this.zoom}px)`);
     this.labelToolComponent.zoom = this.zoom;
   }
 
@@ -94,6 +98,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
     (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mousemove', event => { this.onMouseMove(event) }, true);
     (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mouseup', event => { this.onMouseUp(event) }, true);
     (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mousewheel', event => { this.onMouseWheel(event) }, true);
+    (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mouseleave', event => { this.onMouseLeave(event) }, true);
 
     this.addSkipWhenWindowClosedHandler();
     this.initialize();
@@ -156,6 +161,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
     const image: HTMLImageElement = await promise;
     this.width = image.width;
     this.height = image.height;
+    this.scaleCenter = new Point(this.width / 2, this.height / 2);
     // this.width = 600;
     // this.height = this.width * image.height / image.width;
     this.dataSrc = src;
@@ -306,6 +312,9 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   onMouseMove(e: MouseEvent) {
 
+    this.scaleCenter.X = e.offsetX / this.zoom;
+    this.scaleCenter.Y = e.offsetY / this.zoom;
+
     if (this.translating && e.buttons === 1) {
       this.translate(e);
       return false;
@@ -322,7 +331,13 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
   }
 
+  onMouseLeave(e: MouseEvent) {
+    this.scaleCenter.X = this.width / 2;
+    this.scaleCenter.Y = this.height / 2;
+  }
+
   onMouseWheel(e: WheelEvent) {
+    console.log(e);
     // if (e.ctrlKey) {
     if (e.deltaY < 0 && this.zoomTimes < 10) {
       this.zoomIn();
@@ -334,7 +349,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
     // }
   }
 
-  zoomIn() {
+  zoomIn(e?: WheelEvent) {
     this.zoomTimes++;
     if (this.zoomTimes > 0) {
       this.zoom += 0.2;
@@ -345,11 +360,15 @@ export class MindToolComponent implements OnInit, OnDestroy {
     }
     console.log(this.zoom);
 
+    this.transX += (this.zoom - 1) * this.width / 2 + this.scaleCenter.X - (this.zoom * this.scaleCenter.X);
+    this.transY += (this.zoom - 1) * this.height / 2 + this.scaleCenter.Y - (this.zoom * this.scaleCenter.Y);
+    this.scaleCenter.X *= this.zoom;
+    this.scaleCenter.Y *= this.zoom;
+
     this.refreshTransform();
-    console.log(this.labelToolComponent.zoom);
   }
 
-  zoomOut() {
+  zoomOut(e?: WheelEvent) {
     this.zoomTimes--;
     if (this.zoomTimes > 0) {
       this.zoom -= 0.2;
@@ -359,6 +378,10 @@ export class MindToolComponent implements OnInit, OnDestroy {
       this.zoom = 1;
     }
     console.log(this.zoom);
+    this.transX += (this.zoom - 1) * this.width / 2 + this.scaleCenter.X - (this.zoom * this.scaleCenter.X);
+    this.transY += (this.zoom - 1) * this.height / 2 + this.scaleCenter.Y - (this.zoom * this.scaleCenter.Y);
+    this.scaleCenter.X /= this.zoom;
+    this.scaleCenter.Y /= this.zoom;
 
     this.refreshTransform();
   }

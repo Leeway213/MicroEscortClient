@@ -9,13 +9,16 @@
 
 .work-panel {
     position: absolute;
-    padding-top: 1em;
+    /* padding-top: 1em; */
     top: 50px;
     bottom: 0;
     overflow: hidden;
     background-color: #060544;
     width: 100%;
     height: auto !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     /* min-height: 35.6em; */
     /* max-height: 442px; */
     /* max-width: 1536px; */
@@ -30,6 +33,9 @@
 .svg-container {
     /* z-index: 10; */
     box-shadow: 0 0 1em white;
+    position: absolute;
+    left: -10000px;
+    right: -10000px;
 }
 
 .task-introduction {

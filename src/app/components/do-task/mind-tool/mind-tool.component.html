@@ -1,33 +1,34 @@
 <div class="work-panel">
 
-    <!-- [style.transform]="safeTransform" -->
-  <div #svgContainer class="svg-container center align-self-center"
-    [style.width]="width * zoom + 'px'"
-    [style.height]="height * zoom + 'px'"
-    [style.transform]="safeTransform"
-    (contextmenu)="disableMenu()">
-    <!-- <canvas #canvas></canvas> -->
-    <img [src]="dataSrc" [style.width]="width * zoom + 'px'" [style.height]="height * zoom + 'px'">
-    <div [style.width]="width * zoom + 'px'" [style.height]="height * zoom + 'px'" [style.margin-top]="(0 - height * zoom) + 'px'">
-      <ng-template appToolSwitch></ng-template>
+  <!-- [style.transform]="safeTransform" -->
+  <div #svgContainer class="svg-container center align-self-center" [style.width]="width * zoom + 'px'" [style.height]="height * zoom + 'px'"
+    [style.transform]="safeTransform" (contextmenu)="disableMenu()">
+    <div>
+      <!-- <canvas #canvas></canvas> -->
+      <img [src]="dataSrc" [style.width]="width * zoom + 'px'" [style.height]="height * zoom + 'px'">
+      <div [style.width]="width * zoom + 'px'" [style.height]="height * zoom + 'px'" [style.margin-top]="(0 - height * zoom) + 'px'">
+        <ng-template appToolSwitch></ng-template>
+      </div>
     </div>
   </div>
 
   <div class="left-menu">
     <!--Task Introduction-->
-      <div *ngIf="tasks !== undefined && tasks[currentTaskIndex] !== undefined && tasks[currentTaskIndex].introduction" class="task-introduction">
-          <!-- <td-markdown [content]="tasks[currentTaskIndex].introduction"></td-markdown> -->
-          <app-introduction-viewer [content]="tasks[currentTaskIndex].introduction"></app-introduction-viewer>
-      </div>
-      <div *ngIf="tasks !== undefined && tasks[currentTaskIndex] !== undefined && tasks[currentTaskIndex].status === 'verifying'" class="task-introduction">
-        <app-verify-panel [message]="'当前标注是否正确??'" (resultChange)="verifyResultChange($event)"></app-verify-panel>
-      </div>
-      <app-label-list *ngIf="currentTask != undefined && currentTask.params.withLabels" [objects]="currentTask.params.objectsToAnnotate" (onLabeled)="label($event)"></app-label-list>
+    <div *ngIf="tasks !== undefined && tasks[currentTaskIndex] !== undefined && tasks[currentTaskIndex].introduction" class="task-introduction">
+      <!-- <td-markdown [content]="tasks[currentTaskIndex].introduction"></td-markdown> -->
+      <app-introduction-viewer [content]="tasks[currentTaskIndex].introduction"></app-introduction-viewer>
+    </div>
+    <div *ngIf="tasks !== undefined && tasks[currentTaskIndex] !== undefined && tasks[currentTaskIndex].status === 'verifying'"
+      class="task-introduction">
+      <app-verify-panel [message]="'当前标注是否正确??'" (resultChange)="verifyResultChange($event)"></app-verify-panel>
+    </div>
+    <app-label-list *ngIf="currentTask != undefined && currentTask.params.withLabels" [objects]="currentTask.params.objectsToAnnotate"
+      (onLabeled)="label($event)"></app-label-list>
   </div>
 </div>
 <div #toolContainer class="container bottom-tools">
   <button mat-raised-button [style.height]="toolContainer.clientHeight + 'px'" color="accent">快捷键</button>
-  <mat-button-toggle-group #group="matButtonToggleGroup" [style.height]="toolContainer.clientHeight + 'px'" [value]="mode"
+  <mat-button-toggle-group #group="matButtonToggleGroup" style="height:38px" [value]="mode"
     (change)="modeChange($event)">
     <mat-button-toggle [style.height]="toolContainer.clientHeight + 'px'" value="draw">
       <span>绘制</span>
