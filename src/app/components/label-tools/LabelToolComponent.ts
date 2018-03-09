@@ -16,6 +16,7 @@ export interface LabelToolComponent {
   label(args: any);
 }
 
+
 export const labelTools: {[key: string]: Type<LabelToolComponent>} = {
   'boundingbox': BoundingBoxComponent,
   'polygon': PolygonComponent,

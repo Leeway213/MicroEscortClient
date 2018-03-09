@@ -89,7 +89,6 @@ export class BoundingBoxComponent implements OnInit, LabelToolComponent {
     this.resizingBoundingBox = this.boundingBoxs[index];
     this.resizingBound = tmp[0];
     this.resizing = true;
-
     e.stopPropagation();
   }
 

@@ -18,8 +18,8 @@ export class TrainingHouseComponent implements OnInit {
   ngOnInit() {
   }
 
-  navigateTo(projectId: string) {
-    this.router.navigate(['/tasks', projectId]);
+  navigateTo(tasksetId: string) {
+    this.router.navigate(['/tasks', tasksetId]);
   }
 
 }

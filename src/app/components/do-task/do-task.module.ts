@@ -14,6 +14,7 @@ import { PolygonComponent } from '../label-tools/image-annotation/polygon/polygo
 import { ToolSwitchDirective } from './directives/tool-switch.directive';
 import { PointComponent } from '../label-tools/image-annotation/point/point.component';
 import { TaskSetResolver } from './utils/TaskSetResolver.guard';
+import {ChangeZoomDirective} from './directives/changeZoom.directive';
 
 @NgModule({
   imports: [
@@ -31,7 +32,8 @@ import { TaskSetResolver } from './utils/TaskSetResolver.guard';
     LabelListComponent,
     DoTaskComponent,
     MindToolComponent,
-    TaskSubmitComponent
+    TaskSubmitComponent,
+    ChangeZoomDirective
   ],
   providers: [
     TaskSetResolver

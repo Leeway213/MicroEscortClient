@@ -6,13 +6,15 @@ import { MindToolComponent } from '../mind-tool/mind-tool.component';
 import { ProjectService, ProjectModel } from '../../../services/project.service';
 import { TaskSetModel, TaskSetService } from '../../../services/taskset.service';
 
+
 @Component({
   selector: 'app-do-task',
   templateUrl: './do-task.component.html',
   styleUrls: ['./do-task.component.css']
 })
 export class DoTaskComponent implements OnInit {
-
+  //放大倍率
+  num:number=1;
   private mindToolComponent: MindToolComponent;
   @ViewChild("mindTool")
   set mindToolComponentSetter(content: MindToolComponent) {
