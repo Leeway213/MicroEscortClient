@@ -14,9 +14,7 @@
 }
 .data-comfirm{
     display: inline-block;
-    width:100px;
-    padding-top:6px;
-    padding-bottom:6px;
+    padding:6px 10px;
     font-size:20px;
     color:#000;
     border-radius:5px;
@@ -26,9 +24,23 @@
     text-align:center;
     cursor:pointer;
 }
+.data-comfirm.grayed{
+    background:rgb(235, 235, 228);
+    pointer-events: none;
+}
 .data-list{
     background:#fff;
     padding:10px;
     border-radius:5px;
     margin-top:10px;
+}
+.play-btn{
+    padding:6px 10px;
+    background:#fff;
+    border-radius:5px;
+    color:#000;
+    margin:10px auto;
+    margin-left:10px;
+    font-size:20px;
+    cursor:pointer;
 }

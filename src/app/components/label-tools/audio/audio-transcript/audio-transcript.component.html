@@ -4,29 +4,56 @@
     <div id="waveform-timeline"></div>
   </div>
   <div class="control-panel">
-    <button (click)="switch()">播放</button>
+    <button (click)="switch()" class="play-btn">播放</button>
   </div>
 </div>
 <div class="data-wrap">
     <label class="content-label" for="text">文本输入：</label>
-    <input #content type="text" name="text" class="data-content"/>
-    <span class="data-comfirm" (click)="commit(content)">确定</span>
+    <input #content type="text" name="text" class="data-content" [disabled]='addRegionState'/>
+    <button class="data-comfirm" (click)="commit(content)" [class.grayed]="addRegionState" [disabled]='addRegionState'>确定</button>
+    <button class="data-comfirm" (click)="clearRegions()" [class.grayed]="addRegionState" [disabled]='addRegionState'>清除所有区域</button>
     <div class="data-list">
         <nz-table [nzDataSource]="tableData">
             <thead nz-thead>
               <tr>
                 <th nz-th><span>开始时间</span></th>
                 <th nz-th><span>结束时间</span></th>
-                <th nz-th><span>文本内容</span></th>
+                <th nz-th>
+                  <span>文本内容</span>
+                </th>
+                <th nz-th>
+                  <span> 操作</span>
+                </th>
               </tr>
             </thead>
             <tbody nz-tbody>
               <tr nz-tbody-tr  *ngFor="let trdata of tableData;let i=index;">
                 <td nz-td>{{trdata.startTime}}</td>
                 <td nz-td>{{trdata.endTime}}</td>
-                <td nz-td>{{trdata.content}}</td>
+                <td nz-td>
+                  <span *ngIf="editRow!==trdata.key">{{trdata.content}}</span>
+                  <span *ngIf="editRow===trdata.key">
+                    <nz-input [(ngModel)]="tempEditObject[trdata.key].content"></nz-input>
+                  </span>
+                </td>
+                <td nz-td>
+                    <span *ngIf="editRow!==trdata.key">
+                      <a (click)="edit(trdata)">Edit</a>
+                    </span>
+                    <span *ngIf="editRow!==trdata.key">
+                        <a (click)="delete(trdata)">Delete</a>
+                      </span>
+                    <span *ngIf="editRow===trdata.key">
+                      <a (click)="save(trdata)">Save</a>
+                      <span nz-table-divider></span>
+                        <nz-popconfirm [nzTitle]="'Sure to cancel?'" (nzOnConfirm)="cancel(trdata)">
+                          <a nz-popconfirm>Cancel</a>
+                        </nz-popconfirm>
+                    </span>
+                </td>
               </tr>
             </tbody>
         </nz-table>
     </div>
 </div>
+
