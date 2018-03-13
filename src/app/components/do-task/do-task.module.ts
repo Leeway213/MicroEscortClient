@@ -15,6 +15,7 @@ import { ToolSwitchDirective } from './directives/tool-switch.directive';
 import { PointComponent } from '../label-tools/image-annotation/point/point.component';
 import { TaskSetResolver } from './utils/TaskSetResolver.guard';
 import {ChangeZoomDirective} from './directives/changeZoom.directive';
+import { PageGuard } from './utils/page.guard';
 
 @NgModule({
   imports: [
@@ -36,7 +37,8 @@ import {ChangeZoomDirective} from './directives/changeZoom.directive';
     ChangeZoomDirective
   ],
   providers: [
-    TaskSetResolver
+    TaskSetResolver,
+    PageGuard
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   entryComponents: [

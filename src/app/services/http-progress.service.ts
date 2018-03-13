@@ -44,14 +44,13 @@ export class ProgressInterceptor implements HttpInterceptor {
         this.httpProgressService.loading = true;
 
         return next.handle(req).do(event => {
-            console.log(event);
             if (event.type === HttpEventType.DownloadProgress) {
                 // this.httpProgressService.progress = event.loaded / event.total;
             }
 
             if (event instanceof HttpResponse) {
                 const elapsed = Date.now() - started;
-                console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`);
+               // console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`);
                 this.httpProgressService.loading = false;
             }
         }).catch((err, caught) => {

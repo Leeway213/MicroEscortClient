@@ -86,4 +86,5 @@ export interface TaskSetModel {
     project: string;
     createdAt: Date;
     updatedAt: Date;
+    tutorial:string;
 }

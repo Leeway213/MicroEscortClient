@@ -27,6 +27,7 @@ import { MySharedModule } from './components/shared-module/shared.module';
 import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { UserProfileResolver } from './utils/UserProfileResolver.guard';
 import { TaskSetService } from './services/taskset.service';
+import { GetIdService } from './services/getId.service';
 
 
 @NgModule({
@@ -42,7 +43,8 @@ import { TaskSetService } from './services/taskset.service';
     AppRoutingModule,
     HttpClientModule,
     BrowserModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MySharedModule
   ],
   providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
@@ -54,6 +56,7 @@ import { TaskSetService } from './services/taskset.service';
     ProjectService,
     HttpProgressService,
     TaskResolver,
+    GetIdService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ProgressInterceptor,

@@ -5,21 +5,25 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LeftNavPanelComponent } from './left-nav-panel/left-nav-panel.component';
 import { NgZorroAntdModule } from 'ng-zorro-antd';
+import { ToturialComponent } from './toturial/toturial.component';
+import { CovalentTextEditorModule } from '@covalent/text-editor';
 
 @NgModule({
   imports: [
     NgZorroAntdModule,
     CommonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    CovalentTextEditorModule
   ],
-  declarations: [LeftNavPanelComponent],
+  declarations: [LeftNavPanelComponent,ToturialComponent],
   exports: [
     NgZorroAntdModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    LeftNavPanelComponent
+    LeftNavPanelComponent,
+    ToturialComponent
   ]
 })
 export class MySharedModule { }

@@ -34,6 +34,7 @@
       </ul>
 
       <ul *ngIf="userService.checkAuth()" class="nav navbar-nav navbar-right">
+        <li class="toturial-show" (click)="showToturial()">任务指南</li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <span class="glyphicon glyphicon-user"></span>
@@ -61,3 +62,4 @@
     </div>
   </div>
 </nav>
+<app-toturial *ngIf="editorShow" [tasksetId]="tasksetId" (changeEditor)="change()"></app-toturial>

@@ -8,15 +8,15 @@ import RegionsPlugin from 'wavesurfer.js/dist/plugin/wavesurfer.regions.min.js';
 import CursorPlugin from 'wavesurfer.js/dist/plugin/wavesurfer.cursor.js';
 import { TaskService, TaskModel } from '../../../../services/task.service';
 import { TaskSetModel, TaskSetService } from '../../../../services/taskset.service';
-import { SimpleChanges } from '@angular/core/src/metadata/lifecycle_hooks';
-
+import { SimpleChanges, AfterContentInit } from '@angular/core/src/metadata/lifecycle_hooks';
+import { DatePipe } from '@angular/common/src/pipes';
 
 @Component({
   selector: 'app-audio-transcript',
   templateUrl: './audio-transcript.component.html',
   styleUrls: ['./audio-transcript.component.css']
 })
-export class AudioTranscriptComponent implements OnInit {
+export class AudioTranscriptComponent implements OnInit,AfterContentInit {
   regionState:boolean=false;
   waveform: any;
   regionEle:any;
@@ -25,12 +25,15 @@ export class AudioTranscriptComponent implements OnInit {
   addRegionState:boolean=false;
   count:number=-1;
   editRow = null;
+  selectRow=null;
   cacheTrData:any;
   tasksetId:string;
   currentTaskIndex:number;
   currentTask:TaskModel;
   currentTaskset:TaskSetModel;
   tasks:Array<TaskModel>;
+  startZoom:number=1;
+  endZoom:number=200;
   @ViewChild("waveFormElement") waveFormElement: ElementRef;
 
   constructor(
@@ -58,6 +61,7 @@ export class AudioTranscriptComponent implements OnInit {
       this.currentTask=this.tasks?this.tasks[this.currentTaskIndex]:null;
     })
     await this.loaddata('./static/audios/wave.mp3'); 
+    //await this.loaddata('assets/heroMusic.mp3');
     (this.waveFormElement.nativeElement as HTMLDivElement).onclick = (event) => {
       this.saveNewRegion();
     };  
@@ -68,6 +72,18 @@ export class AudioTranscriptComponent implements OnInit {
     this.waveform.stop();
     this.waveform.seekTo(startTime/dur);
     this.waveform.play();
+  }
+  //行选中事件
+  rowSelect(data){
+    this.clearRegions();
+    this.waveform.addRegion({
+      start:data.startTime,
+      end:data.endTime,
+      loop:true
+   })
+   this.selectRow=data.key;
+   this.addRegionState=true;
+   this.autoPlay(data.startTime);
   }
   //编辑需要显示区域块
   edit(data) {
@@ -82,6 +98,7 @@ export class AudioTranscriptComponent implements OnInit {
     })
     this.addRegionState=true;
     this.autoPlay(data.startTime);
+    event.stopPropagation();
   }
   save(data) {
     Object.assign(data, this.tempEditObject[ data.key ]);
@@ -97,6 +114,7 @@ export class AudioTranscriptComponent implements OnInit {
     }
     
     this.clearRegions();
+    event.stopPropagation();
   }
   delete(data) {
     this.tempEditObject[ data.key ] = {};
@@ -105,12 +123,14 @@ export class AudioTranscriptComponent implements OnInit {
     this.count=this.count-1;
     //重新调整key值
     this.tableData=this.changeTable();
+    event.stopPropagation();
     console.log(this.tableData);
   }
   cancel(data) {
     this.tempEditObject[ data.key ] = {};
     this.editRow = null;
     this.addRegionState=false;
+    event.stopPropagation();
   }
   //获取当前任务的数据
   getResult() {
@@ -130,6 +150,8 @@ export class AudioTranscriptComponent implements OnInit {
       this.currentTaskIndex++;
       this.currentTask=this.tasks[this.currentTaskIndex];
       if (this.currentTask) {
+        //获取任务的具体地址
+        //await this.loaddata('assets/heroMusic.mp3');
         this.refresh();
       } else {
         this.router.navigate(['/tasks']);
@@ -137,6 +159,7 @@ export class AudioTranscriptComponent implements OnInit {
     } else {
       // 刷新任务
       try {
+        //获取当前任务集的任意一个任务
         const res: any = await this.taskService.getTask(
           this.currentTask.taskset
         );
@@ -186,7 +209,9 @@ export class AudioTranscriptComponent implements OnInit {
   //清除所有区块
   clearRegions(){
     this.waveform.regions.clear();
-    console.log(this.waveform)
+    this.addRegionState=false;
+    this.selectRow=null;
+    this.regionState=false;
   }
   //重新调整tableData
   changeTable(){
@@ -195,6 +220,15 @@ export class AudioTranscriptComponent implements OnInit {
     })
     return this.tableData;
   }
+  //放大区域
+  changeZoom(e){
+    if(e.deltaY<0){
+      this.startZoom=this.startZoom+20>this.endZoom?this.endZoom:this.startZoom+20;
+    }else{
+      this.startZoom=this.startZoom-20<0?1:this.startZoom-20;
+    }
+    this.waveform.zoom(this.startZoom);
+  }
   //加载数据
   loaddata(dataurl: string) {
     const promise = new Promise((resolve, reject) => {
@@ -202,7 +236,7 @@ export class AudioTranscriptComponent implements OnInit {
         container: '#waveform',
         waveColor: 'violet',
         progressColor: 'purple',
-        hideScrollbar:true,
+        hideScrollbar:false,
         plugins: [
           TimelinePlugin.create({
             container: '#waveform-timeline'
@@ -210,23 +244,36 @@ export class AudioTranscriptComponent implements OnInit {
           RegionsPlugin.create({
             container: '#waveform'
           }),
-          MinimapPlugin.create()
+         // MinimapPlugin.create()
         ]
       });
+      //当选择区域的属性发生变化时触发
+      this.waveform.on('region-updated',(region,e)=>{
+        this.cacheTrData={
+          startTime:region.start,
+          endTime:region.end
+        }
+        //改变区域的起始和结束时间
+        if(this.addRegionState&&this.selectRow!=null){
+          this.tableData[this.selectRow].startTime=this.cacheTrData.startTime;
+          this.tableData[this.selectRow].endTime=this.cacheTrData.endTime;
+        }else if(this.addRegionState){
+          this.tableData[this.editRow].startTime=this.cacheTrData.startTime;
+          this.tableData[this.editRow].endTime=this.cacheTrData.endTime;
+        }       
+      })
       this.waveform.on('region-update-end',(region,e: MouseEvent)=>{
         this.regionState=true;
         if(!this.addRegionState){
           this.cacheTrData={
             startTime:region.start,
             endTime:region.end
-          }
-          
+          }          
         }else{
           this.cacheTrData={
             startTime:region.start,
             endTime:region.end
           }
-            ;
         }         
         setTimeout(() => {
            //自动播放区域
@@ -252,9 +299,15 @@ export class AudioTranscriptComponent implements OnInit {
 
     return promise;
   }
-
-  switch() {
+  switch(btn) {
     this.waveform.playPause();
+    if(btn.innerText=='播放'){
+      btn.innerText='暂停'
+    }else{
+      btn.innerText='播放';
+    }
+  }
+  ngAfterContentInit(){
     
   }
 

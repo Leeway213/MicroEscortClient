@@ -14,6 +14,7 @@ import { MySharedModule } from '../shared-module/shared.module';
 import { PointComponent } from './image-annotation/point/point.component';
 import { LineComponent } from './image-annotation/line/line.component';
 import { AudioTranscriptComponent } from './audio/audio-transcript/audio-transcript.component';
+import { TransformTimePipe } from './pipes/transformTime.pipe';
 
 @NgModule({
   imports: [
@@ -32,14 +33,16 @@ import { AudioTranscriptComponent } from './audio/audio-transcript/audio-transcr
     PointsToStringPipe,
     PointComponent,
     LineComponent,
-    AudioTranscriptComponent
+    AudioTranscriptComponent,
+    TransformTimePipe
   ],
   exports: [
     BoundingBoxComponent,
     PolygonComponent,
     IntroductionViewerComponent,
     VerifyPanelComponent,
-    AudioTranscriptComponent
+    AudioTranscriptComponent,
+    TransformTimePipe
   ]
 })
 export class LabelToolsModule { }
