@@ -39,6 +39,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
   labelToolComponent: LabelToolComponent;
 
   safeTransform: SafeStyle;
+  stylesObj:any;
 
   @ViewChild('svgContainer') svgContainerRef: ElementRef;
 
@@ -126,7 +127,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
 
     const componentRef = viewContainerRef.createComponent(componentFactory);
     this.labelToolComponent = componentRef.instance;
-    this.refreshTool();
   }
 
   private refreshTool() {
@@ -134,15 +134,35 @@ export class MindToolComponent implements OnInit, OnDestroy {
     this.labelToolComponent.mode = this.mode;
     this.labelToolComponent.zoom = this.zoom;
     this.labelToolComponent.blockKeyInMouseEvent = 'ctrlKey';
-    this.labelToolComponent.refresh();
   }
 
   private async refresh() {
     this.dataSrc = '';
-    this.width = this.height = 0;
-    await this.loadImage(this.currentTask.params.attachment);
-    this.fitImage();
+    this.width = this.height =0;
     this.refreshTool();
+    console.log(this.labelToolComponent.data)
+    switch(this.taskset.dataType){
+      case 'image':
+      this.stylesObj={
+        width:this.width * this.zoom+'px',
+        height:this.height * this.zoom + 'px',
+        marginTop:(0 - this.height * this.zoom) + 'px'
+      }
+      await this.loadImage(this.currentTask.params.attachment);
+      this.fitImage();
+      break;
+      case 'audio':
+      //this.width=800;
+      //this.height=500;
+      this.stylesObj={
+        width:'auto',
+        height:'auto'
+      }
+      this.labelToolComponent.refresh();
+      break;
+      default:
+      break;
+    }
   }
 
   private async loadImage(src: string) {
@@ -156,8 +176,8 @@ export class MindToolComponent implements OnInit, OnDestroy {
     const image: HTMLImageElement = await promise;
     this.width = image.width;
     this.height = image.height;
-    // this.width = 600;
-    // this.height = this.width * image.height / image.width;
+     this.width = 600;
+     this.height = this.width * image.height / image.width;
     this.dataSrc = src;
 
     this.labelToolComponent.width = this.width;
@@ -223,6 +243,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
   async next() {
     if (this.currentTask.quiz) {
       this.currentTaskIndex++;
+      this.labelToolComponent.data = this.currentTask;
       if (this.currentTask) {
         this.refresh();
       } else {
@@ -237,6 +258,7 @@ export class MindToolComponent implements OnInit, OnDestroy {
         console.log(res);
         if (res.code === 200) {
           this.tasks = res.data.tasks;
+          this.labelToolComponent.data = this.currentTask;
           this.refresh();
         } else {
           throw new Error("no avaiable tasks");
@@ -290,7 +312,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
     this.zoomTimes = 0;
     this.transX = 0;
     this.transY = 0;
-
     this.refreshTransform();
   }
 
@@ -323,13 +344,16 @@ export class MindToolComponent implements OnInit, OnDestroy {
   }
 
   onMouseWheel(e: WheelEvent) {
+    if(this.taskset.dataType!=='audio'){
     // if (e.ctrlKey) {
-    if (e.deltaY < 0 && this.zoomTimes < 10) {
-      this.zoomIn();
-    } else if (e.deltaY > 0 && this.zoomTimes > -8) {
-      this.zoomOut();
+      if (e.deltaY < 0 && this.zoomTimes < 10) {
+        this.zoomIn();
+      } else if (e.deltaY > 0 && this.zoomTimes > -8) {
+        this.zoomOut();
+      }
     }
-    console.log(`zoom: ${this.zoomTimes}`);
+    
+    //console.log(`zoom: ${this.zoomTimes}`);
     e.preventDefault();
     // }
   }

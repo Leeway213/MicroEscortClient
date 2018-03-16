@@ -8,7 +8,7 @@
     (contextmenu)="disableMenu()">
     <!-- <canvas #canvas></canvas> -->
     <img [src]="dataSrc" [style.width]="width * zoom + 'px'" [style.height]="height * zoom + 'px'">
-    <div [style.width]="width * zoom + 'px'" [style.height]="height * zoom + 'px'" [style.margin-top]="(0 - height * zoom) + 'px'">
+    <div [ngStyle]="stylesObj">
       <ng-template appToolSwitch></ng-template>
     </div>
   </div>

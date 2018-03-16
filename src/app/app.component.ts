@@ -24,6 +24,11 @@ export class AppComponent implements OnInit {
       title: '粒微社区',
       routerLink: '/login',
       children: undefined
+    },
+    {
+      title: ' 历史记录',
+      routerLink: '/history',
+      children: undefined
     }
   ];
 

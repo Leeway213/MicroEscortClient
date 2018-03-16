@@ -16,6 +16,7 @@ import { PointComponent } from '../label-tools/image-annotation/point/point.comp
 import { TaskSetResolver } from './utils/TaskSetResolver.guard';
 import {ChangeZoomDirective} from './directives/changeZoom.directive';
 import { PageGuard } from './utils/page.guard';
+import { AudioTranscriptComponent } from '../label-tools/audio/audio-transcript/audio-transcript.component';
 
 @NgModule({
   imports: [
@@ -44,7 +45,8 @@ import { PageGuard } from './utils/page.guard';
   entryComponents: [
     BoundingBoxComponent,
     PolygonComponent,
-    PointComponent
+    PointComponent,
+    AudioTranscriptComponent
   ]
 })
 export class DoTaskModule { }

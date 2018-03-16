@@ -1,8 +1,7 @@
 import { Observable } from 'rxjs/Rx';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpRequest ,HttpParams,HttpErrorResponse} from '@angular/common/http';
 import { UserService } from './user.service';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable()
 export class TaskService {
@@ -38,6 +37,8 @@ export class TaskService {
     //   })
     // }).toPromise();
     // return this.finishTask(task.id, null);
+
+    
     const p = new Promise<any>((resolve, reject) => {
       this.http.get(`${this.userService.baseUrl}/tasks/skip?task_id=${task.id}`, {
         headers: new HttpHeaders({
@@ -59,6 +60,35 @@ export class TaskService {
     });
     return p;
   }
+  //获取任务标注结果
+  getTaskResult(
+    params?:{
+      size:number,
+      offset?:number,
+      type?:string,
+      dataType?:string,
+      startIndex?:string,
+      endIndex?:string
+    }):Promise<any>{
+    let urlparams = new HttpParams();
+    if(params){    
+      params.size?urlparams.append('size',String(params.size)):undefined; 
+      params.size?urlparams.append('offset',String(params.offset)):undefined; 
+      params.type?urlparams.append('type',params.type):undefined;
+      params.type?urlparams.append('dataType',params.dataType):undefined;
+      params.type?urlparams.append('startIndex',params.startIndex):undefined;
+      params.type?urlparams.append('endIndex',params.endIndex):undefined;
+    }
+    return this.http.get(`${this.userService.baseUrl}/tasks/records`, {
+      headers: new HttpHeaders({
+        'Authorization': 'Bearer ' + this.userService.user.token
+      }),
+      params: urlparams
+    
+    }).toPromise();
+    
+  }
+
 
 }
 

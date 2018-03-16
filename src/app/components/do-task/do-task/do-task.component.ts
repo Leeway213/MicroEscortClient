@@ -49,15 +49,15 @@ export class DoTaskComponent implements OnInit {
     this.mindToolComponent.submit();
   }
 
-  async skip() {
-    try {
-      await this.taskService.skipTask(this.mindToolComponent.currentTask);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      this.mindToolComponent.next();
-    }
-  }
+   async skip() {
+     try {
+       await this.taskService.skipTask(this.mindToolComponent.currentTask);
+     } catch (err) {
+       console.log(err);
+     } finally {
+       this.mindToolComponent.next();
+     }
+   }
 
   next() {
     this.quizResult = undefined;

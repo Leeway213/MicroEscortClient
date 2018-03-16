@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild,Input } from '@angular/core';
 import {Router,Route,ActivatedRoute} from "@angular/router";
 
 import WaveSurfer from 'wavesurfer.js';
@@ -6,10 +6,10 @@ import TimelinePlugin from 'wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js
 import MinimapPlugin from 'wavesurfer.js/dist/plugin/wavesurfer.minimap.min.js';
 import RegionsPlugin from 'wavesurfer.js/dist/plugin/wavesurfer.regions.min.js';
 import CursorPlugin from 'wavesurfer.js/dist/plugin/wavesurfer.cursor.js';
-import { TaskService, TaskModel } from '../../../../services/task.service';
-import { TaskSetModel, TaskSetService } from '../../../../services/taskset.service';
 import { SimpleChanges, AfterContentInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { DatePipe } from '@angular/common/src/pipes';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/of';
 
 @Component({
   selector: 'app-audio-transcript',
@@ -20,7 +20,7 @@ export class AudioTranscriptComponent implements OnInit,AfterContentInit {
   regionState:boolean=false;
   waveform: any;
   regionEle:any;
-  tableData:Array<any>;
+  @Input() tableData:Array<any>;
   tempEditObject = {};
   addRegionState:boolean=false;
   count:number=-1;
@@ -29,18 +29,21 @@ export class AudioTranscriptComponent implements OnInit,AfterContentInit {
   cacheTrData:any;
   tasksetId:string;
   currentTaskIndex:number;
-  currentTask:TaskModel;
-  currentTaskset:TaskSetModel;
-  tasks:Array<TaskModel>;
   startZoom:number=1;
   endZoom:number=200;
+  _current = 1;
+  _pageSize = 2;
+  _total = 1;
+
+  
+  taskset:any;
+  canUndo: boolean;
+  @Input() data: any;
   @ViewChild("waveFormElement") waveFormElement: ElementRef;
 
   constructor(
     private router:Router,
-    private route:ActivatedRoute,
-    private taskService:TaskService,
-    private tasksetService:TaskSetService
+    private route:ActivatedRoute
   ) {
     this.tableData=[];
     this.count=-1;
@@ -49,19 +52,10 @@ export class AudioTranscriptComponent implements OnInit,AfterContentInit {
       this.tasksetId=params.id;
     })
    }
+   ngOnchanges(change:SimpleChanges){
+    
+   }
   async ngOnInit() {
-    //获取特定Id的任务集
-    this.tasksetService.getTaskSetById(this.tasksetId).then(data=>{
-      console.log(data);
-      this.currentTaskset=data;
-    })
-    this.taskService.getTask(this.tasksetId).then(data=>{
-      console.log(data);
-      this.tasks=data.data.tasks;
-      this.currentTask=this.tasks?this.tasks[this.currentTaskIndex]:null;
-    })
-    await this.loaddata('./static/audios/wave.mp3'); 
-    //await this.loaddata('assets/heroMusic.mp3');
     (this.waveFormElement.nativeElement as HTMLDivElement).onclick = (event) => {
       this.saveNewRegion();
     };  
@@ -72,6 +66,11 @@ export class AudioTranscriptComponent implements OnInit,AfterContentInit {
     this.waveform.stop();
     this.waveform.seekTo(startTime/dur);
     this.waveform.play();
+  }
+  refreshData(reset = false){
+    if(reset){
+      this._current=1;
+    }
   }
   //行选中事件
   rowSelect(data){
@@ -111,6 +110,7 @@ export class AudioTranscriptComponent implements OnInit,AfterContentInit {
     }else{
       this.tableData.splice(data.key,1);
       this.tableData=this.changeTable();
+      this.tableData = [...this.tableData];
     }
     
     this.clearRegions();
@@ -123,6 +123,8 @@ export class AudioTranscriptComponent implements OnInit,AfterContentInit {
     this.count=this.count-1;
     //重新调整key值
     this.tableData=this.changeTable();
+    this.tableData = [...this.tableData];
+    this._total=this.tableData.length;
     event.stopPropagation();
     console.log(this.tableData);
   }
@@ -135,46 +137,16 @@ export class AudioTranscriptComponent implements OnInit,AfterContentInit {
   //获取当前任务的数据
   getResult() {
     return {
-      id:this.currentTask.id,
+      id:this.data.id,
       data:this.tableData
     }
   }
 
-  refresh() {
+  async refresh() {
     this.tableData=[];
     this.tempEditObject = {};  
-  }
-  async next() {
-    //true为训练模式
-    if (this.currentTaskset.quiz) {
-      this.currentTaskIndex++;
-      this.currentTask=this.tasks[this.currentTaskIndex];
-      if (this.currentTask) {
-        //获取任务的具体地址
-        //await this.loaddata('assets/heroMusic.mp3');
-        this.refresh();
-      } else {
-        this.router.navigate(['/tasks']);
-      }
-    } else {
-      // 刷新任务
-      try {
-        //获取当前任务集的任意一个任务
-        const res: any = await this.taskService.getTask(
-          this.currentTask.taskset
-        );
-        console.log(res);
-        if (res.code === 200) {
-          this.tasks = res.data.tasks;
-          this.refresh();
-        } else {
-          throw new Error("no avaiable tasks");
-        }
-      } catch (error) {
-        this.tasks = undefined;
-        this.router.navigate(['/tasks']);
-      }
-    }
+    console.log(this.data);
+    await this.loaddata(this.data.params.attachment)
   }
   //保留最新的region区域,并且选择结束后播放该区域
   saveNewRegion(){
@@ -195,9 +167,12 @@ export class AudioTranscriptComponent implements OnInit,AfterContentInit {
       if(!this.addRegionState){
         this.cacheTrData.key=++this.count;
         this.tableData.push(this.cacheTrData);
+        this._total=this.tableData.length;
+        this.tableData = [...this.tableData];
       }   
       if(this.regionState){
         this.tableData[this.tableData.length-1].content=inputEle.value;
+        this.tableData = [...this.tableData];
         this.regionState=false;
       }
     }else{
@@ -260,7 +235,8 @@ export class AudioTranscriptComponent implements OnInit,AfterContentInit {
         }else if(this.addRegionState){
           this.tableData[this.editRow].startTime=this.cacheTrData.startTime;
           this.tableData[this.editRow].endTime=this.cacheTrData.endTime;
-        }       
+        }     
+        this.tableData = [...this.tableData];  
       })
       this.waveform.on('region-update-end',(region,e: MouseEvent)=>{
         this.regionState=true;
@@ -306,6 +282,12 @@ export class AudioTranscriptComponent implements OnInit,AfterContentInit {
     }else{
       btn.innerText='播放';
     }
+  }
+  undo(){
+
+  }
+  label(){
+
   }
   ngAfterContentInit(){
     

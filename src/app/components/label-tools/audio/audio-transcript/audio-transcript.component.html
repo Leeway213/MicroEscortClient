@@ -13,7 +13,10 @@
     <button class="data-comfirm" (click)="commit(content)" [class.grayed]="addRegionState" [disabled]='addRegionState'>确定</button>
     <button class="data-comfirm" (click)="clearRegions()" [class.grayed]="editRow!==null">清除行选择</button>
     <div class="data-list">
-        <nz-table [nzDataSource]="tableData">
+        <nz-table #nzTable  
+        [nzDataSource]="tableData" 
+        [nzPageSize]="5"
+        nzShowSizeChanger>
             <thead nz-thead>
               <tr>
                 <th nz-th [nzWidth]="'200px'"><span>开始时间</span></th>
@@ -22,12 +25,12 @@
                   <span>文本内容</span>
                 </th>
                 <th nz-th [nzWidth]="'150px'">
-                  <span> 操作</span>
+                  <span>操作</span>
                 </th>
               </tr>
             </thead>
             <tbody nz-tbody>
-              <tr nz-tbody-tr  *ngFor="let trdata of tableData;let i=index;" (click)="rowSelect(trdata)" [class.selected]="i==selectRow">
+              <tr nz-tbody-tr  *ngFor="let trdata of nzTable.data;let i=index;" (click)="rowSelect(trdata)" [class.selected]="i==selectRow">
                 <td nz-td>{{trdata.startTime|number:'2.3-3'|transformTime}}</td>
                 <td nz-td>{{trdata.endTime|number:'2.3-3'|transformTime}}</td>
                 <td nz-td>

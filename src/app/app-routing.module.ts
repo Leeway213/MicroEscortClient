@@ -20,6 +20,9 @@ const routes: Routes = [
         path: 'profile', loadChildren: 'app/components/user-profile/user-profile.module#UserProfileModule', canActivate: [AuthGuard], resolve: {userProfile: UserProfileResolver}
     },
     {
+        path: 'history', loadChildren: 'app/components/history/history.module#HistoryModule'
+    },
+    {
         path: '**', redirectTo: 'tasks', pathMatch: 'full'
     }
 ];
