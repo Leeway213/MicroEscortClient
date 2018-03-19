@@ -8,9 +8,10 @@ import { TaskService } from "../../services/task.service";
   styleUrls: ["./history.component.css"]
 })
 export class HistoryComponent implements OnInit {
-
+    //当前页码
     _current = 1;
-    pageSize = 20;
+    //每页数据条数
+    pageSize = 1;
     _total = 1;
     _dataSet = [];
     loading = true;
@@ -52,11 +53,11 @@ export class HistoryComponent implements OnInit {
       this.loading=true;
       this.taskservice.getTaskResult({
           size:this.pageSize,
-          offset:this._current
+          offset:this._current-1
       }).then(data=>{
           this.loading=false;
-          this._total=data.total;
-          this._dataSet=data.data;
+          this._total=data.data.count;
+          this._dataSet=data.data.tasks;
       })
       
     }
@@ -65,18 +66,8 @@ export class HistoryComponent implements OnInit {
 
     }
     ngOnInit() {
-      //this.refreshData();
-      for (let i = 0; i < 46; i++) {
-        this._dataSet.push({
-          key    : i,
-          name   : `Edward King ${i}`,
-          status:'doing',
-          taskType:'image',
-          dataType:'boundingBox',
-          reason:'不知道'
-        });
-      }
-      this._dataSet=[...this._dataSet];
+      this.refreshData();
+      
     }
 
 }

@@ -32,7 +32,7 @@
           </nz-dropdown>
         </th>
         <th nz-th>
-          <span>操作类型</span>
+          <span>数据类型</span>
         </th>
         <th nz-th>
           <span>任务状态</span>
@@ -45,12 +45,12 @@
     <tbody nz-tbody>
       <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index;" (click)="rowClick(data,i)">
         <td nz-td>
-          <a>{{data.name}}</a>
+          <a>{{data.Task.name}}</a>
         </td>
-        <td nz-td>{{data.status}}</td>
-        <td nz-td>{{data.taskType}}</td>
-        <td nz-td>{{data.dataType}}</td>
-        <td nz-td>{{data.reason}}</td>
+        <td nz-td>{{data.Task.TaskSet.type}}</td>
+        <td nz-td>{{data.Task.TaskSet.dataType}}</td>
+        <td nz-td>{{data.Task.status}}</td>
+        <td nz-td>{{data.Task.type}}</td>
       </tr>
     </tbody>
   </nz-table>

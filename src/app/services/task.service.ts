@@ -70,20 +70,20 @@ export class TaskService {
       startIndex?:string,
       endIndex?:string
     }):Promise<any>{
-    let urlparams = new HttpParams();
+    let urlparams = new URLSearchParams();
+    URLSearchParams
     if(params){    
       params.size?urlparams.append('size',String(params.size)):undefined; 
-      params.size?urlparams.append('offset',String(params.offset)):undefined; 
+      params.offset?urlparams.append('offset',String(params.offset)):undefined; 
       params.type?urlparams.append('type',params.type):undefined;
-      params.type?urlparams.append('dataType',params.dataType):undefined;
-      params.type?urlparams.append('startIndex',params.startIndex):undefined;
-      params.type?urlparams.append('endIndex',params.endIndex):undefined;
+      params.dataType?urlparams.append('dataType',params.dataType):undefined;
+      params.startIndex?urlparams.append('startIndex',params.startIndex):undefined;
+      params.endIndex?urlparams.append('endIndex',params.endIndex):undefined;
     }
-    return this.http.get(`${this.userService.baseUrl}/tasks/records`, {
+    return this.http.get(`${this.userService.baseUrl}/tasks/records?${urlparams}`, {
       headers: new HttpHeaders({
         'Authorization': 'Bearer ' + this.userService.user.token
-      }),
-      params: urlparams
+      })
     
     }).toPromise();
     
