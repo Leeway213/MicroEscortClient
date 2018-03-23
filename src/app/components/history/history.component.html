@@ -1,57 +1,121 @@
-<h2>任务记录</h2>
-<div class="table-wrap">
-    <nz-table #nzTable
-    [nzAjaxData]="_dataSet"
-    nzShowSizeChanger
-    [nzLoading]="loading"
-    [nzTotal]="_total"
-    [(nzPageIndex)]="_current"
-    (nzPageIndexChange)="refreshData()"
-    [(nzPageSize)]="pageSize"
-    (nzPageSizeChange)="refreshData(true)">
-    <thead nz-thead>
-      <tr>
-        <th nz-th>
-          <span>任务名称</span>
-        </th>
-        <th nz-th>
-          <span>任务类型</span>
-          <nz-dropdown [nzTrigger]="'click'">
-            <i class="anticon anticon-filter" nz-dropdown></i>
-            <ul nz-menu>
-                <li nz-menu-item *ngFor="let filter of dataArr">
-                <label nz-checkbox [(ngModel)]="filter.value">
-                    <span>{{filter.name}}</span>
-                </label>
-                </li>
-            </ul>
-            <div nz-table-filter>
-                <span nz-table-filter-confirm (click)="refreshData(true)">OK</span>
-                <span nz-table-filter-clear (click)="reset()">Reset</span>
+<div class="table-wrap container">
+    <h2 class="h2 section-title">任务数据筛选</h2>
+    <div class="select-wrap">
+      <div class="select-btn">
+          <label class="type-label" for="">任务类型：</label>
+          <div class="btn-group">              
+              <button type="button" class="btn-size btn btn-default">{{taskBtnValue}}</button>
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu">
+                <li *ngFor="let list of dataTypeArr;let i=index;" (click)="selectFun(list,'task')"><a>{{list.name}}</a></li>
+              </ul>
             </div>
-          </nz-dropdown>
-        </th>
-        <th nz-th>
-          <span>数据类型</span>
-        </th>
-        <th nz-th>
-          <span>任务状态</span>
-        </th>
-        <th nz-th>
-          <span>未完成原因</span>
-        </th>
-      </tr>
-    </thead>
-    <tbody nz-tbody>
-      <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index;" (click)="rowClick(data,i)">
-        <td nz-td>
-          <a>{{data.Task.name}}</a>
-        </td>
-        <td nz-td>{{data.Task.TaskSet.type}}</td>
-        <td nz-td>{{data.Task.TaskSet.dataType}}</td>
-        <td nz-td>{{data.Task.status}}</td>
-        <td nz-td>{{data.Task.type}}</td>
-      </tr>
-    </tbody>
-  </nz-table>
+      </div> 
+      <div class="select-btn">
+          <label class="type-label" for="">数据类型：</label>
+          <div class="btn-group">              
+            <button type="button" class="btn-size btn btn-default">{{dataBtnValue}}</button>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+              <li *ngFor="let list of dataArr;let i=index;" (click)="selectFun(list,'operation')"><a>{{list.name}}</a></li>
+            </ul>
+          </div>
+      </div> 
+      <div class="select-btn">
+          <label class="type-label" for="">任务状态：</label>
+          <div class="btn-group">              
+            <button type="button" class="btn-size btn btn-default">{{statusBtnValue}}</button>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="caret"></span>
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+              <li *ngFor="let list of statusArr;let i=index;" (click)="selectFun(list,'status')"><a>{{list.name}}</a></li>
+            </ul>
+          </div>
+      </div> 
+      <div class="select-btn">
+          <label class="type-label" for="">时间选择：</label>
+          <nz-datepicker
+           style="width: 40%;margin-right:10px;" 
+           [ngModel]="startTime"
+           (ngModelChange)="startTime=$event;startTimeChange()"
+           nzShowTime 
+           [nzFormat]="'YYYY-MM-DD'"
+           [nzPlaceHolder]="'开始时间'"></nz-datepicker>
+           <nz-datepicker
+           style="width: 40%;" 
+           [ngModel]="endTime"
+           (ngModelChange)="endTime=$event;endTimeChange();"
+           nzShowTime
+           [nzFormat]="'YYYY-MM-DD'" 
+           [nzPlaceHolder]="'结束时间'"></nz-datepicker>
+      </div>
+      <div class="confirm-wrap">
+        <div class="btn-confirm" (click)="lastSelect()">筛选</div>  
+      </div>      
+    </div>
+    <h2 class="h2 section-title">任务数据展示</h2>
+    <div class="table-express">
+      <nz-table #nzTable
+        [nzAjaxData]="_dataSet"
+        nzShowSizeChanger
+        [nzLoading]="loading"
+        [nzTotal]="_total"
+        [(nzPageIndex)]="_current"
+        (nzPageIndexChange)="refreshData()"
+        [(nzPageSize)]="pageSize"
+        (nzPageSizeChange)="refreshData(true)">
+        <thead nz-thead>
+          <tr>
+            <th nz-th>
+              <span>任务名称</span>
+            </th>
+            <th nz-th>
+              <span>任务类型</span>
+              <nz-dropdown [nzTrigger]="'click'">
+                <i class="anticon anticon-filter" nz-dropdown></i>
+                <ul nz-menu>
+                    <li nz-menu-item *ngFor="let filter of dataArr">
+                    <label nz-checkbox [(ngModel)]="filter.value">
+                        <span>{{filter.name}}</span>
+                    </label>
+                    </li>
+                </ul>
+                <div nz-table-filter>
+                    <span nz-table-filter-confirm (click)="refreshData(true)">OK</span>
+                    <span nz-table-filter-clear (click)="reset()">Reset</span>
+                </div>
+              </nz-dropdown>
+            </th>
+            <th nz-th>
+              <span>数据类型</span>
+            </th>
+            <th nz-th>
+              <span>任务状态</span>
+            </th>
+            <th nz-th>
+              <span>未完成原因</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody nz-tbody>
+          <tr nz-tbody-tr *ngFor="let data of nzTable.data;let i=index;" (click)="rowClick(data,i)">
+            <td nz-td>
+              <a>{{data.Task.name}}</a>
+            </td>
+            <td nz-td>{{data.Task.TaskSet.type}}</td>
+            <td nz-td>{{data.Task.TaskSet.dataType}}</td>
+            <td nz-td>{{data.status}}</td>
+            <td nz-td>{{data.Task.type}}</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
 </div>

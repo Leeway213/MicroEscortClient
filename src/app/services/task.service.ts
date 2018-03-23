@@ -67,6 +67,7 @@ export class TaskService {
       offset?:number,
       type?:string,
       dataType?:string,
+      status?:string,
       startIndex?:string,
       endIndex?:string
     }):Promise<any>{
@@ -77,6 +78,7 @@ export class TaskService {
       params.offset?urlparams.append('offset',String(params.offset)):undefined; 
       params.type?urlparams.append('type',params.type):undefined;
       params.dataType?urlparams.append('dataType',params.dataType):undefined;
+      params.status?urlparams.append('status',params.status):undefined;
       params.startIndex?urlparams.append('startIndex',params.startIndex):undefined;
       params.endIndex?urlparams.append('endIndex',params.endIndex):undefined;
     }

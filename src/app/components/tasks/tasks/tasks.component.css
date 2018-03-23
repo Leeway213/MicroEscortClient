@@ -21,7 +21,9 @@
     display: inline-block;
     margin-right: 1em;
 }
-
+.container{
+   
+}
 /* .project-mat-card:hover {
     background-color: gray;
     animation: hover-animation 0.5s;

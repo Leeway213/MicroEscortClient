@@ -72,7 +72,6 @@ export class MindToolComponent implements OnInit, OnDestroy {
   translating = false;
   transX = 0;
   transY = 0;
-
   @Output() quizEvent = new EventEmitter();
 
   constructor(
@@ -82,6 +81,9 @@ export class MindToolComponent implements OnInit, OnDestroy {
     private componentFactoryResolver: ComponentFactoryResolver,
     private sanitizer: DomSanitizer
   ) {
+    this.stylesObj={
+      
+    }
   }
 
   private refreshTransform() {
