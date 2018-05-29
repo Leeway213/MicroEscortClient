@@ -1,0 +1,13 @@
+.bounding-box {
+  fill-opacity: 0.3;
+  stroke: rgb(0, 255, 0);
+}
+
+.bounding-point {
+  stroke: red;
+  fill: white;
+}
+
+.resize-point {
+  cursor: move;
+}

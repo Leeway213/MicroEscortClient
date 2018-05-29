@@ -1,0 +1,63 @@
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#nav-collapse">
+        <span class="sr-only">切换导航</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">{{brand}}</a>
+    </div>
+    <div class="collapse navbar-collapse" id="nav-collapse">
+      <ul class="nav navbar-nav" *ngIf="userService.checkAuth()">
+        <li *ngFor="let nav of leftNavs" [ngClass]="{active: currentPath === nav.routerLink, dropdown: nav.children}">
+          <a routerLink="{{nav.routerLink}}" [class.dropdown-toggle]="nav.children" data-toggle="dropdown">
+            {{ nav.title }}
+            <b *ngIf="nav.children" class="caret"></b>
+          </a>
+          <ul *ngIf="nav.children" class="dropdown-menu">
+            <li *ngFor="let child of nav.children">
+              <a routerLink="{{child.routerLink}}">{{child.title}}</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul *ngIf="!userService.checkAuth() && currentPath !== '/signup' && currentPath !== '/login'" class="nav navbar-nav navbar-right">
+          <li><a routerLink="/signup"><span class="glyphicon glyphicon-user"></span> 注册</a></li>
+          <li><a routerLink="/login"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+      </ul>
+
+      <ul *ngIf="userService.checkAuth()" class="nav navbar-nav navbar-right">
+        <!-- todo: exp & money -->
+      </ul>
+
+      <ul *ngIf="userService.checkAuth()" class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <span class="glyphicon glyphicon-user"></span>
+              {{userService.user.username}}
+            <b class="caret"></b>
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <app-user-panel></app-user-panel>
+            </li>
+            <!-- <li>
+              <a href="#">个人信息</a>
+            </li>
+            <li>
+              <a href="#">我要提现</a>
+            </li>
+            <li class="divider"></li>
+            <li>
+              <a (click)="logout()">注销</a>
+            </li> -->
+          </ul>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</nav>

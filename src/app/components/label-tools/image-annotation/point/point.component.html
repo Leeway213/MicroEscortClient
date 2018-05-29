@@ -1,0 +1,14 @@
+<svg [style.cursor]="mode === 'draw' ? 'crosshair' : 'default'" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  attr.viewBox="0 0 {{width * zoom}} {{height * zoom}}" [attr.width]="width * zoom" [attr.height]="height * zoom" 
+  (mousemove)="onPointMouseMove($event)"
+  (mouseup)="onClick($event)">
+
+  <svg:g *ngFor="let point of points; let i = index">
+    <svg:circle class="major-point" [matTooltip]="point.label" [attr.r]="3" [attr.cx]="point.point.X * zoom" [attr.cy]="point.point.Y * zoom"
+      [style.fill]="point.selected ? 'red' : ''"
+      (mousedown)="onPointMouseDown($event, i)"
+      (mouseup)="onPointMouseUp($event, i)"
+    ></svg:circle>
+  </svg:g>
+
+</svg>

@@ -1,0 +1,94 @@
+.basic-info-panel {
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: row;
+    padding: 4% 0 0 5%;
+}
+
+.basic-info-panel div {
+    display: inline-flex;
+    display: -webkit-inline-flex;
+}
+
+.username-panel {
+    width: 20%;
+}
+
+.avatar {
+    padding: 1em 1em;
+}
+
+.avatar p {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: rgb(0, 179, 138);
+    padding-top: 15%;
+    font-size: 24px;
+    color: white;
+    text-align: center;
+}
+
+.username {
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: column;
+    padding-top: 9%;
+}
+
+.detail-info-panel div {
+    width: 100px;
+    height: 100px;
+    border: 2px solid rgba(0, 179, 138, 0.5);
+    border-radius: 50%;
+    margin: 0 1em;
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: column;
+    text-align: center;
+    /* padding-top: 5%; */
+    justify-content: center;
+}
+
+.update-info-panel {
+    padding: 4% 0 0 5%;
+    font-size: 14px;
+}
+
+.update-info-item {
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: row;
+    height: 60px;
+    width: 100%;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    /* padding-top: 2.4%; */
+    margin-top: 2%;
+}
+
+.vertical-center {
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.update-info-item .modify {
+    float: right;
+}
+
+.icon {
+    text-align: center;
+    align-items: center;
+}
+
+.modify {
+    text-align: center;
+}
+
+:host ::ng-deep .vertical-center-modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }

@@ -1,0 +1,420 @@
+import { DomSanitizer } from '@angular/platform-browser';
+import { labelTools } from './../../label-tools/LabelToolComponent';
+import { LabelToolComponent } from '../../label-tools/LabelToolComponent';
+import { Task } from 'protractor/built/taskScheduler';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  ComponentFactoryResolver,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+  Type,
+} from '@angular/core';
+import { TaskService, TaskModel } from '../../../services/task.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { BoundingBoxComponent } from '../../label-tools/image-annotation/bounding-box/bounding-box.component';
+import { SafeStyle } from '@angular/platform-browser/src/security/dom_sanitization_service';
+import { ToolSwitchDirective } from '../directives/tool-switch.directive';
+import { TaskSetModel } from '../../../services/taskset.service';
+import { Point } from '../../label-tools/image-annotation/models/Point';
+
+
+
+@Component({
+  selector: 'app-mind-tool',
+  templateUrl: './mind-tool.component.html',
+  styleUrls: ['./mind-tool.component.css']
+})
+export class MindToolComponent implements OnInit, OnDestroy {
+
+  verifyPass: boolean;
+
+  @ViewChild(ToolSwitchDirective) toolSwitch: ToolSwitchDirective;
+
+  labelToolComponent: LabelToolComponent;
+
+  safeTransform: SafeStyle;
+
+  @ViewChild('svgContainer') svgContainerRef: ElementRef;
+
+  @ViewChild('canvas') canvasRef: ElementRef;
+  canvasContext: CanvasRenderingContext2D;
+
+
+  currentTaskIndex: number;
+  @Input() tasks: TaskModel[];
+  get currentTask(): TaskModel {
+    return this.tasks ? this.tasks[this.currentTaskIndex] : null;
+  }
+
+  @Input() taskset: TaskSetModel;
+
+  mode: 'draw' | 'select' | 'delete' = 'draw';
+
+  @ViewChild('toolContainer') toolRef: any;
+
+  @Input() dataSrc: string;
+
+  @Input() srcWidth: number;
+  @Input() srcHeight: number;
+
+  width: number;
+  height: number;
+  zoomTimes = 0;
+  zoom = 1;
+
+  translating = false;
+  transX = 0;
+  transY = 0;
+
+  scaleCenter: Point;
+
+  @Output() quizEvent = new EventEmitter();
+
+  constructor(
+    private taskService: TaskService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private sanitizer: DomSanitizer
+  ) {
+  }
+
+  private refreshTransform() {
+    // scale(${this.zoom}) 
+    this.safeTransform = this.sanitizer.bypassSecurityTrustStyle(`translate(${this.transX * this.zoom}px, ${this.transY * this.zoom}px)`);
+    this.labelToolComponent.zoom = this.zoom;
+  }
+
+  ngOnInit() {
+    (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mousedown', event => { this.onMouseDown(event) }, true);
+    (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mousemove', event => { this.onMouseMove(event) }, true);
+    (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mouseup', event => { this.onMouseUp(event) }, true);
+    (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mousewheel', event => { this.onMouseWheel(event) }, true);
+    (this.svgContainerRef.nativeElement as HTMLDivElement).addEventListener('mouseleave', event => { this.onMouseLeave(event) }, true);
+
+
+    this.addSkipWhenWindowClosedHandler();
+    this.initialize();
+    this.addShotcut();
+    console.log(this.toolRef);
+  }
+
+  async ngOnDestroy(): Promise<void> {
+    console.log(this.currentTask);
+
+    this.removeShotcut();
+    this.removeSkipWhenWindowClosedHandler();
+    if (this.currentTask) {
+      await this.taskService.skipTask(this.currentTask);
+    }
+  }
+
+  private initialize() {
+    this.currentTaskIndex = 0;
+    this.loadTool(labelTools[this.taskset.type]);
+    this.refresh();
+  }
+
+  private loadTool(component: Type<LabelToolComponent>) {
+    if (!component) {
+      return;
+    }
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component);
+    const viewContainerRef = this.toolSwitch.viewContainerRef;
+    viewContainerRef.clear();
+
+    const componentRef = viewContainerRef.createComponent(componentFactory);
+    this.labelToolComponent = componentRef.instance;
+    this.refreshTool();
+  }
+
+  private refreshTool() {
+    this.labelToolComponent.data = this.currentTask;
+    this.labelToolComponent.mode = this.mode;
+    this.labelToolComponent.zoom = this.zoom;
+    this.labelToolComponent.blockKeyInMouseEvent = 'ctrlKey';
+    this.labelToolComponent.refresh();
+  }
+
+  private async refresh() {
+    this.dataSrc = '';
+    this.width = this.height = 0;
+    await this.loadImage(this.currentTask.params.attachment);
+    this.fitImage();
+    this.refreshTool();
+  }
+
+  private async loadImage(src: string) {
+    const promise = new Promise<any>(resolve => {
+      const tmp: HTMLImageElement = new Image();
+      tmp.onload = function () {
+        resolve(tmp);
+      };
+      tmp.src = src;
+    });
+    const image: HTMLImageElement = await promise;
+    this.width = image.width;
+    this.height = image.height;
+    this.scaleCenter = new Point(this.width / 2, this.height / 2);
+    // this.width = 600;
+    // this.height = this.width * image.height / image.width;
+    this.dataSrc = src;
+
+    this.labelToolComponent.width = this.width;
+    this.labelToolComponent.height = this.height;
+  }
+
+  /**
+   * 添加快捷键操作
+   */
+  private addShotcut() {
+    document.onkeydown = e => {
+      // ctrl+z: 撤销
+      if (e.ctrlKey && e.key === 'z') {
+        this.undo();
+      }
+
+      // "1，2，3"切换标注、选择、删除模式
+      if (e.code === "Digit1") {
+        this.labelToolComponent.mode = this.mode = "draw";
+      } else if (e.code === "Digit2") {
+        this.labelToolComponent.mode = this.mode = "select";
+      } else if (e.code === "Digit3") {
+        this.labelToolComponent.mode = this.mode = "delete";
+      } else if (e.code === "KeyA") {
+        this.onZoomInClick();
+      } else if (e.code === "KeyS") {
+        this.onZoomOutClick();
+      } else if (e.code === "KeyD") {
+        this.fitImage();
+      }
+    };
+  }
+
+  private removeShotcut() {
+    document.onkeydown = undefined;
+  }
+
+  /**
+   * 为当前窗口添加一个事件句柄，在浏览器窗口或标签关闭、刷新时，执行跳过当前任务的操作
+   */
+  private addSkipWhenWindowClosedHandler() {
+    window.onbeforeunload = async e => {
+      await this.taskService.skipTask(this.currentTask);
+      e.returnValue = '离开？';
+    };
+  }
+
+  /**
+   * 移除window.onbeforeunload事件句柄
+   */
+  private removeSkipWhenWindowClosedHandler() {
+    window.onbeforeunload = undefined;
+  }
+
+  async submit() {
+    const result: any = {};
+    if (this.currentTask.status === 'doing' || this.currentTask.quiz) {
+      const annotations = this.labelToolComponent.getResult();
+      result.taskId = this.currentTask.id;
+      result.results = {
+        annotations: annotations,
+        quiz: this.currentTask.quiz
+      };
+    } else if (this.currentTask.status === 'verifying') {
+      result.results = {
+        pass: this.verifyPass
+      };
+    }
+
+    const response = await this.taskService.finishTask(
+      this.currentTask.id,
+      result
+    );
+    console.log(response);
+    if (this.currentTask.quiz) {
+      this.quizEvent.emit(response.data);
+    } else {
+      this.next();
+    }
+  }
+
+  async next() {
+    if (this.currentTask.quiz) {
+      this.currentTaskIndex++;
+      if (this.currentTask) {
+        this.refresh();
+      } else {
+        this.router.navigate(['/tasks']);
+      }
+    } else {
+      // 刷新任务
+      try {
+        const res: any = await this.taskService.getTask(
+          this.currentTask.taskset
+        );
+        console.log(res);
+        if (res.code === 200) {
+          this.tasks = res.data.tasks;
+          this.refresh();
+        } else {
+          throw new Error("no avaiable tasks");
+        }
+      } catch (error) {
+        this.tasks = undefined;
+        this.router.navigate(['/tasks']);
+      }
+    }
+  }
+
+  modeChange(e) {
+    this.mode = e.value;
+    this.labelToolComponent.mode = e.value;
+  }
+
+  /**
+   *
+   * @param args  object { label: "", color: "" }
+   */
+  label(args: any) {
+    this.labelToolComponent.label(args);
+  }
+
+  /**
+   * 右键点击事件，禁止右键菜单
+   */
+  disableMenu() {
+    return false;
+  }
+
+  /**
+   * 放大按钮点击事件
+   */
+  onZoomInClick() {
+    if (this.zoomTimes < 10) {
+      this.zoomIn();
+    }
+  }
+
+  /**
+   * 缩小按钮点击事件
+   */
+  onZoomOutClick() {
+    if (this.zoomTimes > -8) {
+      this.zoomOut();
+    }
+  }
+
+  /**
+   * 还原大小按钮点击事件
+   */
+  fitImage() {
+    this.zoom = 1;
+    this.zoomTimes = 0;
+    this.transX = 0;
+    this.transY = 0;
+
+    this.refreshTransform();
+  }
+
+  onMouseDown(e: MouseEvent) {
+    if (e.buttons === 1 && e.ctrlKey) {
+      // 开始拖动
+      this.translating = true;
+
+      return false;
+    }
+
+  }
+
+  onMouseMove(e: MouseEvent) {
+
+    this.scaleCenter.X = e.offsetX / this.zoom;
+    this.scaleCenter.Y = e.offsetY / this.zoom;
+
+    if (this.translating && e.buttons === 1) {
+      this.translate(e);
+      return false;
+    }
+
+  }
+
+  onMouseUp(e: MouseEvent) {
+
+    if (this.translating) {
+      this.translating = false;
+      return false;
+    }
+
+  }
+
+  onMouseLeave(e: MouseEvent) {
+    this.scaleCenter.X = this.width / 2;
+    this.scaleCenter.Y = this.height / 2;
+  }
+
+  onMouseWheel(e: WheelEvent) {
+    console.log(e);
+    // if (e.ctrlKey) {
+    if (e.deltaY < 0 && this.zoomTimes < 10) {
+      this.zoomIn();
+    } else if (e.deltaY > 0 && this.zoomTimes > -8) {
+      this.zoomOut();
+    }
+    console.log(`zoom: ${this.zoomTimes}`);
+    e.preventDefault();
+    // }
+  }
+
+  zoomIn(e?: WheelEvent) {
+    this.zoomTimes++;
+    if (this.zoomTimes > 0) {
+      this.zoom += 0.2;
+    } else if (this.zoomTimes < 0) {
+      this.zoom = Math.pow(1 - 0.2 * this.zoomTimes, -1);
+    } else {
+      this.zoom = 1;
+    }
+
+    this.refreshTransform();
+  }
+
+  zoomOut(e?: WheelEvent) {
+    this.zoomTimes--;
+    if (this.zoomTimes > 0) {
+      this.zoom -= 0.2;
+    } else if (this.zoomTimes < 0) {
+      this.zoom = Math.pow(1 - 0.2 * this.zoomTimes, -1);
+    } else {
+      this.zoom = 1;
+    }
+
+    this.refreshTransform();
+  }
+
+  translate(e: MouseEvent) {
+    this.transX += e.movementX / this.zoom;
+    this.transY += e.movementY / this.zoom;
+    this.refreshTransform();
+  }
+
+  undo() {
+    this.labelToolComponent.undo();
+  }
+
+  reset() {
+    this.labelToolComponent.refresh();
+  }
+
+  verifyResultChange(e: boolean) {
+    this.verifyPass = e;
+  }
+
+}

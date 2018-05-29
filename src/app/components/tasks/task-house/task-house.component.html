@@ -1,0 +1,22 @@
+<div class="root-panel">
+  <div class="recommend-panel">
+    <div class="row recommend-title">
+      <span>优质任务推荐</span>
+      <a href="#">查看任务权限>></a>
+    </div>
+    <nz-carousel *ngIf="recommends.length > 0" [nzAutoPlay]="true">
+      <div nz-carousel-content *ngFor="let recommend of recommends">
+        <div class="row">
+          <div class="col-md-4" *ngFor="let project of recommend">
+            <app-recommend-task [taskset]="project"></app-recommend-task>
+          </div>
+        </div>
+      </div>
+    </nz-carousel>
+  </div>
+
+  <div class="task-list-panel">
+    <app-task-list [tasksets]="tasksets"></app-task-list>
+  </div>
+
+</div>

@@ -1,0 +1,23 @@
+.panel-correct {
+    background-color: rgba(0,255,0,0.7);
+    border-radius: 2px;
+    box-shadow: 0 0 1em white;
+    padding-top: 2em;
+}
+
+.panel-wrong {
+    background-color: rgba(255,0,0,0.7);
+    border-radius: 2px;
+    box-shadow: 0 0 1em white;
+    padding-top: 2em;
+}
+
+.panel-text {
+    margin: 2em;
+}
+
+.panel-buttons {
+    margin-right: 0.1em;
+    margin-bottom: 0.1em;
+    text-align: right;
+}

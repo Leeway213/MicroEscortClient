@@ -1,0 +1,21 @@
+<nz-table #nzTable [nzDataSource]="tasksets" [nzPageSize]="10" [nzCustomNoResult]="true">
+  <h3 noResult>
+    暂时没有任务
+  </h3>
+  <thead nz-thead>
+    <tr>
+      <th nz-th><span>任务</span></th>
+      <th nz-th><span>简介</span></th>
+      <th nz-th><span>类型</span></th>
+      <th nz-th><span>价格</span></th>
+    </tr>
+  </thead>
+  <tbody nz-tbody>
+    <tr nz-tbody-tr *ngFor="let data of nzTable.data">
+      <td nz-td><a [routerLink]="['/tasks', data.id]">{{data.name}}</a></td>
+      <td nz-td>{{data.description}}</td>
+      <td nz-td>{{data.type}}</td>
+      <td nz-td>{{data.labelPrice}} 元/题</td>
+    </tr>
+  </tbody>
+</nz-table>

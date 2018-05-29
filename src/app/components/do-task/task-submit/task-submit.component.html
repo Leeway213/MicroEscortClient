@@ -1,0 +1,34 @@
+<div>
+  <div *ngIf="quizResult === undefined">
+    <div *ngIf="submitConfirm" class="action-confirm">
+        <div class="close" (click)="submitConfirm = false">
+            <span class="close-icon"></span>
+          </div>
+      <div class="action-confirm-text">
+        确定提交吗？要不要再确认一下。要做一个付责任的镖师哦~~
+      </div>
+      <div class="action-confirm-buttons">
+        <button mat-raised-button (click)="this.submitConfirm = false">我再看看</button>
+        <button mat-raised-button color="primary" (click)="submit()">不改了</button>
+      </div>
+    </div>
+    <div *ngIf="skipConfirm" class="action-confirm">
+      <div class="close" (click)="skipConfirm = false">
+        <span class="close-icon"></span>
+      </div>
+        <div class="action-confirm-text">
+          数据显示有问题？
+        </div>
+        <div class="action-confirm-buttons">
+          <button mat-raised-button (click)="skip()">没问题，我只是想跳过</button>
+          <button mat-raised-button color="primary" (click)="skip()">是的,报告错误</button>
+        </div>
+      </div>
+    <button *ngIf="!submitConfirm && !skipConfirm" mat-raised-button (click)="this.skipConfirm = true">跳过</button>
+    <button *ngIf="!submitConfirm && !skipConfirm" mat-raised-button color="accent" class="action-next" (click)="this.submitConfirm = true">提交</button>
+  </div>
+
+  <div *ngIf="quizResult !== undefined">
+    <app-quiz-result [correct]="quizResult.correct" (onNext)="next()"></app-quiz-result>
+  </div>
+</div>

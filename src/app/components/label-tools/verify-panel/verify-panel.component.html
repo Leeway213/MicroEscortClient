@@ -1,0 +1,6 @@
+  <span>{{message}}</span><br>
+  <mat-radio-group [(ngModel)]="result" (change)="resultChanged()">
+    <mat-radio-button *ngFor="let option of options" [value]="option.value">
+      {{option.viewValue}}
+    </mat-radio-button>
+  </mat-radio-group>

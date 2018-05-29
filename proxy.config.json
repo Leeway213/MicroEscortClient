@@ -1,0 +1,12 @@
+{
+    "/api": {
+        "target": "http://59.110.155.156",
+        "secure": false,
+        "changeOrigin": true
+    },
+    "/static": {
+        "target": "http://59.110.155.156",
+        "secure": false,
+        "changeOrigin": true
+    }
+}

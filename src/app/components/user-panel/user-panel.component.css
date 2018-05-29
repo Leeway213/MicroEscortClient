@@ -1,0 +1,29 @@
+.root-panel {
+    padding: 0em 1em;
+    width: 100%;
+}
+
+.hello-panel p {
+    float: right;
+}
+
+.income-panel p {
+    text-align: center;
+}
+
+.ant-row {
+    padding: 0.5em 0;
+    text-align: center;
+}
+
+.link-panel div {
+    text-align: center;
+}
+
+a {
+    color: black;
+}
+
+a:hover {
+    color: rgb(0, 179, 138);
+}

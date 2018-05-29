@@ -1,0 +1,11 @@
+<!-- <nz-input [(ngModel)]="nickname" [nzPlaceHolder]="'请输入昵称'"></nz-input> -->
+
+<form nz-form [formGroup]="validateForm">
+  <div nz-form-item>
+    <div nz-form-control>
+      <nz-input formControlName="nickname" [nzPlaceHolder]="'请输入昵称'" [nzSize]="'large'">
+      </nz-input>
+      <div nz-form-explain *ngIf="getFormControl('nickname').dirty&&getFormControl('nickname').hasError('required')">请输入昵称!</div>
+    </div>
+  </div>
+</form>
